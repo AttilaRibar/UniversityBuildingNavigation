@@ -1,0 +1,68 @@
+{
+  "id": "ba",
+  "code": "BA",
+  "name": {
+    "hu": "BA épület – Bécsi út 96/B",
+    "en": "Building BA – Bécsi út 96/B"
+  },
+  "georeference": {
+    "origin": [
+      19.0340468,
+      47.5336501
+    ],
+    "xAxisBearing": 304.51
+  },
+  "levels": [
+    {
+      "id": "A",
+      "ordinal": 0,
+      "shortName": "A",
+      "name": {
+        "hu": "Alagsor",
+        "en": "Basement"
+      },
+      "elevation": 0
+    },
+    {
+      "id": "F",
+      "ordinal": 1,
+      "shortName": "F",
+      "name": {
+        "hu": "Földszint",
+        "en": "Ground floor"
+      },
+      "elevation": 4.2
+    },
+    {
+      "id": "1",
+      "ordinal": 2,
+      "shortName": "1",
+      "name": {
+        "hu": "1. emelet",
+        "en": "1st floor"
+      },
+      "elevation": 8.4
+    },
+    {
+      "id": "2",
+      "ordinal": 3,
+      "shortName": "2",
+      "name": {
+        "hu": "2. emelet",
+        "en": "2nd floor"
+      },
+      "elevation": 12.3
+    },
+    {
+      "id": "3",
+      "ordinal": 4,
+      "shortName": "3",
+      "name": {
+        "hu": "3. emelet",
+        "en": "3rd floor"
+      },
+      "elevation": 16.2
+    }
+  ],
+  "attribution": "Outline © OpenStreetMap contributors (ODbL). Interior estimated from the building's floor directory signs."
+}
