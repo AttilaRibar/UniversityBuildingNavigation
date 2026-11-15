@@ -10,7 +10,7 @@ const depart = (distance: number, levelId = "0"): RouteStep => ({
   landmark: null,
   exitTurn: null,
 });
-const turn = (direction: "left" | "right" | "slight_left", distance: number, levelId = "0"): RouteStep => ({
+const turn = (direction: "left" | "right" | "slight_left" | "slight_right", distance: number, levelId = "0"): RouteStep => ({
   type: "turn",
   levelId,
   direction,
@@ -48,5 +48,22 @@ describe("condenseSteps", () => {
   it("keeps a short final turn before arriving", () => {
     const result = condenseSteps([depart(12), turn("left", 1), arrive]);
     expect(result.map((s) => s.type)).toEqual(["depart", "turn", "arrive"]);
+  });
+
+  it("folds a short left-right sidestep into the walk around it", () => {
+    const result = condenseSteps([depart(10), turn("left", 5), turn("right", 30), arrive]);
+    expect(result.map((s) => s.type)).toEqual(["depart", "arrive"]);
+    expect((result[0] as { distance: number }).distance).toBeCloseTo(45);
+  });
+
+  it("drops a short slight bend in front of a real turn but keeps the turn", () => {
+    const result = condenseSteps([depart(30), turn("slight_left", 4), turn("right", 27), arrive]);
+    expect(result.map((s) => s.type)).toEqual(["depart", "turn", "arrive"]);
+    expect(result[1]).toMatchObject({ direction: "right", distance: 31 });
+  });
+
+  it("keeps two turns the same way", () => {
+    const result = condenseSteps([depart(10), turn("left", 4), turn("left", 20), arrive]);
+    expect(result.map((s) => s.type)).toEqual(["depart", "turn", "turn", "arrive"]);
   });
 });

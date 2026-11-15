@@ -4,6 +4,8 @@ type WalkStep = Extract<RouteStep, { type: "depart" | "turn" }>;
 
 /** A walk shorter than this is a shuffle, not something worth its own card. */
 const SHORT_WALK = 3;
+/** A turn followed this soon by the opposite turn is a sidestep, not a change of direction. */
+const JOG = 6;
 /** Getting to a staircase or lift that is this close is a single "go to the lift" card. */
 const APPROACH_RUN = 9;
 
@@ -19,6 +21,42 @@ function merge(first: WalkStep, rest: readonly WalkStep[]): WalkStep {
   return { ...first, points, distance, landmark: first.landmark ?? rest.find((s) => s.landmark)?.landmark ?? null };
 }
 
+type Turn = Extract<RouteStep, { type: "turn" }>;
+
+const isSlight = (turn: Turn) => turn.direction.startsWith("slight");
+const isJogPair = (a: Turn, b: Turn) =>
+  (a.direction === "left" && b.direction === "right") ||
+  (a.direction === "right" && b.direction === "left") ||
+  (a.direction === "slight_left" && b.direction === "slight_right") ||
+  (a.direction === "slight_right" && b.direction === "slight_left");
+
+/**
+ * Removes sidesteps: a short turn immediately undone by the opposite turn is
+ * just the corridor shifting sideways, and a short slight bend right before a
+ * real turn adds nothing to it.
+ */
+function foldJogs(run: readonly WalkStep[]): WalkStep[] {
+  const out: WalkStep[] = [run[0]];
+  for (let i = 1; i < run.length; i++) {
+    const step = run[i];
+    const next = run[i + 1];
+    if (step.type === "turn" && step.distance < JOG && next?.type === "turn") {
+      if (isJogPair(step, next)) {
+        out[out.length - 1] = merge(out[out.length - 1], [step, next]);
+        i++;
+        continue;
+      }
+      if (isSlight(step)) {
+        out.push({ ...next, points: [...step.points, ...next.points.slice(1)], distance: step.distance + next.distance, landmark: step.landmark ?? next.landmark });
+        i++;
+        continue;
+      }
+    }
+    out.push(step);
+  }
+  return out;
+}
+
 const sideOf = (direction: Extract<RouteStep, { type: "turn" }>["direction"]): "left" | "right" | null =>
   direction === "u_turn" ? null : direction.endsWith("left") ? "left" : "right";
 
@@ -30,7 +68,8 @@ const sideOf = (direction: Extract<RouteStep, { type: "turn" }>["direction"]): "
  * folded away:
  *  - a short run of walking that ends at a staircase or lift becomes one step;
  *  - a few steps out of a lift followed by a turn become "leave and turn left";
- *  - a tiny last turn before a connector joins the walk before it.
+ *  - a tiny last turn before a connector joins the walk before it;
+ *  - a short left-right sidestep disappears into the walk it interrupts.
  */
 export function condenseSteps(steps: readonly RouteStep[]): RouteStep[] {
   const out: RouteStep[] = [];
@@ -57,7 +96,7 @@ function condenseRun(run: readonly WalkStep[], endsAtConnector: boolean): WalkSt
   const total = run.reduce((sum, s) => sum + s.distance, 0);
   if (endsAtConnector && total < APPROACH_RUN) return [merge(run[0], run.slice(1))];
 
-  const result: WalkStep[] = [...run];
+  const result = foldJogs(run);
   // Tiny last leg before a connector: part of the walk that leads to it.
   if (endsAtConnector && result.length > 1 && result[result.length - 1].distance < SHORT_WALK) {
     const last = result.pop()!;
