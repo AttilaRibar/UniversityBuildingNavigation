@@ -203,20 +203,24 @@ export function createCityStyle(hiddenBuildingIds: readonly number[]): StyleSpec
           "fill-extrusion-vertical-gradient": true,
         },
       },
-      {
-        id: "water-name",
-        type: "symbol",
-        source: BASE_SOURCE,
-        "source-layer": "water_name",
-        layout: {
-          "text-field": ["get", "name"],
-          "text-font": FONT_ITALIC,
-          "text-size": 13,
-          "text-letter-spacing": 0.2,
-          "symbol-placement": ["case", ["==", ["geometry-type"], "LineString"], "line", "point"],
-        },
-        paint: { "text-color": MAP_COLORS.waterLabel, "text-halo-color": MAP_COLORS.water, "text-halo-width": 1 },
-      },
+      ...(["line", "point"] as const).map(
+        (placement): LayerSpecification => ({
+          id: `water-name-${placement}`,
+          type: "symbol",
+          source: BASE_SOURCE,
+          "source-layer": "water_name",
+          // Placement cannot depend on data, so rivers (lines) and lakes (points) get a layer each.
+          filter: ["==", ["geometry-type"], placement === "line" ? "LineString" : "Point"],
+          layout: {
+            "text-field": ["get", "name"],
+            "text-font": FONT_ITALIC,
+            "text-size": 13,
+            "text-letter-spacing": 0.2,
+            "symbol-placement": placement,
+          },
+          paint: { "text-color": MAP_COLORS.waterLabel, "text-halo-color": MAP_COLORS.water, "text-halo-width": 1 },
+        }),
+      ),
       {
         id: "road-name",
         type: "symbol",

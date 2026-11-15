@@ -166,7 +166,6 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
       if (e.sourceId === BASE_SOURCE && e.tile) baseTileLoaded = true;
     });
     map.on("error", (e) => {
-      console.warn("DEBUGMAP", String(e.error?.message) + JSON.stringify(e.error).slice(0, 600));
       const sourceId = (e as { sourceId?: unknown }).sourceId;
       if (degraded || baseTileLoaded || (sourceId !== undefined && sourceId !== BASE_SOURCE)) return;
       degraded = true;
