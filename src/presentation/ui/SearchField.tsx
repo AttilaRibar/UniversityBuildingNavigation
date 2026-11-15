@@ -30,7 +30,6 @@ export function SearchField({ value, onChange, placeholder, ariaLabel, onFocus, 
         autoComplete="off"
         autoCorrect="off"
         spellCheck={false}
-        // eslint-disable-next-line jsx-a11y/no-autofocus -- opt-in, for screens whose whole purpose is search
         autoFocus={autoFocus}
         value={value}
         placeholder={placeholder}

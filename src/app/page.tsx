@@ -1,3 +1,5 @@
+import { CityOverview } from "@/presentation/city/CityOverview";
+
 export default function HomePage() {
-  return <main className="p-6">Óbuda Campus Navigator</main>;
+  return <CityOverview />;
 }
