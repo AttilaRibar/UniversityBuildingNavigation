@@ -105,7 +105,7 @@ flowchart LR
 1. **Route.** The page is prerendered once per building id (`generateStaticParams` over the buildings that have indoor data). `BuildingExplorer` loads the building through a dynamic import, which is a separate JavaScript chunk.
 2. **Navigator.** `useNavigator` builds the route graph once per building (`useMemo`). After mount it reads `to`, `from` and `sf` from `window.location.search`, selects the destination and switches to the "place" phase. `to` matches a unit id or a room number. `from` matches an anchor id or a unit id.
 3. **Route search.** `findRoute` runs A* between all doors of the origin and all doors of the destination.
-4. **Steps.** `buildSteps` converts the route legs into structured steps. `condenseSteps` merges noise into instruction cards.
+4. **Steps.** `buildSteps` converts the route legs into structured steps. `condenseSteps` merges noise into instruction cards: short walks into a lift or stair, a short exit followed by a turn, and sidesteps (a short turn undone by the opposite turn, or a short slight bend right before a real turn).
 5. **Text.** `describeStep` in the presentation layer renders each step as a card (icon, title, subtitle) in the active language.
 6. **Scene and panels.** The route legs and the current step focus drive `BuildingScene`; the same cards populate the route panel and the instruction banner.
 7. **URL sync.** `useNavigator` keeps the address bar in sync with `history.replaceState`, without navigation.
@@ -203,9 +203,10 @@ Tests run with Vitest in a Node environment (`vitest.config.ts`). They cover the
 | Search | `src/domain/search/*.test.ts` | Normalisation of room numbers, scoring, typo tolerance |
 | Mapper | `src/infrastructure/indoor/geojson-mapper.test.ts` | GeoJSON to domain mapping |
 | Application | `src/application/directions.test.ts` | Maps platform detection and URL building |
+| Step text | `src/presentation/building/stepText.test.ts` | Hungarian and English card text for steps, no card without a title, distance and duration formatting |
 | Shipped data | `src/data/buildings/ba/ba.test.ts` | BA passes validation without errors, has the expected levels and rooms, every destination is routable with and without stairs, step-free routes avoid stairs, a multi-level route yields at most 12 cards |
 
-`npm run validate:data` runs the same validator over every building as a CI gate. The React components and the three.js scene have no automated tests; they are checked by hand. The CI workflow runs lint, typecheck, tests, data validation and the build.
+`npm run validate:data` runs the same validator over every building as a CI gate. The React components and the three.js scene have no automated tests (only the pure `stepText` module in the presentation layer does); they are checked by hand. The CI workflow runs lint, typecheck, tests, data validation and the build.
 
 ## Known limitations and future work
 
@@ -217,7 +218,7 @@ Tests run with Vitest in a Node environment (`vitest.config.ts`). They cover the
 - **Search normaliser is BA-specific.** The default building code list is `["ba"]`.
 - **Georeference is stored, not used.** `building.json` carries the WGS84 origin and axis bearing, but no runtime code places the indoor model on the city map.
 - **No import-boundary lint rule.** See [the dependency rule](#the-dependency-rule).
-- **No automated tests for UI and the 3D scene.**
+- **No automated tests for UI components and the 3D scene.**
 - **Offline map.** Only tiles the user has already viewed are cached.
 - **Hosting at the domain root only.** There is no `basePath` support.
 - **Tooling note.** `npm start` (`next start`) is not used; the static export is served with `npm run preview`.
