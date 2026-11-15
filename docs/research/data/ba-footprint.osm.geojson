@@ -1,0 +1,1810 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "way/159710379",
+   "properties": {
+    "@id": "way/159710379",
+    "site_role": "BA outer building (96/B) - whole footprint",
+    "addr:city": "Budapest",
+    "addr:housenumber": "96/B",
+    "addr:postcode": "1034",
+    "addr:street": "Bécsi út",
+    "building": "university",
+    "building:levels": "2",
+    "email": "info@nik.uni-obuda.hu",
+    "facebook": "https://www.facebook.com/Neumann.Kar",
+    "name": "Óbudai Egyetem NIK (BA épület)",
+    "name:en": "Óbuda University NIK (building BA)",
+    "official_name": "Óbudai Egyetem - Neumann János Informatikai Kar",
+    "official_name:en": "Óbuda University - John von Neumann Faculty of Informatics",
+    "phone": "+36 1 666 5540",
+    "ref": "BA",
+    "short_name": "ÓE-NIK",
+    "website": "https://nik.uni-obuda.hu/"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.034625,
+       47.5341463
+      ],
+      [
+       19.0347271,
+       47.5340222
+      ],
+      [
+       19.0346561,
+       47.5339977
+      ],
+      [
+       19.0347211,
+       47.533914
+      ],
+      [
+       19.0347309,
+       47.5339017
+      ],
+      [
+       19.0347975,
+       47.5338178
+      ],
+      [
+       19.0347467,
+       47.5337995
+      ],
+      [
+       19.0347972,
+       47.5337355
+      ],
+      [
+       19.0346986,
+       47.5337002
+      ],
+      [
+       19.0346952,
+       47.5337046
+      ],
+      [
+       19.0346482,
+       47.5337647
+      ],
+      [
+       19.0345951,
+       47.5338326
+      ],
+      [
+       19.0345292,
+       47.533809
+      ],
+      [
+       19.034277,
+       47.5337185
+      ],
+      [
+       19.0342397,
+       47.5337052
+      ],
+      [
+       19.0343336,
+       47.5336511
+      ],
+      [
+       19.0345177,
+       47.5335451
+      ],
+      [
+       19.0343999,
+       47.5334508
+      ],
+      [
+       19.034108,
+       47.5336189
+      ],
+      [
+       19.0341095,
+       47.5336201
+      ],
+      [
+       19.0340663,
+       47.533644
+      ],
+      [
+       19.0340537,
+       47.5336508
+      ],
+      [
+       19.0340513,
+       47.5336486
+      ],
+      [
+       19.0340474,
+       47.5336504
+      ],
+      [
+       19.0339745,
+       47.5336845
+      ],
+      [
+       19.0338887,
+       47.5337245
+      ],
+      [
+       19.033804,
+       47.533764
+      ],
+      [
+       19.0334338,
+       47.5339367
+      ],
+      [
+       19.033522,
+       47.5340225
+      ],
+      [
+       19.0335562,
+       47.5340065
+      ],
+      [
+       19.0335952,
+       47.5340445
+      ],
+      [
+       19.0336737,
+       47.5340079
+      ],
+      [
+       19.0338819,
+       47.5339105
+      ],
+      [
+       19.0339302,
+       47.5338881
+      ],
+      [
+       19.0339033,
+       47.5338591
+      ],
+      [
+       19.0338975,
+       47.5338527
+      ],
+      [
+       19.0339268,
+       47.53384
+      ],
+      [
+       19.0339429,
+       47.5338318
+      ],
+      [
+       19.034005,
+       47.5338037
+      ],
+      [
+       19.0340709,
+       47.533773
+      ],
+      [
+       19.0340877,
+       47.5337649
+      ],
+      [
+       19.0340982,
+       47.5337688
+      ],
+      [
+       19.0341825,
+       47.5338003
+      ],
+      [
+       19.0341656,
+       47.5338219
+      ],
+      [
+       19.0341,
+       47.5339058
+      ],
+      [
+       19.0341869,
+       47.5339366
+      ],
+      [
+       19.034206,
+       47.5339611
+      ],
+      [
+       19.034228,
+       47.5339746
+      ],
+      [
+       19.0342476,
+       47.5339848
+      ],
+      [
+       19.0342688,
+       47.5339906
+      ],
+      [
+       19.0342902,
+       47.5339951
+      ],
+      [
+       19.0343152,
+       47.5339963
+      ],
+      [
+       19.0343487,
+       47.5339943
+      ],
+      [
+       19.034441,
+       47.5340277
+      ],
+      [
+       19.0344775,
+       47.5339818
+      ],
+      [
+       19.0345555,
+       47.5340102
+      ],
+      [
+       19.034487,
+       47.5340961
+      ],
+      [
+       19.034625,
+       47.5341463
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/190583206",
+   "properties": {
+    "@id": "way/190583206",
+    "site_role": "BA part: round Auditorium Maximum drum (3 levels)",
+    "building:levels": "3",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0342856,
+       47.5338152
+      ],
+      [
+       19.0342422,
+       47.5338275
+      ],
+      [
+       19.0342077,
+       47.5338491
+      ],
+      [
+       19.0341861,
+       47.5338773
+      ],
+      [
+       19.0341801,
+       47.5339088
+      ],
+      [
+       19.0341869,
+       47.5339366
+      ],
+      [
+       19.034206,
+       47.5339611
+      ],
+      [
+       19.034228,
+       47.5339746
+      ],
+      [
+       19.0342476,
+       47.5339848
+      ],
+      [
+       19.0342688,
+       47.5339906
+      ],
+      [
+       19.0342902,
+       47.5339951
+      ],
+      [
+       19.0343152,
+       47.5339963
+      ],
+      [
+       19.0343487,
+       47.5339943
+      ],
+      [
+       19.0343919,
+       47.5339805
+      ],
+      [
+       19.0344258,
+       47.5339583
+      ],
+      [
+       19.0344464,
+       47.5339295
+      ],
+      [
+       19.0344512,
+       47.5339105
+      ],
+      [
+       19.034446,
+       47.5338788
+      ],
+      [
+       19.0344251,
+       47.5338502
+      ],
+      [
+       19.0343909,
+       47.5338282
+      ],
+      [
+       19.0343476,
+       47.5338155
+      ],
+      [
+       19.0342856,
+       47.5338152
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/200241758",
+   "properties": {
+    "@id": "way/200241758",
+    "site_role": "BA part: long straight bar (5 levels) along Doberdo ut",
+    "building:levels": "5",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0341636,
+       47.5337346
+      ],
+      [
+       19.0340982,
+       47.5337688
+      ],
+      [
+       19.0340877,
+       47.5337649
+      ],
+      [
+       19.0340709,
+       47.533773
+      ],
+      [
+       19.034005,
+       47.5338037
+      ],
+      [
+       19.0339429,
+       47.5338318
+      ],
+      [
+       19.0339268,
+       47.53384
+      ],
+      [
+       19.0338975,
+       47.5338527
+      ],
+      [
+       19.0339033,
+       47.5338591
+      ],
+      [
+       19.0339302,
+       47.5338881
+      ],
+      [
+       19.0338819,
+       47.5339105
+      ],
+      [
+       19.0336737,
+       47.5340079
+      ],
+      [
+       19.0335952,
+       47.5340445
+      ],
+      [
+       19.0335562,
+       47.5340065
+      ],
+      [
+       19.033522,
+       47.5340225
+      ],
+      [
+       19.0334338,
+       47.5339367
+      ],
+      [
+       19.033804,
+       47.533764
+      ],
+      [
+       19.0338887,
+       47.5337245
+      ],
+      [
+       19.0339745,
+       47.5336845
+      ],
+      [
+       19.0340474,
+       47.5336504
+      ],
+      [
+       19.0340513,
+       47.5336486
+      ],
+      [
+       19.0340537,
+       47.5336508
+      ],
+      [
+       19.0341636,
+       47.5337346
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/200241759",
+   "properties": {
+    "@id": "way/200241759",
+    "site_role": "BA part: east wing toward Becsi ut (3 levels)",
+    "building:levels": "3",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0347467,
+       47.5337995
+      ],
+      [
+       19.0347975,
+       47.5338178
+      ],
+      [
+       19.0347309,
+       47.5339017
+      ],
+      [
+       19.0347211,
+       47.533914
+      ],
+      [
+       19.0346561,
+       47.5339977
+      ],
+      [
+       19.0347271,
+       47.5340222
+      ],
+      [
+       19.034625,
+       47.5341463
+      ],
+      [
+       19.034487,
+       47.5340961
+      ],
+      [
+       19.0345555,
+       47.5340102
+      ],
+      [
+       19.0344775,
+       47.5339818
+      ],
+      [
+       19.0345951,
+       47.5338326
+      ],
+      [
+       19.0346482,
+       47.5337647
+      ],
+      [
+       19.0346952,
+       47.5337046
+      ],
+      [
+       19.0346986,
+       47.5337002
+      ],
+      [
+       19.0347972,
+       47.5337355
+      ],
+      [
+       19.0347467,
+       47.5337995
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/200241761",
+   "properties": {
+    "@id": "way/200241761",
+    "site_role": "BA part: central link/core between bar, drum and wings (2 levels)",
+    "building:levels": "2",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0340982,
+       47.5337688
+      ],
+      [
+       19.0341636,
+       47.5337346
+      ],
+      [
+       19.0342182,
+       47.5337061
+      ],
+      [
+       19.0342265,
+       47.5337127
+      ],
+      [
+       19.0342397,
+       47.5337052
+      ],
+      [
+       19.034277,
+       47.5337185
+      ],
+      [
+       19.0345292,
+       47.533809
+      ],
+      [
+       19.0345951,
+       47.5338326
+      ],
+      [
+       19.0344775,
+       47.5339818
+      ],
+      [
+       19.034441,
+       47.5340277
+      ],
+      [
+       19.0343487,
+       47.5339943
+      ],
+      [
+       19.0343919,
+       47.5339805
+      ],
+      [
+       19.0344258,
+       47.5339583
+      ],
+      [
+       19.0344464,
+       47.5339295
+      ],
+      [
+       19.0344512,
+       47.5339105
+      ],
+      [
+       19.034446,
+       47.5338788
+      ],
+      [
+       19.0344251,
+       47.5338502
+      ],
+      [
+       19.0343909,
+       47.5338282
+      ],
+      [
+       19.0343476,
+       47.5338155
+      ],
+      [
+       19.0342856,
+       47.5338152
+      ],
+      [
+       19.0342422,
+       47.5338275
+      ],
+      [
+       19.0342077,
+       47.5338491
+      ],
+      [
+       19.0341861,
+       47.5338773
+      ],
+      [
+       19.0341801,
+       47.5339088
+      ],
+      [
+       19.0341869,
+       47.5339366
+      ],
+      [
+       19.0341,
+       47.5339058
+      ],
+      [
+       19.0341656,
+       47.5338219
+      ],
+      [
+       19.0341825,
+       47.5338003
+      ],
+      [
+       19.0340982,
+       47.5337688
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/200241762",
+   "properties": {
+    "@id": "way/200241762",
+    "site_role": "BA part: small tower-like stub at bar end (4 levels)",
+    "building:levels": "4",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0341636,
+       47.5337346
+      ],
+      [
+       19.0342182,
+       47.5337061
+      ],
+      [
+       19.0341095,
+       47.5336201
+      ],
+      [
+       19.0340663,
+       47.533644
+      ],
+      [
+       19.0340537,
+       47.5336508
+      ],
+      [
+       19.0341636,
+       47.5337346
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/200241763",
+   "properties": {
+    "@id": "way/200241763",
+    "site_role": "BA part: south-east block (2 levels + 1 underground)",
+    "building:levels": "2",
+    "building:levels:underground": "1",
+    "building:part": "university"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0343999,
+       47.5334508
+      ],
+      [
+       19.0345177,
+       47.5335451
+      ],
+      [
+       19.0343336,
+       47.5336511
+      ],
+      [
+       19.0342397,
+       47.5337052
+      ],
+      [
+       19.0342265,
+       47.5337127
+      ],
+      [
+       19.0342182,
+       47.5337061
+      ],
+      [
+       19.0341095,
+       47.5336201
+      ],
+      [
+       19.034108,
+       47.5336189
+      ],
+      [
+       19.0343999,
+       47.5334508
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/118433139",
+   "properties": {
+    "@id": "way/118433139",
+    "site_role": "NEIGHBOUR: BC building (Becsi ut 94-96, Kando KVK)",
+    "addr:city": "Budapest",
+    "addr:housenumber": "94-96",
+    "addr:postcode": "1034",
+    "addr:street": "Bécsi út",
+    "building": "university",
+    "building:levels": "5",
+    "loc_name": "Mozdonyos épület",
+    "name": "Óbudai Egyetem KVK (BC épület)",
+    "name:en": "Óbuda University KVK (building BC)",
+    "name:wikipedia": "hu:Kandó Kálmán",
+    "official_name": "Óbudai Egyetem - Kandó Kálmán Villamosmérnöki Kar",
+    "operator": "Óbudai Egyetem",
+    "ref": "BC",
+    "short_name": "ÓE-KVK",
+    "website": "https://kvk.uni-obuda.hu"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0347059,
+       47.5336858
+      ],
+      [
+       19.0348097,
+       47.5337215
+      ],
+      [
+       19.0348977,
+       47.5336051
+      ],
+      [
+       19.0349861,
+       47.5336355
+      ],
+      [
+       19.0350461,
+       47.533556
+      ],
+      [
+       19.0351565,
+       47.5334098
+      ],
+      [
+       19.0350706,
+       47.5333802
+      ],
+      [
+       19.0351173,
+       47.5333183
+      ],
+      [
+       19.0350086,
+       47.5332809
+      ],
+      [
+       19.0349487,
+       47.5333603
+      ],
+      [
+       19.0349232,
+       47.533394
+      ],
+      [
+       19.0349028,
+       47.533387
+      ],
+      [
+       19.0348389,
+       47.533365
+      ],
+      [
+       19.0346673,
+       47.5335922
+      ],
+      [
+       19.0347421,
+       47.533618
+      ],
+      [
+       19.034754,
+       47.5336221
+      ],
+      [
+       19.0347059,
+       47.5336858
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/165208349",
+   "properties": {
+    "@id": "way/165208349",
+    "site_role": "NEIGHBOUR: D building RKK (Doberdo ut 6)",
+    "addr:city": "Budapest",
+    "addr:housenumber": "6",
+    "addr:postcode": "1034",
+    "addr:street": "Doberdó út",
+    "building": "university",
+    "building:levels": "6",
+    "name": "Óbudai Egyetem RKK (D épület)",
+    "name:wikipedia": "hu:Rejtő Sándor (gépészmérnök)",
+    "official_name": "Óbudai Egyetem - Rejtő Sándor Könnyűipari és Környezetmérnöki Kar",
+    "official_name:en": "Óbuda University - Sándor Rejtő Faculty of Light Industry and Environmental Engineering",
+    "operator": "Óbudai Egyetem",
+    "ref": "D",
+    "short_name": "ÓE-RKK",
+    "website": "https://rkk.uni-obuda.hu"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0333829,
+       47.5336375
+      ],
+      [
+       19.0337495,
+       47.533395
+      ],
+      [
+       19.0339255,
+       47.5332786
+      ],
+      [
+       19.0338014,
+       47.5331931
+      ],
+      [
+       19.0337185,
+       47.533248
+      ],
+      [
+       19.0336208,
+       47.5331817
+      ],
+      [
+       19.0337441,
+       47.5331001
+      ],
+      [
+       19.0336863,
+       47.5330598
+      ],
+      [
+       19.0335627,
+       47.5331419
+      ],
+      [
+       19.0335,
+       47.5331845
+      ],
+      [
+       19.0333915,
+       47.5332534
+      ],
+      [
+       19.0332634,
+       47.5333391
+      ],
+      [
+       19.0333333,
+       47.5333867
+      ],
+      [
+       19.0334614,
+       47.533301
+      ],
+      [
+       19.0335483,
+       47.5333604
+      ],
+      [
+       19.0333378,
+       47.5334997
+      ],
+      [
+       19.0332588,
+       47.533552
+      ],
+      [
+       19.0332884,
+       47.5335724
+      ],
+      [
+       19.0333829,
+       47.5336375
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/267493714",
+   "properties": {
+    "@id": "way/267493714",
+    "site_role": "NEIGHBOUR: Kiss Arpad dormitory",
+    "addr:city": "Budapest",
+    "addr:housenumber": "6/A",
+    "addr:postcode": "1034",
+    "addr:street": "Doberdó út",
+    "building": "dormitory",
+    "building:levels": "6",
+    "building:material": "plaster",
+    "name": "Kiss Árpád Kollégium",
+    "name:en": "Kiss Árpád Dormitory",
+    "operator": "Óbudai Egyetem",
+    "smoking": "separated",
+    "website": "https://koll.uni-obuda.hu/kiss-arpad-kollegium/"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.032833,
+       47.5335998
+      ],
+      [
+       19.0329315,
+       47.5335347
+      ],
+      [
+       19.032949,
+       47.5335231
+      ],
+      [
+       19.0331316,
+       47.5336489
+      ],
+      [
+       19.0329821,
+       47.5337478
+      ],
+      [
+       19.0328299,
+       47.5336429
+      ],
+      [
+       19.0327995,
+       47.533622
+      ],
+      [
+       19.032833,
+       47.5335998
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "way/396248314",
+   "properties": {
+    "@id": "way/396248314",
+    "site_role": "NEIGHBOUR: unnamed 3-level building (OSM)",
+    "building": "yes",
+    "building:levels": "3"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0331517,
+       47.5336628
+      ],
+      [
+       19.0331316,
+       47.5336489
+      ],
+      [
+       19.032949,
+       47.5335231
+      ],
+      [
+       19.0329943,
+       47.5334931
+      ],
+      [
+       19.032936,
+       47.533453
+      ],
+      [
+       19.0331064,
+       47.5333402
+      ],
+      [
+       19.0333378,
+       47.5334997
+      ],
+      [
+       19.0332588,
+       47.533552
+      ],
+      [
+       19.0332884,
+       47.5335724
+      ],
+      [
+       19.0331517,
+       47.5336628
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2026970276",
+   "properties": {
+    "@id": "node/2026970276",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -17.6,
+     -17.2
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0340663,
+     47.533644
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2026970281",
+   "properties": {
+    "@id": "node/2026970281",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     31.6,
+     12.6
+    ],
+    "entrance": "main"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0347211,
+     47.533914
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2027234206",
+   "properties": {
+    "@id": "node/2027234206",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -41.4,
+     -44.8
+    ],
+    "entrance": "main",
+    "wheelchair": "no"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0337495,
+     47.533395
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2102485277",
+   "properties": {
+    "@id": "node/2102485277",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     1.5,
+     11.1
+    ],
+    "addr:housename": "Audmax",
+    "official_name": "Auditorium Maximum",
+    "ref": "BA.1.32.Audmax"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0343202,
+     47.5339006
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2102485414",
+   "properties": {
+    "@id": "node/2102485414",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     1.1,
+     -22.8
+    ],
+    "addr:housename": "F.01"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.034314,
+     47.533594
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2102521185",
+   "properties": {
+    "@id": "node/2102521185",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     56.1,
+     -27.0
+    ],
+    "entrance": "main"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0350461,
+     47.533556
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2102521187",
+   "properties": {
+    "@id": "node/2102521187",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     33.2,
+     -20.1
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0347421,
+     47.533618
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2102542701",
+   "properties": {
+    "@id": "node/2102542701",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -31.4,
+     12.2
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0338819,
+     47.5339105
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104740103",
+   "properties": {
+    "@id": "node/2104740103",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -10.1,
+     2.4
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0341656,
+     47.5338219
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810654",
+   "properties": {
+    "@id": "node/2104810654",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     7.7,
+     -0.2
+    ],
+    "addr:housename": "Aula"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344029,
+     47.5337984
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810659",
+   "properties": {
+    "@id": "node/2104810659",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -19.0,
+     -11.6
+    ],
+    "addr:housename": "F.02"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0340473,
+     47.5336951
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810662",
+   "properties": {
+    "@id": "node/2104810662",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -25.3,
+     -7.6
+    ],
+    "addr:housename": "F.03"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.033963,
+     47.5337316
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810664",
+   "properties": {
+    "@id": "node/2104810664",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -31.9,
+     -3.0
+    ],
+    "addr:housename": "F.04"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0338749,
+     47.5337728
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810672",
+   "properties": {
+    "@id": "node/2104810672",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -43.3,
+     8.4
+    ],
+    "addr:housename": "F.05"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0337242,
+     47.5338762
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810675",
+   "properties": {
+    "@id": "node/2104810675",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -51.1,
+     17.8
+    ],
+    "addr:housename": "F.06"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0336206,
+     47.5339607
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810677",
+   "properties": {
+    "@id": "node/2104810677",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     30.0,
+     4.3
+    ],
+    "addr:housename": "F.08"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0346989,
+     47.5338391
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2104810681",
+   "properties": {
+    "@id": "node/2104810681",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -1.7,
+     -9.0
+    ],
+    "entrance": "yes",
+    "wheelchair": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.034277,
+     47.5337185
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2288588521",
+   "properties": {
+    "@id": "node/2288588521",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     45.3,
+     -45.7
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0349028,
+     47.533387
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/2380664859",
+   "properties": {
+    "@id": "node/2380664859",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -26.8,
+     3.5
+    ],
+    "entrance": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0339429,
+     47.5338318
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/4798718588",
+   "properties": {
+    "@id": "node/4798718588",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -22.3,
+     -2.7
+    ],
+    "addr:city": "Budapest",
+    "addr:housenumber": "96/B",
+    "addr:postcode": "1034",
+    "addr:street": "Bécsi út",
+    "attraction": "exhibition",
+    "email": "info@nik.uni-obuda.hu",
+    "facebook": "https://www.facebook.com/Neumann.Kar",
+    "fee": "no",
+    "museum": "history",
+    "name": "IT Evolúció kiállítás",
+    "name:en": "IT Evolution Exhibition",
+    "opening_hours": "Mo-Fr 06:00-22:00",
+    "operator": "Óbudai Egyetem",
+    "phone": "+36 1 666 5540",
+    "tourism": "museum",
+    "website": "http://news.uni-obuda.hu/articles/2016/08/05/it-evolucio-kiallitas-megnyito"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0340039,
+     47.5337758
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336590",
+   "properties": {
+    "@id": "node/9131336590",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -10.0,
+     -6.2
+    ],
+    "historic": "memorial",
+    "memorial": "car",
+    "name": "Ford A-Modell",
+    "name:en": "Ford Model A"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0341669,
+     47.5337437
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336591",
+   "properties": {
+    "@id": "node/9131336591",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     13.8,
+     -37.0
+    ],
+    "artist_name": "Berek Lajos",
+    "artist:wikidata": "Q1501993",
+    "historic": "memorial",
+    "memorial": "bust",
+    "name": "Neumann János",
+    "ref:kozterkep": "24698",
+    "start_date": "2007-02-08",
+    "subject:wikidata": "Q17455"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344837,
+     47.5334653
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336592",
+   "properties": {
+    "@id": "node/9131336592",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     12.8,
+     -35.1
+    ],
+    "artist_name": "Berek Lajos",
+    "historic": "memorial",
+    "memorial": "bust",
+    "name": "Bánki Donát",
+    "ref:kozterkep": "23887"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344697,
+     47.5334825
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336593",
+   "properties": {
+    "@id": "node/9131336593",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     13.0,
+     -35.7
+    ],
+    "artist_name": "Berek Lajos",
+    "artist:wikidata": "Q1501993",
+    "historic": "memorial",
+    "memorial": "bust",
+    "name": "Kandó Kálmán",
+    "ref:kozterkep": "24663",
+    "start_date": "2009-05-08",
+    "subject:wikidata": "Q704391"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344725,
+     47.5334768
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336594",
+   "properties": {
+    "@id": "node/9131336594",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     14.6,
+     -37.7
+    ],
+    "artist_name": "Berek Lajos",
+    "artist:wikidata": "Q1501993",
+    "historic": "memorial",
+    "memorial": "bust",
+    "name": "Rejtő Sándor",
+    "ref:kozterkep": "24828",
+    "subject:wikidata": "Q1247227"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344948,
+     47.5334592
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336595",
+   "properties": {
+    "@id": "node/9131336595",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     15.8,
+     -37.9
+    ],
+    "artist_name": "Berek Lajos",
+    "artist:wikidata": "Q1501993",
+    "historic": "memorial",
+    "memorial": "bust",
+    "name": "Keleti Károly",
+    "ref:kozterkep": "24839",
+    "subject:wikidata": "Q282047"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0345107,
+     47.5334571
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9131336604",
+   "properties": {
+    "@id": "node/9131336604",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     17.2,
+     1.0
+    ],
+    "entrance": "yes",
+    "wheelchair": "yes"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0345292,
+     47.533809
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/9700157832",
+   "properties": {
+    "@id": "node/9700157832",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -1.1,
+     14.5
+    ],
+    "addr:city": "Budapest",
+    "addr:housenumber": "96/b",
+    "addr:postcode": "1034",
+    "addr:street": "Bécsi út",
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/ChargerKantin",
+    "drive_through": "no",
+    "name": "Charger Kantin",
+    "note": "Az Audmax alatt található, két oldalról is van bejárata a földszint felől",
+    "opening_hours": "Mo-Fr 08:00-16:00"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0342855,
+     47.5339307
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/10037731574",
+   "properties": {
+    "@id": "node/10037731574",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     14.9,
+     -36.2
+    ],
+    "historic": "memorial",
+    "memorial": "statue",
+    "name": "Rudolf Kalman"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344988,
+     47.533473
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/10037731575",
+   "properties": {
+    "@id": "node/10037731575",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     13.3,
+     -36.4
+    ],
+    "historic": "memorial",
+    "memorial": "statue",
+    "name": "Ybl Miklós"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0344765,
+     47.5334709
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/12159539497",
+   "properties": {
+    "@id": "node/12159539497",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -47.2,
+     -49.7
+    ],
+    "access": "customers",
+    "highway": "elevator"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0336722,
+     47.5333508
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/12159539500",
+   "properties": {
+    "@id": "node/12159539500",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     -64.9,
+     -57.5
+    ],
+    "addr:housename": "Gara terem",
+    "addr:street": "Doberdó út",
+    "building:levels": "1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.0334361,
+     47.5332802
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "node/12204780001",
+   "properties": {
+    "@id": "node/12204780001",
+    "local_xy_m_from_(47.5338,19.0343)": [
+     37.7,
+     -2.4
+    ],
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "14",
+    "covered": "no"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     19.034801,
+     47.533778
+    ]
+   }
+  }
+ ],
+ "note": "OSM data (c) OpenStreetMap contributors, ODbL. Fetched 2026-11 via api 0.6/map bbox. Local metres: x east, y north."
+}

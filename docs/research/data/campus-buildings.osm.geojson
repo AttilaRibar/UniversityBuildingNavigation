@@ -1,0 +1,2236 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.034625,
+       47.5341463
+      ],
+      [
+       19.0347271,
+       47.5340222
+      ],
+      [
+       19.0346561,
+       47.5339977
+      ],
+      [
+       19.0347211,
+       47.533914
+      ],
+      [
+       19.0347309,
+       47.5339017
+      ],
+      [
+       19.0347975,
+       47.5338178
+      ],
+      [
+       19.0347467,
+       47.5337995
+      ],
+      [
+       19.0347972,
+       47.5337355
+      ],
+      [
+       19.0346986,
+       47.5337002
+      ],
+      [
+       19.0346952,
+       47.5337046
+      ],
+      [
+       19.0346482,
+       47.5337647
+      ],
+      [
+       19.0345951,
+       47.5338326
+      ],
+      [
+       19.0345292,
+       47.533809
+      ],
+      [
+       19.034277,
+       47.5337185
+      ],
+      [
+       19.0342397,
+       47.5337052
+      ],
+      [
+       19.0343336,
+       47.5336511
+      ],
+      [
+       19.0345177,
+       47.5335451
+      ],
+      [
+       19.0343999,
+       47.5334508
+      ],
+      [
+       19.034108,
+       47.5336189
+      ],
+      [
+       19.0341095,
+       47.5336201
+      ],
+      [
+       19.0340663,
+       47.533644
+      ],
+      [
+       19.0340537,
+       47.5336508
+      ],
+      [
+       19.0340513,
+       47.5336486
+      ],
+      [
+       19.0340474,
+       47.5336504
+      ],
+      [
+       19.0339745,
+       47.5336845
+      ],
+      [
+       19.0338887,
+       47.5337245
+      ],
+      [
+       19.033804,
+       47.533764
+      ],
+      [
+       19.0334338,
+       47.5339367
+      ],
+      [
+       19.033522,
+       47.5340225
+      ],
+      [
+       19.0335562,
+       47.5340065
+      ],
+      [
+       19.0335952,
+       47.5340445
+      ],
+      [
+       19.0336737,
+       47.5340079
+      ],
+      [
+       19.0338819,
+       47.5339105
+      ],
+      [
+       19.0339302,
+       47.5338881
+      ],
+      [
+       19.0339033,
+       47.5338591
+      ],
+      [
+       19.0338975,
+       47.5338527
+      ],
+      [
+       19.0339268,
+       47.53384
+      ],
+      [
+       19.0339429,
+       47.5338318
+      ],
+      [
+       19.034005,
+       47.5338037
+      ],
+      [
+       19.0340709,
+       47.533773
+      ],
+      [
+       19.0340877,
+       47.5337649
+      ],
+      [
+       19.0340982,
+       47.5337688
+      ],
+      [
+       19.0341825,
+       47.5338003
+      ],
+      [
+       19.0341656,
+       47.5338219
+      ],
+      [
+       19.0341,
+       47.5339058
+      ],
+      [
+       19.0341869,
+       47.5339366
+      ],
+      [
+       19.034206,
+       47.5339611
+      ],
+      [
+       19.034228,
+       47.5339746
+      ],
+      [
+       19.0342476,
+       47.5339848
+      ],
+      [
+       19.0342688,
+       47.5339906
+      ],
+      [
+       19.0342902,
+       47.5339951
+      ],
+      [
+       19.0343152,
+       47.5339963
+      ],
+      [
+       19.0343487,
+       47.5339943
+      ],
+      [
+       19.034441,
+       47.5340277
+      ],
+      [
+       19.0344775,
+       47.5339818
+      ],
+      [
+       19.0345555,
+       47.5340102
+      ],
+      [
+       19.034487,
+       47.5340961
+      ],
+      [
+       19.034625,
+       47.5341463
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ba",
+    "code": "BA",
+    "name_hu": "BA épület (Bécsi úti főépület, Neumann-kar)",
+    "name_en": "Building BA (Bécsi út main building, Neumann Faculty)",
+    "faculties": [
+     {
+      "abbr": "NIK",
+      "name_hu": "Neumann János Informatikai Kar",
+      "name_en": "John von Neumann Faculty of Informatics",
+      "url": "https://nik.uni-obuda.hu/"
+     }
+    ],
+    "address": "1034 Budapest, Bécsi út 96/B",
+    "district": "III. kerület",
+    "centroid": [
+     19.034213,
+     47.5338129
+    ],
+    "osm": "way/159710379",
+    "levels": 2.0,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "University seat and Rector's Office (Rektori Hivatal) are in the central A building of the Bécsi út campus (hu.wikipedia photo caption; alapító okirat seat = Bécsi út 96/B). OSM way tagged ref=BA, official_name=Óbudai Egyetem - Neumann János Informatikai Kar, matches Neptun code list. OSM building:levels=2 looks too low for the whole complex (may be only the street-side wing) - not verified. Also houses University Research and Innovation Center (EKIK)."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0347059,
+       47.5336858
+      ],
+      [
+       19.0348097,
+       47.5337215
+      ],
+      [
+       19.0348977,
+       47.5336051
+      ],
+      [
+       19.0349861,
+       47.5336355
+      ],
+      [
+       19.0350461,
+       47.533556
+      ],
+      [
+       19.0351565,
+       47.5334098
+      ],
+      [
+       19.0350706,
+       47.5333802
+      ],
+      [
+       19.0351173,
+       47.5333183
+      ],
+      [
+       19.0350086,
+       47.5332809
+      ],
+      [
+       19.0349487,
+       47.5333603
+      ],
+      [
+       19.0349232,
+       47.533394
+      ],
+      [
+       19.0349028,
+       47.533387
+      ],
+      [
+       19.0348389,
+       47.533365
+      ],
+      [
+       19.0346673,
+       47.5335922
+      ],
+      [
+       19.0347421,
+       47.533618
+      ],
+      [
+       19.034754,
+       47.5336221
+      ],
+      [
+       19.0347059,
+       47.5336858
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "bc",
+    "code": "BC",
+    "name_hu": "BC épület (Mozdonyos épület, Kandó-kar)",
+    "name_en": "Building BC (Locomotive building, Kandó Faculty)",
+    "faculties": [
+     {
+      "abbr": "KVK",
+      "name_hu": "Kandó Kálmán Villamosmérnöki Kar",
+      "name_en": "Kálmán Kandó Faculty of Electrical Engineering",
+      "url": "https://kvk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1034 Budapest, Bécsi út 94-96",
+    "district": "III. kerület",
+    "centroid": [
+     19.0349116,
+     47.5334995
+    ],
+    "osm": "way/118433139",
+    "levels": 5.0,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Neptun: 'Bécsi street C building, the building of the Kando Faculty next to the locomotive'. KVK site: building C houses two institutes, lecture halls and the International Education Office. OSM ref=BC, loc_name=Mozdonyos épület, levels=5."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0333829,
+       47.5336375
+      ],
+      [
+       19.0337495,
+       47.533395
+      ],
+      [
+       19.0339255,
+       47.5332786
+      ],
+      [
+       19.0338014,
+       47.5331931
+      ],
+      [
+       19.0337185,
+       47.533248
+      ],
+      [
+       19.0336208,
+       47.5331817
+      ],
+      [
+       19.0337441,
+       47.5331001
+      ],
+      [
+       19.0336863,
+       47.5330598
+      ],
+      [
+       19.0335627,
+       47.5331419
+      ],
+      [
+       19.0335,
+       47.5331845
+      ],
+      [
+       19.0333915,
+       47.5332534
+      ],
+      [
+       19.0332634,
+       47.5333391
+      ],
+      [
+       19.0333333,
+       47.5333867
+      ],
+      [
+       19.0334614,
+       47.533301
+      ],
+      [
+       19.0335483,
+       47.5333604
+      ],
+      [
+       19.0333378,
+       47.5334997
+      ],
+      [
+       19.0332588,
+       47.533552
+      ],
+      [
+       19.0332884,
+       47.5335724
+      ],
+      [
+       19.0333829,
+       47.5336375
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "d",
+    "code": "D",
+    "name_hu": "D épület (Doberdó úti épület, Rejtő-kar)",
+    "name_en": "Building D (Doberdó út, Rejtő Faculty)",
+    "faculties": [
+     {
+      "abbr": "RKK",
+      "name_hu": "Rejtő Sándor Könnyűipari és Környezetmérnöki Kar",
+      "name_en": "Sándor Rejtő Faculty of Light Industry and Environmental Engineering",
+      "url": "https://rkk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1034 Budapest, Doberdó út 6",
+    "district": "III. kerület",
+    "centroid": [
+     19.0335624,
+     47.5333335
+    ],
+    "osm": "way/165208349",
+    "levels": 6.0,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Neptun code D = Doberdó street (e.g. D.205). OSM ref=D, levels=6. Property register lists Doberdó út 6 as teaching + dormitory + sports ground; a 3-level untagged OSM way (396248314) and the Kiss Árpád dormitory are adjacent but not included here."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.033305,
+       47.5357884
+      ],
+      [
+       19.0332539,
+       47.5357706
+      ],
+      [
+       19.033099,
+       47.5357166
+      ],
+      [
+       19.0330136,
+       47.5356869
+      ],
+      [
+       19.0329189,
+       47.5356534
+      ],
+      [
+       19.0328937,
+       47.5356442
+      ],
+      [
+       19.0330151,
+       47.5354888
+      ],
+      [
+       19.0331459,
+       47.5353199
+      ],
+      [
+       19.0332211,
+       47.5352235
+      ],
+      [
+       19.0332986,
+       47.5352503
+      ],
+      [
+       19.0333679,
+       47.5352741
+      ],
+      [
+       19.0336503,
+       47.5353713
+      ],
+      [
+       19.0335876,
+       47.5354539
+      ],
+      [
+       19.0333247,
+       47.5353612
+      ],
+      [
+       19.0333,
+       47.5353938
+      ],
+      [
+       19.0333299,
+       47.5354042
+      ],
+      [
+       19.0332787,
+       47.5354718
+      ],
+      [
+       19.0332275,
+       47.5355393
+      ],
+      [
+       19.0331991,
+       47.5355295
+      ],
+      [
+       19.0331798,
+       47.535555
+      ],
+      [
+       19.0334202,
+       47.535638
+      ],
+      [
+       19.033305,
+       47.5357884
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "bk",
+    "code": "BK",
+    "name_hu": "Kandó Kálmán Kollégium (BK)",
+    "name_en": "Kandó Kálmán Dormitory (BK)",
+    "faculties": [],
+    "address": "1034 Budapest, Bécsi út 104-108",
+    "district": "III. kerület",
+    "centroid": [
+     19.0332324,
+     47.535516
+    ],
+    "osm": "way/251721669",
+    "levels": 7.0,
+    "height_m": null,
+    "type": "dormitory",
+    "verified": true,
+    "notes": "OSM ref=BK, operator Óbudai Egyetem; founding document lists Bécsi út 104 as dormitory. Meaning of BK (Bécsi út K[ollégium]) is inferred from OSM only."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.032833,
+       47.5335998
+      ],
+      [
+       19.0329315,
+       47.5335347
+      ],
+      [
+       19.032949,
+       47.5335231
+      ],
+      [
+       19.0331316,
+       47.5336489
+      ],
+      [
+       19.0329821,
+       47.5337478
+      ],
+      [
+       19.0328299,
+       47.5336429
+      ],
+      [
+       19.0327995,
+       47.533622
+      ],
+      [
+       19.032833,
+       47.5335998
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "kiss-arpad",
+    "code": null,
+    "name_hu": "Kiss Árpád Kollégium",
+    "name_en": "Kiss Árpád Dormitory",
+    "faculties": [],
+    "address": "1034 Budapest, Doberdó út 6/A",
+    "district": "III. kerület",
+    "centroid": [
+     19.0329721,
+     47.5336518
+    ],
+    "osm": "way/267493714",
+    "levels": 6.0,
+    "height_m": null,
+    "type": "dormitory",
+    "verified": true,
+    "notes": "OSM operator Óbudai Egyetem; website koll.uni-obuda.hu."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0784353,
+       47.49051
+      ],
+      [
+       19.0784176,
+       47.4906391
+      ],
+      [
+       19.0783273,
+       47.4906355
+      ],
+      [
+       19.0783002,
+       47.4908096
+      ],
+      [
+       19.0784158,
+       47.4907741
+      ],
+      [
+       19.0785045,
+       47.4909026
+      ],
+      [
+       19.0784695,
+       47.4909484
+      ],
+      [
+       19.0786201,
+       47.4910068
+      ],
+      [
+       19.0786668,
+       47.4909492
+      ],
+      [
+       19.0788083,
+       47.4910066
+      ],
+      [
+       19.0788565,
+       47.4910261
+      ],
+      [
+       19.0788695,
+       47.4910315
+      ],
+      [
+       19.0788261,
+       47.4910784
+      ],
+      [
+       19.0786918,
+       47.491224
+      ],
+      [
+       19.0782899,
+       47.4910448
+      ],
+      [
+       19.0782426,
+       47.491059
+      ],
+      [
+       19.0781038,
+       47.4908769
+      ],
+      [
+       19.0781382,
+       47.4908643
+      ],
+      [
+       19.0781452,
+       47.4908176
+      ],
+      [
+       19.0781535,
+       47.4907716
+      ],
+      [
+       19.0781775,
+       47.4905903
+      ],
+      [
+       19.0781594,
+       47.4905881
+      ],
+      [
+       19.0781748,
+       47.4904982
+      ],
+      [
+       19.0784353,
+       47.49051
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ta",
+    "code": "TA",
+    "name_hu": "TA épület (Tavaszmező utcai főépület, Keleti-kar)",
+    "name_en": "Building TA (Tavaszmező utca main building, Keleti Faculty)",
+    "faculties": [
+     {
+      "abbr": "KGK",
+      "name_hu": "Keleti Károly Gazdasági Kar",
+      "name_en": "Keleti Károly Faculty of Business and Management",
+      "url": "https://kgk.uni-obuda.hu/"
+     },
+     {
+      "abbr": "KVK",
+      "name_hu": "Kandó Kálmán Villamosmérnöki Kar",
+      "name_en": "Kálmán Kandó Faculty of Electrical Engineering",
+      "url": "https://kvk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1084 Budapest, Tavaszmező utca 17",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0784161,
+     47.4909042
+    ],
+    "osm": "way/567175542",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": false,
+    "notes": "Neptun: TA = main building of the Keleti Faculty. Footprint is inferred: the OSM node 'Óbudai Egyetem TA., TC.' lies inside this untagged way (1769 m2, the largest building in the site outline way/83276974). Dean's office of KVK is at Tavaszmező 17, I. floor; KGK seat Tavaszmező 17 (2025 ügyrend); University Library headquarters is at Tavaszmező u. 17 (hu.wikipedia). TC (brick building, reached through the TA courtyard) is not separately identified: small untagged ways 567175544, 567175545, 625314034 inside the same site outline are candidates, not verified."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0775075,
+       47.4907498
+      ],
+      [
+       19.077596,
+       47.4907847
+      ],
+      [
+       19.0776773,
+       47.4908173
+      ],
+      [
+       19.0777343,
+       47.4908408
+      ],
+      [
+       19.0778523,
+       47.4908478
+      ],
+      [
+       19.0779765,
+       47.4908551
+      ],
+      [
+       19.077983,
+       47.4908082
+      ],
+      [
+       19.0779932,
+       47.4907347
+      ],
+      [
+       19.0779859,
+       47.4907343
+      ],
+      [
+       19.0780174,
+       47.4905074
+      ],
+      [
+       19.0780247,
+       47.4905078
+      ],
+      [
+       19.0780408,
+       47.4903914
+      ],
+      [
+       19.077938,
+       47.4903763
+      ],
+      [
+       19.0779372,
+       47.4903819
+      ],
+      [
+       19.0778116,
+       47.4903739
+      ],
+      [
+       19.0778177,
+       47.4903536
+      ],
+      [
+       19.0773987,
+       47.4902969
+      ],
+      [
+       19.0773549,
+       47.490291
+      ],
+      [
+       19.0772293,
+       47.4902416
+      ],
+      [
+       19.0772177,
+       47.4902554
+      ],
+      [
+       19.0773008,
+       47.4902874
+      ],
+      [
+       19.0773852,
+       47.4903205
+      ],
+      [
+       19.0773598,
+       47.49035
+      ],
+      [
+       19.0774072,
+       47.4903686
+      ],
+      [
+       19.0774019,
+       47.4903864
+      ],
+      [
+       19.0777923,
+       47.4904392
+      ],
+      [
+       19.0778952,
+       47.4904457
+      ],
+      [
+       19.0778826,
+       47.4905362
+      ],
+      [
+       19.0778109,
+       47.4905317
+      ],
+      [
+       19.0778066,
+       47.490563
+      ],
+      [
+       19.077685,
+       47.4905553
+      ],
+      [
+       19.077676,
+       47.49062
+      ],
+      [
+       19.0777976,
+       47.4906277
+      ],
+      [
+       19.077794,
+       47.4906537
+      ],
+      [
+       19.0778657,
+       47.4906583
+      ],
+      [
+       19.0778557,
+       47.4907301
+      ],
+      [
+       19.0777097,
+       47.4907188
+      ],
+      [
+       19.0775689,
+       47.4906689
+      ],
+      [
+       19.0775075,
+       47.4907498
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "tb",
+    "code": "TB",
+    "name_hu": "TB épület (Tavaszmező u. B épület)",
+    "name_en": "Building TB (Tavaszmező utca B)",
+    "faculties": [
+     {
+      "abbr": "KVK",
+      "name_hu": "Kandó Kálmán Villamosmérnöki Kar",
+      "name_en": "Kálmán Kandó Faculty of Electrical Engineering",
+      "url": "https://kvk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1084 Budapest, Tavaszmező utca 15 (OSM: 7-15)",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0777758,
+     47.4905723
+    ],
+    "osm": "way/246810592",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Neptun: TB = Tavaszmező street B building. KVK site: building B at No. 15; uni campus page gives KVK at Tavaszmező 15. OSM way named 'Óbudai Egyetem TB. és Kollégium', addr 7-15; node 'Óbudai Egyetem TB épület' lies inside. The property register lists Tavaszmező 7-15 as teaching + dormitory."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0782289,
+       47.4913099
+      ],
+      [
+       19.0783046,
+       47.4912052
+      ],
+      [
+       19.0779095,
+       47.4910619
+      ],
+      [
+       19.0778166,
+       47.4911699
+      ],
+      [
+       19.0777021,
+       47.491138
+      ],
+      [
+       19.0776249,
+       47.4912621
+      ],
+      [
+       19.0777903,
+       47.4913074
+      ],
+      [
+       19.0781631,
+       47.4914256
+      ],
+      [
+       19.0782085,
+       47.4913457
+      ],
+      [
+       19.0782289,
+       47.4913099
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "tg",
+    "code": "TG",
+    "name_hu": "TG épület (Tavaszmező u. G épület, Keleti-kar új épülete)",
+    "name_en": "Building TG (Tavaszmező utca G, new Keleti Faculty building)",
+    "faculties": [
+     {
+      "abbr": "KGK",
+      "name_hu": "Keleti Károly Gazdasági Kar",
+      "name_en": "Keleti Károly Faculty of Business and Management",
+      "url": "https://kgk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1084 Budapest, Tavaszmező utca 14-18",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0779807,
+     47.4912334
+    ],
+    "osm": "way/979703981",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Neptun: TG = new building of the Keleti Faculty; KVK page: Building G at Tavaszmező 14-18. OSM node 'Óbudai Egyetem TG.' lies inside this way (1088 m2); site outline way/83276975 (KGK). Register lists Tavaszmező 18 as teaching property. Adjacent annex ways tg-b and tg-c are not verified."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0782085,
+       47.4913457
+      ],
+      [
+       19.0783197,
+       47.4913758
+      ],
+      [
+       19.0782256,
+       47.491535
+      ],
+      [
+       19.0781145,
+       47.491505
+      ],
+      [
+       19.0780813,
+       47.4915611
+      ],
+      [
+       19.0780582,
+       47.4916002
+      ],
+      [
+       19.0781392,
+       47.4916221
+      ],
+      [
+       19.0781497,
+       47.4916044
+      ],
+      [
+       19.078203,
+       47.4916188
+      ],
+      [
+       19.0781936,
+       47.4916347
+      ],
+      [
+       19.0782435,
+       47.4916482
+      ],
+      [
+       19.0782539,
+       47.491651
+      ],
+      [
+       19.0782635,
+       47.4916349
+      ],
+      [
+       19.0784907,
+       47.491285
+      ],
+      [
+       19.0783046,
+       47.4912052
+      ],
+      [
+       19.0782289,
+       47.4913099
+      ],
+      [
+       19.0782085,
+       47.4913457
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "tg-b",
+    "code": "TG",
+    "name_hu": "TG épület - szárny (b)",
+    "name_en": "Building TG - part (b)",
+    "faculties": [
+     {
+      "abbr": "KGK",
+      "name_hu": "Keleti Károly Gazdasági Kar",
+      "name_en": "Keleti Károly Faculty of Business and Management",
+      "url": "https://kgk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1084 Budapest, Tavaszmező utca 14-18",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0782896,
+     47.4914174
+    ],
+    "osm": "way/979703980",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": false,
+    "notes": "Untagged OSM way inside site outline way/83276975; assumed part of the TG complex (inferred, not verified)."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0777021,
+       47.491138
+      ],
+      [
+       19.0778166,
+       47.4911699
+      ],
+      [
+       19.0779095,
+       47.4910619
+      ],
+      [
+       19.0779296,
+       47.4910385
+      ],
+      [
+       19.0778045,
+       47.4909861
+      ],
+      [
+       19.0777021,
+       47.491138
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "tg-c",
+    "code": "TG",
+    "name_hu": "TG épület - szárny (c)",
+    "name_en": "Building TG - part (c)",
+    "faculties": [
+     {
+      "abbr": "KGK",
+      "name_hu": "Keleti Károly Gazdasági Kar",
+      "name_en": "Keleti Károly Faculty of Business and Management",
+      "url": "https://kgk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1084 Budapest, Tavaszmező utca 14-18",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0778341,
+     47.4911311
+    ],
+    "osm": "way/979703979",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": false,
+    "notes": "Untagged OSM way inside site outline way/83276975; assumed part of the TG complex (inferred, not verified)."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0768511,
+       47.4904974
+      ],
+      [
+       19.0771231,
+       47.490602
+      ],
+      [
+       19.0771585,
+       47.4906156
+      ],
+      [
+       19.0775075,
+       47.4907498
+      ],
+      [
+       19.0775689,
+       47.4906689
+      ],
+      [
+       19.0775323,
+       47.4906545
+      ],
+      [
+       19.077635,
+       47.4905326
+      ],
+      [
+       19.0773517,
+       47.4904236
+      ],
+      [
+       19.0772815,
+       47.4905069
+      ],
+      [
+       19.0772577,
+       47.4904978
+      ],
+      [
+       19.0771564,
+       47.4904588
+      ],
+      [
+       19.0773008,
+       47.4902874
+      ],
+      [
+       19.0772177,
+       47.4902554
+      ],
+      [
+       19.0772293,
+       47.4902416
+      ],
+      [
+       19.0772421,
+       47.4902264
+      ],
+      [
+       19.0771505,
+       47.4901912
+      ],
+      [
+       19.0769845,
+       47.4903883
+      ],
+      [
+       19.0770113,
+       47.4903987
+      ],
+      [
+       19.0769869,
+       47.4904277
+      ],
+      [
+       19.0768801,
+       47.4903866
+      ],
+      [
+       19.0768511,
+       47.4904974
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "kukac",
+    "code": null,
+    "name_hu": "Kukac Kollégium (Hotel@BMF)",
+    "name_en": "Kukac Dormitory",
+    "faculties": [],
+    "address": "1084 Budapest, Tavaszmező utca 7-15",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0772442,
+     47.4905035
+    ],
+    "osm": "way/246810593",
+    "levels": 5.0,
+    "height_m": null,
+    "type": "dormitory",
+    "verified": true,
+    "notes": "OSM operator Óbudai Egyetem; register: Tavaszmező 7 dormitory + restaurant."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0717756,
+       47.4967957
+      ],
+      [
+       19.071781,
+       47.4967972
+      ],
+      [
+       19.0717961,
+       47.4967718
+      ],
+      [
+       19.0718735,
+       47.4967928
+      ],
+      [
+       19.0718584,
+       47.4968182
+      ],
+      [
+       19.0719441,
+       47.4968414
+      ],
+      [
+       19.0721956,
+       47.4964232
+      ],
+      [
+       19.0724552,
+       47.4959913
+      ],
+      [
+       19.0723718,
+       47.4959347
+      ],
+      [
+       19.0718727,
+       47.4960457
+      ],
+      [
+       19.0712908,
+       47.4961752
+      ],
+      [
+       19.0711598,
+       47.4962043
+      ],
+      [
+       19.0711257,
+       47.4962172
+      ],
+      [
+       19.0711033,
+       47.4962279
+      ],
+      [
+       19.0710747,
+       47.4962434
+      ],
+      [
+       19.0710569,
+       47.4962556
+      ],
+      [
+       19.071044,
+       47.496279
+      ],
+      [
+       19.0710372,
+       47.4963041
+      ],
+      [
+       19.0710237,
+       47.4963033
+      ],
+      [
+       19.0709594,
+       47.4965923
+      ],
+      [
+       19.071063,
+       47.4966027
+      ],
+      [
+       19.0715112,
+       47.4967241
+      ],
+      [
+       19.0717756,
+       47.4967957
+      ]
+     ],
+     [
+      [
+       19.0714258,
+       47.4965772
+      ],
+      [
+       19.0714721,
+       47.4963562
+      ],
+      [
+       19.0713266,
+       47.4963444
+      ],
+      [
+       19.0713303,
+       47.496273
+      ],
+      [
+       19.0713339,
+       47.4962635
+      ],
+      [
+       19.0715867,
+       47.4962073
+      ],
+      [
+       19.0716424,
+       47.4962507
+      ],
+      [
+       19.0716112,
+       47.4962638
+      ],
+      [
+       19.0718096,
+       47.4963179
+      ],
+      [
+       19.0720272,
+       47.4963773
+      ],
+      [
+       19.0718388,
+       47.4966906
+      ],
+      [
+       19.0714258,
+       47.4965772
+      ]
+     ],
+     [
+      [
+       19.0721646,
+       47.4960852
+      ],
+      [
+       19.0719691,
+       47.4961287
+      ],
+      [
+       19.0720091,
+       47.4962106
+      ],
+      [
+       19.0719614,
+       47.4961977
+      ],
+      [
+       19.0719397,
+       47.496234
+      ],
+      [
+       19.0721116,
+       47.4962809
+      ],
+      [
+       19.0722103,
+       47.4961167
+      ],
+      [
+       19.0721811,
+       47.4961044
+      ],
+      [
+       19.0721646,
+       47.4960852
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "banki",
+    "code": "N",
+    "name_hu": "N épület (Népszínház utcai épület, Bánki-kar)",
+    "name_en": "Building N (Népszínház utca, Bánki Faculty)",
+    "faculties": [
+     {
+      "abbr": "BGK",
+      "name_hu": "Bánki Donát Gépész és Biztonságtechnikai Mérnöki Kar",
+      "name_en": "Donát Bánki Faculty of Mechanical and Safety Engineering",
+      "url": "https://bgk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1081 Budapest, Népszínház utca 8 (postal address of the dean's office/study office: 1088 Budapest, József körút 6)",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0717079,
+     47.496381
+    ],
+    "osm": "relation/16570843",
+    "levels": null,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Footprint = OSM multipolygon relation 16570843 (building=university, untagged), which lies inside way/634250499 (amenity=university, name 'Óbudai Egyetem - Bánki Donát...', addr Népszínház utca 8). Neptun: N = Népszínház street, Bánki Faculty. The complex has an entrance/address on József körút 6 (property register: education). Since 2025-02-01 the Népszínház wing is being rebuilt and theory teaching moved to Frangepán utca 50 (bgk.uni-obuda.hu); lab/workshop teaching continues in non-affected wings. Also hosts Trefort Ágoston Mérnökpedagógiai Központ (2019 study guide)."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0807624,
+       47.5344303
+      ],
+      [
+       19.0806809,
+       47.5342448
+      ],
+      [
+       19.0808428,
+       47.5342124
+      ],
+      [
+       19.0808509,
+       47.5342308
+      ],
+      [
+       19.0815661,
+       47.5340875
+      ],
+      [
+       19.0815552,
+       47.5340629
+      ],
+      [
+       19.0817269,
+       47.5340285
+      ],
+      [
+       19.0818083,
+       47.5342137
+      ],
+      [
+       19.0816446,
+       47.5342465
+      ],
+      [
+       19.0816347,
+       47.5342239
+      ],
+      [
+       19.0809072,
+       47.5343697
+      ],
+      [
+       19.0809199,
+       47.5343988
+      ],
+      [
+       19.0807624,
+       47.5344303
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "frangepan",
+    "code": null,
+    "name_hu": "Frangepán utcai ideiglenes kampusz (volt Kodolányi Egyetem)",
+    "name_en": "Frangepán utca temporary campus (former Kodolányi University)",
+    "faculties": [
+     {
+      "abbr": "BGK",
+      "name_hu": "Bánki Donát Gépész és Biztonságtechnikai Mérnöki Kar",
+      "name_en": "Donát Bánki Faculty of Mechanical and Safety Engineering",
+      "url": "https://bgk.uni-obuda.hu/"
+     }
+    ],
+    "address": "1139 Budapest, Frangepán utca 50-56",
+    "district": "XIII. kerület",
+    "centroid": [
+     19.0812397,
+     47.5342151
+    ],
+    "osm": "way/121644702",
+    "levels": 5.0,
+    "height_m": null,
+    "type": "faculty",
+    "verified": true,
+    "notes": "Temporary theory-teaching campus of BGK from 2025-02-01 (bgk.uni-obuda.hu). Founding document (2026-07-01) lists Frangepán utca 50-56 as rental, ownership transfer in progress. OSM way is still named 'Kodolányi János Egyetem' (stale). Current status as of Nov 2026 (still used? construction finished?) not verified."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0930453,
+       47.5076855
+      ],
+      [
+       19.0931249,
+       47.5077486
+      ],
+      [
+       19.0932679,
+       47.5078618
+      ],
+      [
+       19.0932708,
+       47.5078642
+      ],
+      [
+       19.0932782,
+       47.5078695
+      ],
+      [
+       19.0933318,
+       47.5079111
+      ],
+      [
+       19.0933915,
+       47.5079597
+      ],
+      [
+       19.0936662,
+       47.5081773
+      ],
+      [
+       19.0939783,
+       47.5079975
+      ],
+      [
+       19.0938269,
+       47.5078776
+      ],
+      [
+       19.0936722,
+       47.5079667
+      ],
+      [
+       19.0935939,
+       47.5079047
+      ],
+      [
+       19.0936633,
+       47.5078647
+      ],
+      [
+       19.0936381,
+       47.5078448
+      ],
+      [
+       19.0936535,
+       47.5078359
+      ],
+      [
+       19.0935735,
+       47.5077726
+      ],
+      [
+       19.0935235,
+       47.507733
+      ],
+      [
+       19.0935082,
+       47.5077418
+      ],
+      [
+       19.0934852,
+       47.5077237
+      ],
+      [
+       19.0934057,
+       47.5077695
+      ],
+      [
+       19.0933304,
+       47.5077099
+      ],
+      [
+       19.0934925,
+       47.5076165
+      ],
+      [
+       19.0933546,
+       47.5075073
+      ],
+      [
+       19.0930453,
+       47.5076855
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ybl-a",
+    "code": "A",
+    "name_hu": "Ybl A épület",
+    "name_en": "Ybl Building A",
+    "faculties": [
+     {
+      "abbr": "YBL",
+      "name_hu": "Ybl Miklós Építéstudományi Kar",
+      "name_en": "Miklós Ybl Faculty of Architecture and Civil Engineering",
+      "url": "https://ybl.uni-obuda.hu/"
+     }
+    ],
+    "address": "1146 Budapest, Thököly út 74",
+    "district": "XIV. kerület",
+    "centroid": [
+     19.09349,
+     47.5078512
+    ],
+    "osm": "way/707995136",
+    "levels": 3.0,
+    "height_m": 15.0,
+    "type": "faculty",
+    "verified": true,
+    "notes": "OSM operator 'Óbudai Egyetem Ybl Miklós Építéstudományi Kar', levels=3, height=15. Faculty address per ybl.uni-obuda.hu and campus page. The Neptun/timetable code for Ybl buildings was NOT found."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0932782,
+       47.5078695
+      ],
+      [
+       19.0932078,
+       47.5079109
+      ],
+      [
+       19.0931489,
+       47.5078652
+      ],
+      [
+       19.0930195,
+       47.5079407
+      ],
+      [
+       19.0928941,
+       47.5080147
+      ],
+      [
+       19.0930065,
+       47.5081023
+      ],
+      [
+       19.0933318,
+       47.5079111
+      ],
+      [
+       19.0932782,
+       47.5078695
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ybl-b",
+    "code": "B",
+    "name_hu": "Ybl B épület",
+    "name_en": "Ybl Building B",
+    "faculties": [
+     {
+      "abbr": "YBL",
+      "name_hu": "Ybl Miklós Építéstudományi Kar",
+      "name_en": "Miklós Ybl Faculty of Architecture and Civil Engineering",
+      "url": "https://ybl.uni-obuda.hu/"
+     }
+    ],
+    "address": "1146 Budapest, Thököly út 74",
+    "district": "XIV. kerület",
+    "centroid": [
+     19.0930814,
+     47.5079291
+    ],
+    "osm": "way/707995226",
+    "levels": 3.0,
+    "height_m": 15.0,
+    "type": "faculty",
+    "verified": true,
+    "notes": "OSM operator Ybl faculty, levels=3, height=15. Register lists the site as Izsó u. 1-3 / Zichy Géza u. 2 / Thököly út 74."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0927305,
+       47.5078883
+      ],
+      [
+       19.0928941,
+       47.5080147
+      ],
+      [
+       19.0930195,
+       47.5079407
+      ],
+      [
+       19.0928558,
+       47.5078143
+      ],
+      [
+       19.0927305,
+       47.5078883
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ybl-sport",
+    "code": null,
+    "name_hu": "Ybl sportcsarnok",
+    "name_en": "Ybl sports hall",
+    "faculties": [
+     {
+      "abbr": "YBL",
+      "name_hu": "Ybl Miklós Építéstudományi Kar",
+      "name_en": "Miklós Ybl Faculty of Architecture and Civil Engineering",
+      "url": "https://ybl.uni-obuda.hu/"
+     }
+    ],
+    "address": "1146 Budapest, Thököly út 74",
+    "district": "XIV. kerület",
+    "centroid": [
+     19.0928873,
+     47.5079451
+    ],
+    "osm": "way/1004363281",
+    "levels": 1.0,
+    "height_m": 8.0,
+    "type": "other",
+    "verified": true,
+    "notes": "OSM leisure=sports_hall, operator Óbudai Egyetem, levels=1, height=8."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0558066,
+       47.5078764
+      ],
+      [
+       19.0558891,
+       47.5079346
+      ],
+      [
+       19.0560108,
+       47.507856
+      ],
+      [
+       19.0559698,
+       47.5078271
+      ],
+      [
+       19.0558977,
+       47.5078736
+      ],
+      [
+       19.0558555,
+       47.5078438
+      ],
+      [
+       19.0560521,
+       47.5077127
+      ],
+      [
+       19.0560766,
+       47.5077295
+      ],
+      [
+       19.056207,
+       47.5078182
+      ],
+      [
+       19.0558714,
+       47.5080312
+      ],
+      [
+       19.0557605,
+       47.5079482
+      ],
+      [
+       19.0557312,
+       47.5079267
+      ],
+      [
+       19.0558066,
+       47.5078764
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "bankikoll",
+    "code": null,
+    "name_hu": "Bánki Donát Kollégium",
+    "name_en": "Bánki Donát Dormitory",
+    "faculties": [],
+    "address": "1065 Budapest, Podmaniczky utca 8",
+    "district": "VI. kerület",
+    "centroid": [
+     19.0559745,
+     47.5078629
+    ],
+    "osm": "way/261301423",
+    "levels": 5.0,
+    "height_m": null,
+    "type": "dormitory",
+    "verified": true,
+    "notes": "OSM name 'Óbudai Egyetem Bánki Donát Kollégium'; register lists Podmaniczky u. 8 as dormitory."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0690314,
+       47.4923628
+      ],
+      [
+       19.0690076,
+       47.4922509
+      ],
+      [
+       19.0689833,
+       47.4921373
+      ],
+      [
+       19.0687761,
+       47.4921288
+      ],
+      [
+       19.0683852,
+       47.4921108
+      ],
+      [
+       19.0683704,
+       47.4923346
+      ],
+      [
+       19.0690314,
+       47.4923628
+      ]
+     ],
+     [
+      [
+       19.0686249,
+       47.4922695
+      ],
+      [
+       19.0686307,
+       47.4922027
+      ],
+      [
+       19.068783,
+       47.4922088
+      ],
+      [
+       19.0687772,
+       47.4922755
+      ],
+      [
+       19.0686249,
+       47.4922695
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "yblkoll",
+    "code": null,
+    "name_hu": "Ybl Miklós Építéstudományi Kar kollégiuma",
+    "name_en": "Ybl Faculty Dormitory",
+    "faculties": [],
+    "address": "1085 Budapest, Mária utca 7",
+    "district": "VIII. kerület",
+    "centroid": [
+     19.0686936,
+     47.4922413
+    ],
+    "osm": "relation/3439794",
+    "levels": 3.0,
+    "height_m": null,
+    "type": "dormitory",
+    "verified": true,
+    "notes": "OSM relation building=dormitory named 'Ybl Miklós Építéstudományi Kar kollégiuma'; register lists Mária u. 7 as dormitory."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0374514,
+       47.5334089
+      ],
+      [
+       19.0374479,
+       47.5331964
+      ],
+      [
+       19.0379588,
+       47.5331927
+      ],
+      [
+       19.0379622,
+       47.5334051
+      ],
+      [
+       19.0378043,
+       47.5334063
+      ],
+      [
+       19.0376031,
+       47.5334078
+      ],
+      [
+       19.0374514,
+       47.5334089
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "b-epulet",
+    "code": "B",
+    "name_hu": "Óbudai Egyetem B épület (Viador utca)",
+    "name_en": "Óbuda University Building B (Viador utca)",
+    "faculties": [],
+    "address": "1034 Budapest, Viador utca / Szőlő utca környéke (házszám nem ismert)",
+    "district": "III. kerület",
+    "centroid": [
+     19.0377038,
+     47.5332977
+    ],
+    "osm": "way/199003486",
+    "levels": 2.0,
+    "height_m": null,
+    "type": "other",
+    "verified": false,
+    "notes": "OSM way named 'Óbudai Egyetem B épület' (building=school, 2 levels), member of the OSM university relation. No official source found; function and address unknown. The property register lists Szőlő utca 2 (Budapest III) as teaching property - possibly this, UNVERIFIED. The hu.wikipedia 'AB' building at Nagyszombat utca could not be confirmed."
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       19.0950586,
+       47.5079246
+      ],
+      [
+       19.0949711,
+       47.5079983
+      ],
+      [
+       19.0950021,
+       47.5080133
+      ],
+      [
+       19.0949387,
+       47.5080728
+      ],
+      [
+       19.0949098,
+       47.5080599
+      ],
+      [
+       19.0948326,
+       47.5081281
+      ],
+      [
+       19.0948312,
+       47.508144
+      ],
+      [
+       19.0947965,
+       47.5081451
+      ],
+      [
+       19.0947969,
+       47.5081292
+      ],
+      [
+       19.0946365,
+       47.5080498
+      ],
+      [
+       19.0946907,
+       47.5080005
+      ],
+      [
+       19.094715,
+       47.5080129
+      ],
+      [
+       19.0947626,
+       47.5079719
+      ],
+      [
+       19.0947322,
+       47.5079604
+      ],
+      [
+       19.0947826,
+       47.5079127
+      ],
+      [
+       19.094807,
+       47.5079258
+      ],
+      [
+       19.0948527,
+       47.5078894
+      ],
+      [
+       19.094844,
+       47.5078832
+      ],
+      [
+       19.0948897,
+       47.5078435
+      ],
+      [
+       19.0950586,
+       47.5079246
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "ybl-c",
+    "code": null,
+    "name_hu": "Stefánia úti 'C épület' (Ybl-kar?)",
+    "name_en": "Stefánia út 30 'C building' (Ybl Faculty?)",
+    "faculties": [],
+    "address": "1143 Budapest, Stefánia út 30",
+    "district": "XIV. kerület",
+    "centroid": [
+     19.0948568,
+     47.5080007
+    ],
+    "osm": "way/257204820",
+    "levels": 3.0,
+    "height_m": null,
+    "type": "other",
+    "verified": false,
+    "notes": "OSM building=university named 'C épület', 3 levels, near the Ybl campus. No source found linking it to Óbuda University - UNVERIFIED, may belong to another institution."
+   }
+  }
+ ]
+}

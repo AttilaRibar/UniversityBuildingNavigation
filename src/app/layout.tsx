@@ -1,15 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/overpass";
+import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from "@/application/app-info";
+import { I18nProvider } from "@/presentation/i18n/I18nProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Óbuda Campus Navigator",
-  description: "Find any room at Óbuda University.",
+  title: { default: `${APP_NAME} – ${APP_TAGLINE.hu}`, template: `%s · ${APP_NAME}` },
+  description: APP_DESCRIPTION.hu,
+  applicationName: APP_NAME,
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#14213d",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="hu">
-      <body>{children}</body>
+      <body>
+        <I18nProvider>{children}</I18nProvider>
+      </body>
     </html>
   );
 }
