@@ -146,6 +146,7 @@ The build output is a static site in `out/`. Any static host works. Notes:
 - Serve `sw.js` with `Cache-Control: no-cache` (or equivalent) so that browsers pick up new versions. `precache-manifest.json` should not be cached long-term either; the service worker fetches it with `cache: "no-store"` regardless.
 - `next.config.ts` enables `trailingSlash`, so pages are exported as `folder/index.html`. The host must serve `/building/ba/` from `building/ba/index.html`.
 - CI (`.github/workflows/ci.yml`) runs lint, typecheck, tests, data validation and the build on Node 22. It does not deploy.
+- **Vercel:** `vercel.json` deploys the project as a plain static site (`framework: null`, build command `npm run build`, output directory `out`). Do not switch the project to the Next.js preset: it publishes the build output before `scripts/build-precache.ts` has written `precache-manifest.json`, which breaks offline support.
 
 ## Data sources and attribution
 
