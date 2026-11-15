@@ -4,7 +4,8 @@
  * Sources:
  *  - Outline and wing geometry: OpenStreetMap way 159710379 and its
  *    `building:part` ways (© OpenStreetMap contributors, ODbL).
- *  - What is on each level: the floor directory signs in the building.
+ *  - What is on each level: the floor directory signs in the building
+ *    (levels A, F, 1, 2, 3, 4).
  *  - Room numbers, lab list and capacities: public NIK / university pages
  *    (see docs/research/ba-building.md).
  *
@@ -178,11 +179,10 @@ function levelA(): LevelBuilder {
   const garage = H.poly([[-10, -49.5], [17.3, -49.5], [17.3, -58.5], [30, -58.5], [30, -12], [-4, -12], [-10, -20]]);
   lb.slab(garage);
   lb.slab(H.rect(-10.1, -58.5, 17.3, -49.5));
-  lb.slab(STUB);
 
   lb.unit({ id: "garage", category: "parking", name: t("Teremgarázs", "Indoor garage") }, garage, [H.pt(4, -49.5)]);
   lb.unit(
-    { id: "entrance-hall", category: "lobby", name: t("Bejárati csarnok", "Entrance hall"), landmark: true },
+    { id: "entrance-hall", category: "lobby", name: t("Bejárati csarnok", "Entrance hall") },
     H.rect(-4, -58.5, 8, -49.5),
     [H.pt(2, -56.5)],
   );
@@ -196,13 +196,13 @@ function levelA(): LevelBuilder {
 
   shaft(lb, "stairs-entrance", H.rect(-3, -54, 1, -49.6), H.pt(-1, -54.6));
   southCore(lb);
-  westCore(lb, { stairs: true, frontLift: false, restroom: false });
 
   // Entrance hall: door -> reception -> main stairs -> south core.
   lb.walkway([H.pt(2, -58.3), H.pt(2, -56.5), H.pt(2, -53.2), H.pt(7, -53.2)]);
   lb.walkway([H.pt(-4, -56.5), H.pt(2, -56.5)]);
-  // Through the garage to the west lift.
-  lb.walkway([H.pt(2, -53.2), H.pt(4, -51), H.pt(4, -30), H.pt(2, -16), B.pt(-3.1, -11), B.pt(-3.1, -5.2)]);
+  // Into the garage. The west lift also stops here, but walking across the
+  // garage is not a pedestrian route, so that link is deliberately left out.
+  lb.walkway([H.pt(2, -53.2), H.pt(4, -51), H.pt(4, -44)]);
 
   lb.anchor("main-entrance", H.pt(2, -58.3), {
     name: t("Főbejárat (Bécsi út)", "Main entrance (Bécsi út)"),
@@ -241,7 +241,7 @@ function levelF(): LevelBuilder {
 
   // Aula link and the round block under the Audmax.
   lb.unit(
-    { id: "aula", category: "lobby", name: t("Aula", "Aula"), capacity: 200, aliases: ["hall", "előcsarnok"], landmark: true },
+    { id: "aula", category: "lobby", name: t("Aula", "Aula"), capacity: 200, aliases: ["hall", "előcsarnok"] },
     LINK,
     [H.pt(2, -31)],
   );
@@ -359,6 +359,7 @@ function levelOne(): LevelBuilder {
   const ekikWest = zigzag(refs("1", 21, 31).map((ref) => office(ref, EKIK, t("Élettani Szabályozások Kutatóközpont", "Physiological Controls Research Center"))));
   row(lb, { frame: H, x0: -18.1, x1: -0.2, yBack: -45.8, yDoor: -49.6, rooms: ekikWest.back });
   row(lb, { frame: H, x0: -18.1, x1: -0.2, yBack: -54.2, yDoor: -51.4, rooms: ekikWest.front });
+  lb.unit({ id: "service-south", category: "service" }, H.rect(-10.1, -58.5, -0.2, -54.2));
   lb.unit({ id: "wc-south", category: "restroom", name: RESTROOM }, H.rect(8, -51, 11, -45.8), [H.pt(9.5, -51)]);
   lb.unit(
     { ref: "1.33", category: "conference", occupant: EKIK, name: t("Tárgyaló", "Meeting room") },
@@ -419,6 +420,7 @@ function levelTwo(): LevelBuilder {
   const ekikWest = zigzag(refs("2", 21, 32).map((ref) => office(ref, EKIK, bejczy)));
   row(lb, { frame: H, x0: -18.1, x1: 2, yBack: -45.8, yDoor: -49.6, rooms: ekikWest.back });
   row(lb, { frame: H, x0: -18.1, x1: 2, yBack: -54.2, yDoor: -51.4, rooms: ekikWest.front });
+  lb.unit({ id: "service-south", category: "service" }, H.rect(-10.1, -58.5, 2, -54.2));
   lb.unit({ id: "wc-south", category: "restroom", name: RESTROOM }, H.rect(8, -51, 11, -45.8), [H.pt(9.5, -51)]);
   lb.unit(office("2.33", EKIK, t("EKIK főigazgatói iroda", "EKIK Director General's Office")), H.rect(11, -51, 17.3, -45.8), [H.pt(14, -51)]);
   row(lb, { frame: H, x0: 13.6, x1: 28.1, yBack: -64.3, yDoor: -54.4, rooms: refs("2", 34, 36).map((ref) => office(ref, EKIK)) });
@@ -428,22 +430,40 @@ function levelTwo(): LevelBuilder {
   return lb;
 }
 
-// --- Level 3: NIK institutes --------------------------------------------------
+// --- Levels 3 and 4: NIK institutes and the Dean's Office ----------------------
 
-function levelThree(): LevelBuilder {
-  const lb = new LevelBuilder("3");
+/** Levels 3 and 4 only cover the bar: offices on both sides, the central core in the middle. */
+function officeLevel(id: string, rooms: UnitInput[]): LevelBuilder {
+  const lb = new LevelBuilder(id);
   barSlabWithAtria(lb);
-
-  const software = t("Szoftvertervezés és -fejlesztés Intézet", "Software Engineering Institute");
-  const cyber = t("Kiberfizikai Rendszerek Intézet", "Institute of Cyberphysical Systems");
-  const bio = t("Biomatika és Alkalmazott Mesterséges Intelligencia Intézet", "Biomathematics and Applied Artificial Intelligence Institute");
-  const institute = (n: number): Text | undefined => (n >= 3 && n <= 14 ? software : n >= 15 && n <= 22 ? cyber : n >= 23 ? bio : undefined);
-  const rooms = refs("3", 1, 28).map((ref, i) => office(ref, NIK, institute(i + 1)));
-
   barRooms(lb, { seStart: -0.2, seRooms: rooms.slice(0, 10), nwRooms: rooms.slice(10) });
   centralCore(lb, { restroom: true });
   barCorridors(lb, 0.8);
   return lb;
+}
+
+function levelThree(): LevelBuilder {
+  const software = t("Szoftvertervezés és -fejlesztés Intézet", "Software Engineering Institute");
+  const cyber = t("Kiberfizikai Rendszerek Intézet", "Institute of Cyberphysical Systems");
+  const bio = t("Biomatika és Alkalmazott Mesterséges Intelligencia Intézet", "Biomathematics and Applied Artificial Intelligence Institute");
+  const institute = (n: number): Text | undefined => (n >= 3 && n <= 14 ? software : n >= 15 && n <= 22 ? cyber : n >= 23 ? bio : undefined);
+  return officeLevel("3", refs("3", 1, 28).map((ref, i) => office(ref, NIK, institute(i + 1))));
+}
+
+function levelFour(): LevelBuilder {
+  const maths = t("Alkalmazott Matematikai Intézet", "Institute of Applied Mathematics");
+  const dean = t("Dékáni Hivatal", "Dean's Office");
+  // The sign shows the Dean's Office in the Doberdó-side row of the NW half,
+  // which is where the odd numbers from 4.11 land with alternating sides.
+  const rooms = refs("4", 1, 28).map((ref, i): UnitInput => {
+    const n = i + 1;
+    if (n === 1) {
+      return { ref, category: "conference", occupant: NIK, name: t("Dékáni tanácsterem", "Dean's Meeting Room"), aliases: ["NIK tárgyaló", "tanácsterem"] };
+    }
+    const isDean = n >= 11 && n % 2 === 1;
+    return { ...office(ref, NIK, isDean ? dean : maths), aliases: isDean ? ["dékáni", "dékán", "dean"] : [] };
+  });
+  return officeLevel("4", rooms);
 }
 
 // --- Output -------------------------------------------------------------------
@@ -454,6 +474,7 @@ const LEVELS = [
   { id: "1", name: t("1. emelet", "1st floor"), elevation: 8.4, build: levelOne },
   { id: "2", name: t("2. emelet", "2nd floor"), elevation: 12.3, build: levelTwo },
   { id: "3", name: t("3. emelet", "3rd floor"), elevation: 16.2, build: levelThree },
+  { id: "4", name: t("4. emelet", "4th floor"), elevation: 20.1, build: levelFour },
 ];
 
 const manifest = {

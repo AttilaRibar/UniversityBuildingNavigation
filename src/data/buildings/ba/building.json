@@ -62,6 +62,16 @@
         "en": "3rd floor"
       },
       "elevation": 16.2
+    },
+    {
+      "id": "4",
+      "ordinal": 5,
+      "shortName": "4",
+      "name": {
+        "hu": "4. emelet",
+        "en": "4th floor"
+      },
+      "elevation": 20.1
     }
   ],
   "attribution": "Outline © OpenStreetMap contributors (ODbL). Interior estimated from the building's floor directory signs."

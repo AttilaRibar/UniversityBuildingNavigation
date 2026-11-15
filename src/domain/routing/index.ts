@@ -4,3 +4,4 @@ export { buildRouteGraph, MAX_SNAP_DISTANCE, anchorNodeId, connectorNodeId, open
 export { findRoute, findRouteToNearest } from "./find-route";
 export { buildSteps, classifyTurn } from "./instructions";
 export { validateBuilding, type ValidationIssue } from "./validate";
+export { condenseSteps } from "./condense";
