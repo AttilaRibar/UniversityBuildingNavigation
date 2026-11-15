@@ -1,0 +1,56 @@
+[
+  {
+    "abbr": "NIK",
+    "name": {
+      "hu": "Neumann János Informatikai Kar",
+      "en": "John von Neumann Faculty of Informatics"
+    },
+    "url": "https://nik.uni-obuda.hu/",
+    "color": "#2f6bff"
+  },
+  {
+    "abbr": "KVK",
+    "name": {
+      "hu": "Kandó Kálmán Villamosmérnöki Kar",
+      "en": "Kálmán Kandó Faculty of Electrical Engineering"
+    },
+    "url": "https://kvk.uni-obuda.hu/",
+    "color": "#ff7a1a"
+  },
+  {
+    "abbr": "RKK",
+    "name": {
+      "hu": "Rejtő Sándor Könnyűipari és Környezetmérnöki Kar",
+      "en": "Sándor Rejtő Faculty of Light Industry and Environmental Engineering"
+    },
+    "url": "https://rkk.uni-obuda.hu/",
+    "color": "#17b890"
+  },
+  {
+    "abbr": "KGK",
+    "name": {
+      "hu": "Keleti Károly Gazdasági Kar",
+      "en": "Keleti Károly Faculty of Business and Management"
+    },
+    "url": "https://kgk.uni-obuda.hu/",
+    "color": "#e5395b"
+  },
+  {
+    "abbr": "BGK",
+    "name": {
+      "hu": "Bánki Donát Gépész és Biztonságtechnikai Mérnöki Kar",
+      "en": "Donát Bánki Faculty of Mechanical and Safety Engineering"
+    },
+    "url": "https://bgk.uni-obuda.hu/",
+    "color": "#8a4fff"
+  },
+  {
+    "abbr": "YBL",
+    "name": {
+      "hu": "Ybl Miklós Építéstudományi Kar",
+      "en": "Miklós Ybl Faculty of Architecture and Civil Engineering"
+    },
+    "url": "https://ybl.uni-obuda.hu/",
+    "color": "#f2a900"
+  }
+]

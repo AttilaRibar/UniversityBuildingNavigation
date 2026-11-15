@@ -1,0 +1,63 @@
+import type { CampusBuildingKind } from "@/domain/campus/model";
+
+/** Strings of the city overview screen. Hungarian is the source language. */
+export const cityHu = {
+  sheetLabel: "Épületek és teremkereső",
+  mapLabel: "Az Óbudai Egyetem épületei Budapest térképén",
+  searchLabel: "Terem vagy épület keresése",
+  intro: (buildings: number, campuses: number) =>
+    `${buildings} épület ${campuses} helyszínen. Koppints egy épületre a térképen vagy a listában.`,
+  buildingCount: (n: number) => `${n} épület`,
+  indoorTag: "Belső térkép",
+  kind: { faculty: "Oktatási épület", dormitory: "Kollégium", sports: "Sportlétesítmény" } satisfies Record<CampusBuildingKind, string>,
+  faculties: "Karok",
+  address: "Cím",
+  approximateFootprint: "Az épület körvonala a térképen közelítő.",
+  navigate: "Navigálás",
+  navigateHint: "Útvonaltervezés gyalog, a telefon térképalkalmazásában (új lapon nyílik)",
+  indoorMap: "Belső térkép",
+  indoorMapComing: "A belső térkép ehhez az épülethez még készül.",
+  backToList: "Vissza a listához",
+  opensInNewTab: "(új lapon nyílik)",
+  roomsHeading: "Termek",
+  buildingsHeading: "Épületek",
+  searchLoading: "Termek betöltése…",
+  capacity: (n: number) => `${n} férőhely`,
+  footerData: "Térképadatok: © OpenStreetMap közreműködők, OpenMapTiles, OpenFreeMap.",
+  mapFailed: "A térkép most nem tölthető be. Az épületeket a listában találod.",
+  mapDegraded: "Az alaptérkép nem töltődött be, csak az egyetemi épületek látszanak.",
+  campusChip: (campus: string, buildings: number) => `${campus}: ${buildings} épület. Ráközelítés.`,
+  campusClusterChip: (campuses: string, buildings: number) => `${campuses}: ${buildings} épület. Ráközelítés.`,
+  buildingChip: (name: string, faculties: string) => (faculties ? `${name}, ${faculties}` : name),
+};
+
+export type CityMessages = typeof cityHu;
+
+export const cityEn: CityMessages = {
+  sheetLabel: "Buildings and room search",
+  mapLabel: "Óbuda University buildings on the map of Budapest",
+  searchLabel: "Search for a room or building",
+  intro: (buildings, campuses) => `${buildings} buildings at ${campuses} sites. Tap a building on the map or in the list.`,
+  buildingCount: (n) => `${n} ${n === 1 ? "building" : "buildings"}`,
+  indoorTag: "Indoor map",
+  kind: { faculty: "Teaching building", dormitory: "Dormitory", sports: "Sports facility" },
+  faculties: "Faculties",
+  address: "Address",
+  approximateFootprint: "The building outline on the map is approximate.",
+  navigate: "Directions",
+  navigateHint: "Walking directions in your phone's maps app (opens in a new tab)",
+  indoorMap: "Indoor map",
+  indoorMapComing: "The indoor map of this building is still being made.",
+  backToList: "Back to the list",
+  opensInNewTab: "(opens in a new tab)",
+  roomsHeading: "Rooms",
+  buildingsHeading: "Buildings",
+  searchLoading: "Loading rooms…",
+  capacity: (n) => `${n} seats`,
+  footerData: "Map data: © OpenStreetMap contributors, OpenMapTiles, OpenFreeMap.",
+  mapFailed: "The map cannot be loaded right now. The buildings are in the list.",
+  mapDegraded: "The base map did not load; only the university buildings are shown.",
+  campusChip: (campus, buildings) => `${campus}: ${buildings} ${buildings === 1 ? "building" : "buildings"}. Zoom in.`,
+  campusClusterChip: (campuses, buildings) => `${campuses}: ${buildings} ${buildings === 1 ? "building" : "buildings"}. Zoom in.`,
+  buildingChip: (name, faculties) => (faculties ? `${name}, ${faculties}` : name),
+};

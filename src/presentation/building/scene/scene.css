@@ -1,0 +1,129 @@
+/* Styles for the HTML labels that three.js positions over the 3D scene. */
+.scene-root {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  /* three.js gives every label its own z-index; keep those inside the scene. */
+  isolation: isolate;
+  background: radial-gradient(120% 90% at 50% 35%, #d7e0ec 0%, var(--color-canvas) 55%, var(--color-canvas-deep) 100%);
+}
+
+.scene-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.scene-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scene-label {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-ink);
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.25s ease;
+}
+
+.scene-label--room {
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
+}
+
+.scene-label--place,
+.scene-label--minor {
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.82);
+}
+
+.scene-label--connector {
+  font-size: 9px;
+  color: #fff;
+  background: var(--color-ink);
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+.scene-label--level {
+  font-size: 13px;
+  font-weight: 800;
+  padding: 5px 9px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--color-ink);
+  transform-origin: right center;
+}
+
+/* Declutter: room numbers only when zoomed in, place names from mid zoom. */
+[data-zoom="far"] .scene-label--room,
+[data-zoom="far"] .scene-label--connector,
+[data-zoom="far"] .scene-label--minor,
+[data-mode="overview"] .scene-label--minor,
+[data-zoom="mid"] .scene-label--room,
+[data-mode="overview"] .scene-label--room,
+[data-mode="overview"] .scene-label--connector,
+[data-mode="overview"] .scene-label--place,
+[data-mode="level"] .scene-label--level {
+  opacity: 0;
+}
+
+[data-zoom="mid"][data-mode="level"] .scene-label--room {
+  opacity: 0.85;
+}
+
+.scene-label--destination {
+  font-size: 17px;
+  font-weight: 800;
+  padding: 7px 11px 6px;
+  border-radius: 9px;
+  border: 2.5px solid var(--color-ink);
+  background: var(--color-accent);
+  box-shadow: 0 4px 0 rgb(20 33 61 / 0.25);
+  margin-top: -22px;
+  animation: label-drop 0.5s var(--ease-spring) both;
+}
+
+.scene-label--destination::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-accent);
+  border-right: 2.5px solid var(--color-ink);
+  border-bottom: 2.5px solid var(--color-ink);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scene-label--origin {
+  font-size: 12px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--color-ink);
+  margin-top: 22px;
+  animation: label-drop 0.4s var(--ease-spring) both;
+}
+
+@keyframes label-drop {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
