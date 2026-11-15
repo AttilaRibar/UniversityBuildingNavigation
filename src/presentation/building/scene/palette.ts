@@ -4,7 +4,8 @@ import type { UnitCategory } from "@/domain/indoor/model";
 export const COLORS = {
   background: "#c9d4e2",
   slab: "#dce4ef",
-  slabSide: "#b9c6d8",
+  slabSide: "#a9b9cf",
+  slabEdge: "#4f6283",
   shadow: "#aebccf",
   edge: "#14213d",
   accent: "#ffd21f",

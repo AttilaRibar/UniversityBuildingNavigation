@@ -1,16 +1,16 @@
 "use client";
 
-import type { Route, RouteStep } from "@/domain/routing";
+import type { Route } from "@/domain/routing";
 import { Button } from "@/presentation/ui/Button";
 import { ArrowLeft, ArrowRight, Close, Flag, Wheelchair } from "@/presentation/ui/icons";
 import type { BuildingMessages } from "@/presentation/i18n/messages/building";
 import { StepIconView } from "../StepIconView";
-import { formatDistance, formatDuration, type StepCard } from "../stepText";
+import { formatDistance, formatDuration, type NavStep, type StepCard } from "../stepText";
 
 export interface RoutePanelProps {
   m: BuildingMessages;
   route: Route;
-  steps: readonly RouteStep[];
+  steps: readonly NavStep[];
   cards: readonly StepCard[];
   stepIndex: number | null;
   heading: string;
@@ -21,7 +21,7 @@ export interface RoutePanelProps {
   onArrived: () => void;
 }
 
-const remainingFrom = (steps: readonly RouteStep[], index: number): number =>
+const remainingFrom = (steps: readonly NavStep[], index: number): number =>
   steps.slice(index).reduce((sum, step) => sum + (step.type === "depart" || step.type === "turn" ? step.distance : 0), 0);
 
 /** Sheet content while a route is shown: controls for stepping through it and the full text list. */

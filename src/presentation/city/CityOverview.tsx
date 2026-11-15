@@ -88,7 +88,7 @@ export function CityOverview() {
         )}
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3 pt-[max(12px,env(safe-area-inset-top))] md:p-4">
-          <div className="pointer-events-auto rounded-full bg-surface/90 py-2 pr-4 pl-2 shadow-float backdrop-blur-md animate-pop md:hidden">
+          <div className="pointer-events-auto flex h-11 items-center rounded-full bg-surface/90 pr-4 pl-2 shadow-float ring-1 ring-line backdrop-blur-md animate-pop md:hidden">
             <Logo />
           </div>
           <LanguageToggle className="pointer-events-auto ml-auto animate-pop" />

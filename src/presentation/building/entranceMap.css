@@ -1,0 +1,94 @@
+/* Street map of the approach step: fades in over the 3D model. */
+.entrance-map {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--color-canvas);
+  animation: entrance-map-in 0.45s ease-out both;
+}
+
+@keyframes entrance-map-in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+}
+
+.entrance-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.entrance-pin-label {
+  position: relative;
+  padding: 8px 12px 6px;
+  border: 2.5px solid #14213d;
+  border-radius: 10px;
+  background: #ffd21f;
+  color: #14213d;
+  font-family: var(--font-sans, inherit);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgb(20 33 61 / 0.25);
+  animation: entrance-pin-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+}
+
+.entrance-pin-stem {
+  width: 3px;
+  height: 22px;
+  background: #14213d;
+  animation: entrance-pin-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+}
+
+/* The door itself: a white dot with a yellow ping. */
+.entrance-pin-dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 3px solid #14213d;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.entrance-pin-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 3px solid #ffd21f;
+  animation: entrance-pin-ping 1.6s ease-out infinite;
+}
+
+@keyframes entrance-pin-drop {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+}
+
+@keyframes entrance-pin-ping {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+
+.entrance-map-attribution {
+  position: absolute;
+  right: 6px;
+  z-index: 2;
+  padding: 2px 7px 1px;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 0.72);
+  color: #33415c;
+  font-size: 10.5px;
+  line-height: 1.5;
+}

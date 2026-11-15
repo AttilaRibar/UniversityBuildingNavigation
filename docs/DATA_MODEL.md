@@ -39,7 +39,7 @@ src/data/buildings/index.ts   loader table: building id -> dynamic import
 | `xAxisBearing` | number, degrees | Compass bearing of the local +x axis, clockwise from north |
 
 - The model stores only the bearing of +x. The BA data was authored with a right-handed frame: +y is 90 degrees counter-clockwise from +x. For BA (`xAxisBearing` 304.51) +x points north-west along the long bar and +y points south-west, towards Doberdó út.
-- No runtime code reads the georeference today. It is kept so that the indoor model can be placed on the map later.
+- `src/domain/geometry/georef.ts` converts local points to WGS84 with a flat-earth approximation. The building screen uses it to pin the entrance door on a street map (`src/presentation/building/EntranceMap.tsx`) as the first step of a route that starts at an entrance anchor (`kind: "entrance"`).
 - The vertical axis is the level, not a coordinate: each level has an `elevation` in metres above the lowest level.
 - Polygon rings are closed in the file (first vertex repeated at the end). The mapper drops the repeated vertex.
 - The mapper does not check ring winding order.

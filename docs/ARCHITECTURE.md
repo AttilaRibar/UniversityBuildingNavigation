@@ -112,6 +112,10 @@ flowchart LR
 
 The navigator has three phases: `explore` (nothing selected), `place` (a destination is selected) and `route` (the route is on screen, either as an overview or one step at a time).
 
+A route that starts at an entrance anchor (`kind: "entrance"`) begins with an "approach" step. It is shown on a MapLibre street map (`EntranceMap`) with the door pinned there, before the 3D exploded view takes over for the indoor steps.
+
+On the city map the user can rotate the view (pitch stays fixed). When a building or campus is selected, the map slowly orbits (`src/presentation/city/orbit.ts`); any user input stops the orbit.
+
 ## Design decisions
 
 ### Static export, no backend
@@ -215,7 +219,7 @@ Tests run with Vitest in a Node environment (`vitest.config.ts`). They cover the
 - **Only building BA has indoor data.** Other campus buildings appear on the city map only.
 - **Estimated geometry.** All 192 BA units are `estimated`. Room positions inside a wing were spread along the corridor in ascending order, alternating sides. Corrections need on-site verification or surveyed plans.
 - **Search normaliser is BA-specific.** The default building code list is `["ba"]`.
-- **Georeference is stored, not used.** `building.json` carries the WGS84 origin and axis bearing, but no runtime code places the indoor model on the city map.
+- **Georeference is used only for the entrance.** `building.json` carries the WGS84 origin and axis bearing; `georef.ts` uses them to pin the entrance door on the approach map, but the indoor model itself is not placed on the city map.
 - **No import-boundary lint rule.** See [the dependency rule](#the-dependency-rule).
 - **No automated tests for UI components and the 3D scene.**
 - **Offline map.** Only tiles the user has already viewed are cached.

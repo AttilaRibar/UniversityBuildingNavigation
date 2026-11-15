@@ -4,9 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { centroid } from "@/domain/geometry/polygon";
 import type { Vec2 } from "@/domain/geometry/vec2";
 import { defaultAnchor, type IndoorBuilding, type Unit, type UnitCategory } from "@/domain/indoor/model";
-import { buildRouteGraph, buildSteps, condenseSteps, findRoute, findRouteToNearest, type Route, type RoutePoint, type RouteStep } from "@/domain/routing";
+import { buildRouteGraph, buildSteps, condenseSteps, findRoute, findRouteToNearest, type Route, type RoutePoint } from "@/domain/routing";
 import { buildingHref } from "@/application/links";
 import type { SceneFocus, SceneMode } from "./scene/BuildingScene";
+import type { NavStep } from "./stepText";
 
 /**
  * - `explore`: looking around, nothing selected
@@ -24,7 +25,8 @@ export interface NavigatorState {
   levelId: string | null;
   stepIndex: number | null;
   route: Route | null;
-  steps: readonly RouteStep[];
+  /** Indoor route steps, after an `approach` step when the route starts at an entrance. */
+  steps: readonly NavStep[];
   /** True when a destination is set but no route exists with the current options. */
   routeMissing: boolean;
 }
@@ -88,7 +90,14 @@ export function useNavigator(building: IndoorBuilding) {
     () => (destination ? findRoute(building, graph, origin, { type: "unit", unitId: destination.id }, { stepFree }) : null),
     [building, graph, origin, destination, stepFree],
   );
-  const steps = useMemo(() => (route ? condenseSteps(buildSteps(building, route)) : []), [building, route]);
+  const steps = useMemo<readonly NavStep[]>(() => {
+    if (!route) return [];
+    const indoor = condenseSteps(buildSteps(building, route));
+    // Coming from the street, the first thing to find is the door: show that on the street map first.
+    const anchor = origin.type === "anchor" ? building.anchors.find((a) => a.id === origin.anchorId) : undefined;
+    if (anchor?.kind !== "entrance") return indoor;
+    return [{ type: "approach", anchorId: anchor.id, levelId: anchor.levelId, position: anchor.position }, ...indoor];
+  }, [building, route, origin]);
 
   // Keep the address bar shareable without triggering a navigation.
   useEffect(() => {
@@ -186,7 +195,8 @@ export function sceneViewOf(state: NavigatorState): { mode: SceneMode; focus: Sc
   if (phase === "route" && route && route.legs.length > 0) {
     const levelIds = routeLevelIds(route);
     const step = stepIndex === null ? null : steps[stepIndex];
-    if (!step) return { mode: { type: "route", levelIds, focusLevelId: null }, focus: null };
+    // The approach is shown on the street map; behind it the model waits in the route overview.
+    if (!step || step.type === "approach") return { mode: { type: "route", levelIds, focusLevelId: null }, focus: null };
     if (step.type === "connector") {
       return {
         mode: { type: "route", levelIds, focusLevelId: step.toLevelId },

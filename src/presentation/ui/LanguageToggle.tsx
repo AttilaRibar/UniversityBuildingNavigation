@@ -13,7 +13,7 @@ export function LanguageToggle({ className }: { className?: string }) {
     <div
       role="group"
       aria-label={m.language}
-      className={`inline-flex rounded-full bg-surface p-1 shadow-float ring-1 ring-line ${className ?? ""}`}
+      className={`flex h-11 shrink-0 items-center gap-0.5 rounded-full bg-surface p-1 shadow-float ring-1 ring-line ${className ?? ""}`}
     >
       {LOCALES.map((l) => {
         const active = l === locale;
@@ -26,12 +26,12 @@ export function LanguageToggle({ className }: { className?: string }) {
             aria-label={LANGUAGE_NAMES[l]}
             onClick={() => setLocale(l)}
             className={
-              "relative h-9 min-w-11 rounded-full px-2.5 text-sm font-extrabold uppercase tracking-wide " +
+              "relative flex h-9 min-w-11 items-center justify-center rounded-full px-2.5 text-sm leading-none font-extrabold uppercase tracking-wide " +
               "transition-colors duration-200 active:scale-95 " +
               (active ? "bg-ink text-white" : "text-muted hover:text-ink")
             }
           >
-            {l}
+            <span className="text-trim">{l}</span>
           </button>
         );
       })}

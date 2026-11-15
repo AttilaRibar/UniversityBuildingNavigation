@@ -165,6 +165,14 @@ export const Pin = (p: IconProps) => (
   </Icon>
 );
 
+/** A door with an arrow walking into it. */
+export const Enter = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M13 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5" />
+    <path d="M3 12h11M10 8l4 4-4 4" />
+  </Icon>
+);
+
 export const Flag = (p: IconProps) => (
   <Icon {...p}>
     <path d="M5 21V4M5 4.5c5-2.5 8 2.5 14 0v9c-6 2.5-9-2.5-14 0" />

@@ -1,5 +1,6 @@
 import type { IndoorBuilding, LocalizedText, Unit } from "@/domain/indoor/model";
 import { levelById } from "@/domain/indoor/model";
+import type { Vec2 } from "@/domain/geometry/vec2";
 import type { RoutePoint, RouteStep } from "@/domain/routing";
 import type { BuildingMessages } from "@/presentation/i18n/messages/building";
 
@@ -14,7 +15,23 @@ export type StepIcon =
   | "stairs_down"
   | "elevator_up"
   | "elevator_down"
+  | "enter"
   | "arrive";
+
+/**
+ * Walking up to the building from the street. Not part of the indoor route: the
+ * screen adds it in front of the route when it starts at an entrance, and shows
+ * it on the street map instead of the 3D model.
+ */
+export interface ApproachStep {
+  type: "approach";
+  anchorId: string;
+  levelId: string;
+  position: Vec2;
+}
+
+/** One step as the screen shows it: the indoor route steps, optionally after an approach. */
+export type NavStep = RouteStep | ApproachStep;
 
 /** What one instruction card shows. */
 export interface StepCard {
@@ -66,10 +83,15 @@ const TURN_ICON = {
 } as const;
 
 /** Turns a structured route step into the words and icon of its card. */
-export function describeStep(steps: readonly RouteStep[], index: number, ctx: StepTextContext): StepCard {
+export function describeStep(steps: readonly NavStep[], index: number, ctx: StepTextContext): StepCard {
   const m = ctx.messages;
   const step = steps[index];
   const next = steps[index + 1];
+
+  if (step.type === "approach") {
+    const anchor = ctx.building.anchors.find((a) => a.id === step.anchorId);
+    return { icon: "enter", title: m.step.enter, subtitle: anchor ? m.step.enterAt(ctx.text(anchor.name)) : null };
+  }
 
   if (step.type === "connector") {
     const way = step.direction > 0 ? "up" : "down";
@@ -92,6 +114,6 @@ export function describeStep(steps: readonly RouteStep[], index: number, ctx: St
 
   if (step.type === "turn") return { icon: TURN_ICON[step.direction], title: m.step.turn[step.direction], subtitle };
   if (step.exitTurn) return { icon: step.exitTurn, title: m.step.exit[step.exitTurn], subtitle };
-  if (index === 0) return { icon: "straight", title: m.step.departFrom(pointName(ctx.origin, ctx)), subtitle };
+  if (index === 0 || steps[index - 1].type === "approach") return { icon: "straight", title: m.step.departFrom(pointName(ctx.origin, ctx)), subtitle };
   return { icon: "straight", title: m.step.continueStraight, subtitle };
 }

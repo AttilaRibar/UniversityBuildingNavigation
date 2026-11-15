@@ -40,9 +40,20 @@ export type SceneFocus =
   | { type: "connector"; fromLevelId: string; toLevelId: string; from: Vec2; to: Vec2 }
   | { type: "point"; levelId: string; position: Vec2 };
 
+/** Smallest gap between stacked levels; the real gap grows with the footprint (see `stackGap`). */
 const OVERVIEW_GAP = 13;
 const ROUTE_GAP = 19;
+const MAX_STACK_GAP = 48;
 const COMPACT_GAP = 4;
+/** Floor plates are drawn as trays this thick, so every level shows a darker edge. */
+const SLAB_THICKNESS = 1.1;
+/** How much each level below the top one fades towards the background in the stacked view. */
+const TONE_STEP = 0.07;
+const MAX_TONE = 0.3;
+/** On-screen diameter of the dot that runs along the current step, in CSS pixels. */
+const PULSE_PX = 26;
+/** Screen space kept free left of a stack for the level name chips, in CSS pixels. */
+const LEVEL_LABEL_ROOM = 84;
 const FADED = 0.1;
 const ROOM_GAP = 0.14;
 const ROUTE_WIDTH = 1.0;
@@ -50,17 +61,29 @@ const CHEVRON_SPACING = 1.6;
 const MIN_ZOOM = 2.2;
 const MAX_ZOOM = 60;
 
+interface TrackedMaterial {
+  material: THREE.Material & { color?: THREE.Color };
+  opacity: number;
+  /** Colour at full strength; the level's tone blends it towards the background. */
+  base: THREE.Color | null;
+}
+
 interface LevelView {
   level: Level;
   group: THREE.Group;
-  materials: Array<{ material: THREE.Material; opacity: number }>;
+  materials: TrackedMaterial[];
   labels: CSS2DObject[];
+  levelLabel: CSS2DObject;
   y: number;
   targetY: number;
   opacity: number;
   targetOpacity: number;
+  tone: number;
+  targetTone: number;
   /** Slab corners at floor and roof height, relative to the level: what the camera has to fit. */
   outline: THREE.Vector3[];
+  /** Slab corners at floor height: where the level name can be pinned. */
+  corners: THREE.Vector3[];
 }
 
 interface RouteVisual {
@@ -90,14 +113,15 @@ export class BuildingScene {
   private readonly raycaster = new THREE.Raycaster();
   private readonly resizeObserver: ResizeObserver;
   private readonly chevrons: THREE.CanvasTexture;
-  private readonly clock = new THREE.Clock();
+  private readonly timer = new THREE.Timer();
+  private readonly pulseTexture: THREE.CanvasTexture;
 
   private mode: SceneMode = { type: "overview" };
   private insets: SceneInsets = { top: 0, right: 0, bottom: 0, left: 0 };
   private routeVisuals: RouteVisual[] = [];
   private routeGroup = new THREE.Group();
   private routeProgress = 1;
-  private pulse: { mesh: THREE.Mesh; levelId: string; points: readonly Vec2[]; length: number } | null = null;
+  private pulse: { sprite: THREE.Sprite; levelId: string; points: readonly Vec2[]; length: number } | null = null;
   private markers: CSS2DObject[] = [];
   private highlighted: string[] = [];
   private cameraGoal: { target: THREE.Vector3; zoom: number } | null = null;
@@ -107,6 +131,8 @@ export class BuildingScene {
   private size = { width: 1, height: 1 };
   /** Set whenever something changed outside the animations, so idle frames can be skipped. */
   private dirty = true;
+  /** Forces the level tones to be re-applied on the next drawn frame. */
+  private dirtyTones = true;
 
   constructor(
     private readonly container: HTMLElement,
@@ -133,9 +159,10 @@ export class BuildingScene {
 
     // Isometric-style view from the Bécsi út side, like the building's own signs.
     // On a portrait phone the view is turned further so the long bar runs up the screen.
+    // A slightly low angle keeps the floor plates of a stack from hiding each other.
     const portrait = container.clientHeight > container.clientWidth * 1.2;
     const azimuth = THREE.MathUtils.degToRad(portrait ? -62 : -35);
-    const elevation = THREE.MathUtils.degToRad(40);
+    const elevation = THREE.MathUtils.degToRad(36);
     const distance = 900;
     this.camera.position.set(
       Math.sin(azimuth) * Math.cos(elevation) * distance,
@@ -159,6 +186,8 @@ export class BuildingScene {
     this.controls.addEventListener("change", () => (this.dirty = true));
 
     this.chevrons = createChevronTexture();
+    this.pulseTexture = createPulseTexture();
+    this.timer.connect(document);
     for (const level of building.levels) this.levels.set(level.id, this.buildLevel(level));
 
     const canvas = this.renderer.domElement;
@@ -282,7 +311,12 @@ export class BuildingScene {
       else material?.dispose();
     });
     this.chevrons.dispose();
+    this.pulseTexture.dispose();
+    this.timer.dispose();
     this.renderer.dispose();
+    // Browsers cap the number of live WebGL contexts; free ours now instead of at garbage collection,
+    // so going back and forth between the screens never costs the city map its context.
+    this.renderer.forceContextLoss();
     this.container.removeChild(canvas);
     this.container.removeChild(this.labelRenderer.domElement);
   }
@@ -295,19 +329,28 @@ export class BuildingScene {
     const labels: CSS2DObject[] = [];
     const track = <T extends THREE.Material>(material: T, opacity = 1): T => {
       material.transparent = true;
-      materials.push({ material, opacity });
+      const color = (material as { color?: THREE.Color }).color;
+      materials.push({ material, opacity, base: color ? color.clone() : null });
       return material;
     };
 
+    // Each level is a tray: a pale top, a darker rim and a crisp outline, so stacked
+    // levels read as separate plates even where they overlap on screen.
     const slabMaterial = track(new THREE.MeshLambertMaterial({ color: COLORS.slab }));
-    const shadowMaterial = track(new THREE.MeshBasicMaterial({ color: COLORS.shadow, depthWrite: false }), 0.55);
+    const rimMaterial = track(new THREE.MeshLambertMaterial({ color: COLORS.slabSide }));
+    const shadowMaterial = track(new THREE.MeshBasicMaterial({ color: COLORS.shadow, depthWrite: false }), 0.5);
+    const outlines: THREE.BufferGeometry[] = [];
     for (const slab of level.slabs) {
-      group.add(new THREE.Mesh(prism(slab, 0.4, -0.4), slabMaterial));
-      const shadow = new THREE.Mesh(flat(slab, -1.4), shadowMaterial);
-      shadow.position.set(1.1, 0, 1.1);
+      group.add(new THREE.Mesh(prism(slab, SLAB_THICKNESS, -SLAB_THICKNESS), [slabMaterial, rimMaterial]));
+      outlines.push(ringLines(slab, 0.02));
+      const shadow = new THREE.Mesh(flat(slab, -SLAB_THICKNESS - 1.6), shadowMaterial);
+      shadow.position.set(1.3, 0, 1.3);
       shadow.renderOrder = -1;
       group.add(shadow);
     }
+    const outlineMaterial = track(new THREE.LineBasicMaterial({ color: COLORS.slabEdge }), 0.55);
+    group.add(new THREE.LineSegments(mergeGeometries(outlines), outlineMaterial));
+    outlines.forEach((g) => g.dispose());
 
     const edges: THREE.BufferGeometry[] = [];
     const units = this.building.units.filter((u) => u.levelId === level.id);
@@ -346,18 +389,18 @@ export class BuildingScene {
       edges.forEach((e) => e.dispose());
     }
 
-    const outline = level.slabs.flat().flatMap((p) => [toScene(p, -0.4), toScene(p, 2.6)]);
-    // Hang the level name off the plate's left-most corner, where the stack reads like a legend.
-    const leftmost = level.slabs.flat().reduce((a, b) => (b[0] < a[0] ? b : a));
+    const outline = level.slabs.flat().flatMap((p) => [toScene(p, -SLAB_THICKNESS), toScene(p, 2.6)]);
+    const corners = level.slabs.flat().map((p) => toScene(p, -SLAB_THICKNESS / 2));
+    // The level name hangs off the plate's left-most corner on screen (see `pinLevelLabels`),
+    // where the stack reads like a legend.
     const levelLabel = makeLabel(this.labels.level(level), "scene-label scene-label--level");
-    levelLabel.position.copy(toScene(leftmost, 0));
-    levelLabel.center.set(1.15, 0.5);
+    levelLabel.center.set(1.08, 0.5);
     levelLabel.userData = { levelLabel: true };
     group.add(levelLabel);
     labels.push(levelLabel);
 
     this.scene.add(group);
-    return { level, group, materials, labels, y: 0, targetY: 0, opacity: 0, targetOpacity: 1, outline };
+    return { level, group, materials, labels, levelLabel, y: 0, targetY: 0, opacity: 0, targetOpacity: 1, tone: 0, targetTone: 0, outline, corners };
   }
 
   // --- Mode layout ------------------------------------------------------------
@@ -365,11 +408,15 @@ export class BuildingScene {
   private applyMode(immediate: boolean): void {
     const mode = this.mode;
     const ordinals = new Map(this.building.levels.map((l) => [l.id, l.ordinal]));
+    const top = Math.max(...this.building.levels.map((l) => l.ordinal));
+    const overviewGap = this.stackGap(this.building.levels.length, OVERVIEW_GAP);
     for (const view of this.levels.values()) {
       const ordinal = view.level.ordinal;
+      view.targetTone = 0;
       if (mode.type === "overview") {
-        view.targetY = ordinal * OVERVIEW_GAP;
+        view.targetY = ordinal * overviewGap;
         view.targetOpacity = 1;
+        view.targetTone = Math.min(MAX_TONE, (top - ordinal) * TONE_STEP);
       } else if (mode.type === "level") {
         const active = ordinals.get(mode.levelId) ?? 0;
         view.targetY = (ordinal - active) * COMPACT_GAP * (ordinal > active ? 6 : 1);
@@ -379,7 +426,7 @@ export class BuildingScene {
         const min = Math.min(...involved);
         const max = Math.max(...involved);
         const focus = mode.focusLevelId ? ordinals.get(mode.focusLevelId) : undefined;
-        view.targetY = (ordinal - min) * ROUTE_GAP;
+        view.targetY = (ordinal - min) * this.stackGap(max - min + 1, ROUTE_GAP);
         if (ordinal < min || ordinal > max) view.targetOpacity = 0;
         else if (focus !== undefined) view.targetOpacity = ordinal === focus ? 1 : FADED;
         else view.targetOpacity = involved.includes(ordinal) ? 1 : FADED;
@@ -387,9 +434,55 @@ export class BuildingScene {
       if (immediate || this.reducedMotion) {
         view.y = view.targetY;
         view.opacity = view.targetOpacity;
+        view.tone = view.targetTone;
       }
     }
     this.container.dataset.mode = mode.type;
+  }
+
+  /**
+   * Vertical distance between stacked levels. A deep floor plate covers more of the
+   * screen, so the gap grows with the footprint as seen from the camera, and fewer
+   * levels can afford a wider spread.
+   */
+  private stackGap(count: number, minimum: number): number {
+    this.camera.updateMatrixWorld();
+    const forward = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 2).setY(0);
+    if (forward.lengthSq() < 1e-6) return minimum;
+    forward.normalize();
+    let min = Infinity;
+    let max = -Infinity;
+    for (const view of this.levels.values()) {
+      for (const corner of view.corners) {
+        const d = corner.dot(forward);
+        min = Math.min(min, d);
+        max = Math.max(max, d);
+      }
+    }
+    if (!Number.isFinite(min)) return minimum;
+    const share = count <= 2 ? 0.6 : count === 3 ? 0.46 : 0.34;
+    return THREE.MathUtils.clamp((max - min) * share, minimum, MAX_STACK_GAP);
+  }
+
+  /** Moves each level name to its plate's left-most corner as seen from the current camera angle. */
+  private pinLevelLabels(): void {
+    this.camera.updateMatrixWorld();
+    const right = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 1);
+    for (const view of this.levels.values()) {
+      if (!view.levelLabel.visible) continue;
+      let best: THREE.Vector3 | null = null;
+      let bestScore = Infinity;
+      for (const corner of view.corners) {
+        // Left-most first; among corners about as far left, prefer the lower one (the plate's front).
+        const score = corner.dot(right) + corner.dot(up) * 0.15;
+        if (score < bestScore) {
+          bestScore = score;
+          best = corner;
+        }
+      }
+      if (best) view.levelLabel.position.copy(best);
+    }
   }
 
   /** Frames the real outline of the visible levels (a bounding box would waste the empty corners). */
@@ -399,7 +492,8 @@ export class BuildingScene {
       if (view.targetOpacity < 0.5) continue;
       for (const p of view.outline) points.push(new THREE.Vector3(p.x, p.y + view.targetY, p.z));
     }
-    if (points.length > 0) this.framePoints(points, immediate, MAX_ZOOM);
+    // Level names hang off the plates' left corners; keep room for them in the stacked views.
+    if (points.length > 0) this.framePoints(points, immediate, MAX_ZOOM, this.mode.type === "level" ? 0 : LEVEL_LABEL_ROOM);
   }
 
   private frameBox(box: THREE.Box3, immediate: boolean, maxZoom: number): void {
@@ -409,7 +503,7 @@ export class BuildingScene {
   }
 
   /** Moves the camera so `points` fill the part of the viewport not covered by panels. */
-  private framePoints(points: readonly THREE.Vector3[], immediate: boolean, maxZoom: number): void {
+  private framePoints(points: readonly THREE.Vector3[], immediate: boolean, maxZoom: number, labelRoom = 0): void {
     this.camera.updateMatrixWorld();
     const right = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 0);
     const up = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 1);
@@ -424,11 +518,12 @@ export class BuildingScene {
       center.addScaledVector(point, 1 / points.length);
     }
     const margin = 18;
-    const freeWidth = Math.max(80, this.size.width - this.insets.left - this.insets.right - margin * 2);
+    const left = this.insets.left + labelRoom;
+    const freeWidth = Math.max(80, this.size.width - left - this.insets.right - margin * 2);
     const freeHeight = Math.max(80, this.size.height - this.insets.top - this.insets.bottom - margin * 2);
     const zoom = THREE.MathUtils.clamp(Math.min(freeWidth / Math.max(1, maxR - minR), freeHeight / Math.max(1, maxU - minU)), MIN_ZOOM, maxZoom);
     // Where the free area's centre sits relative to the canvas centre, in pixels.
-    const offsetX = (this.insets.left - this.insets.right) / 2;
+    const offsetX = (left - this.insets.right) / 2;
     const offsetY = (this.insets.bottom - this.insets.top) / 2;
     const current = this.controls.target;
     const target = current
@@ -546,20 +641,26 @@ export class BuildingScene {
     this.clearPulse();
   }
 
+  /**
+   * The dot that walks along the current step. It is a screen-facing sprite drawn
+   * after everything else and without depth testing: as a "you go here" marker it
+   * must never look buried under the floor, a room block or a ghosted level.
+   */
   private startPulse(levelId: string, points: readonly Vec2[]): void {
     const view = this.levels.get(levelId);
     if (!view) return;
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), new THREE.MeshBasicMaterial({ color: "#ffffff" }));
-    mesh.renderOrder = 3;
-    view.group.add(mesh);
-    this.pulse = { mesh, levelId, points, length: polylineLength(points) };
+    const material = new THREE.SpriteMaterial({ map: this.pulseTexture, transparent: true, depthTest: false, depthWrite: false });
+    const sprite = new THREE.Sprite(material);
+    sprite.renderOrder = 100;
+    sprite.visible = false;
+    view.group.add(sprite);
+    this.pulse = { sprite, levelId, points, length: polylineLength(points) };
   }
 
   private clearPulse(): void {
     if (!this.pulse) return;
-    this.pulse.mesh.removeFromParent();
-    this.pulse.mesh.geometry.dispose();
-    (this.pulse.mesh.material as THREE.Material).dispose();
+    this.pulse.sprite.removeFromParent();
+    this.pulse.sprite.material.dispose();
     this.pulse = null;
   }
 
@@ -636,10 +737,13 @@ export class BuildingScene {
   private readonly loop = (): void => {
     if (this.disposed) return;
     this.frameHandle = requestAnimationFrame(this.loop);
-    const dt = Math.min(this.clock.getDelta(), 0.05);
+    this.timer.update();
+    const dt = Math.min(this.timer.getDelta(), 0.05);
 
     // A still scene costs nothing: only draw while something moves or was changed.
-    const levelsMoving = [...this.levels.values()].some((v) => Math.abs(v.y - v.targetY) > 0.005 || Math.abs(v.opacity - v.targetOpacity) > 0.005);
+    const levelsMoving = [...this.levels.values()].some(
+      (v) => Math.abs(v.y - v.targetY) > 0.005 || Math.abs(v.opacity - v.targetOpacity) > 0.005 || Math.abs(v.tone - v.targetTone) > 0.002,
+    );
     const animating = levelsMoving || this.cameraGoal !== null || this.routeProgress < 1 || (!this.reducedMotion && this.routeVisuals.length > 0);
     this.controls.update();
     if (!animating && !this.dirty) return;
@@ -648,18 +752,24 @@ export class BuildingScene {
     for (const view of this.levels.values()) {
       view.y = damp(view.y, view.targetY, 7, dt);
       view.opacity = damp(view.opacity, view.targetOpacity, 9, dt);
+      const tone = damp(view.tone, view.targetTone, 6, dt);
+      const retone = Math.abs(tone - view.tone) > 1e-4 || this.dirtyTones;
+      view.tone = tone;
       view.group.position.y = view.y;
       view.group.visible = view.opacity > 0.01;
       const solid = view.opacity > 0.98;
-      for (const { material, opacity } of view.materials) {
+      for (const { material, opacity, base } of view.materials) {
         material.opacity = opacity * view.opacity;
         material.depthWrite = solid && opacity === 1;
+        if (retone && base && material.color) material.color.copy(base).lerp(FOG, tone);
       }
       // While a route is shown only the level being walked keeps its room labels.
       const showLabels = view.opacity > 0.6;
       const showUnits = showLabels && (this.mode.type !== "route" || this.mode.focusLevelId === view.level.id);
       for (const label of view.labels) label.visible = label.userData.levelLabel ? showLabels : showUnits;
     }
+    this.dirtyTones = false;
+    this.pinLevelLabels();
 
     if (this.cameraGoal) {
       const target = this.controls.target.clone().lerp(this.cameraGoal.target, 1 - Math.exp(-5 * dt));
@@ -677,14 +787,57 @@ export class BuildingScene {
 
     if (this.pulse) {
       const t = ((performance.now() / 1000) * 9) % (this.pulse.length + 6);
-      this.pulse.mesh.visible = t <= this.pulse.length;
-      this.pulse.mesh.position.copy(toScene(pointAlong(this.pulse.points, t), 0.7));
+      const sprite = this.pulse.sprite;
+      sprite.visible = t <= this.pulse.length;
+      sprite.position.copy(toScene(pointAlong(this.pulse.points, t), 0.3));
+      // One world unit is `zoom` pixels, so this keeps the dot the same size at every zoom.
+      sprite.scale.setScalar(PULSE_PX / this.camera.zoom);
     }
 
     this.container.dataset.zoom = this.camera.zoom < 5.5 ? "far" : this.camera.zoom < 10 ? "mid" : "near";
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
   };
+}
+
+/** What lower levels fade towards: the scene background. */
+const FOG = new THREE.Color(COLORS.background);
+
+/** The closed outline of a polygon as line segments at `height`. */
+function ringLines(polygon: readonly Vec2[], height: number): THREE.BufferGeometry {
+  const positions: number[] = [];
+  polygon.forEach((p, i) => {
+    const q = polygon[(i + 1) % polygon.length];
+    positions.push(p[0], height, -p[1], q[0], height, -q[1]);
+  });
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  return geometry;
+}
+
+/** White dot with a navy ring and a soft yellow glow: the "walk here" marker. */
+function createPulseTexture(): THREE.CanvasTexture {
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const c = size / 2;
+  const glow = ctx.createRadialGradient(c, c, size * 0.18, c, c, size / 2);
+  glow.addColorStop(0, "rgb(255 210 31 / 0.85)");
+  glow.addColorStop(1, "rgb(255 210 31 / 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, size, size);
+  ctx.beginPath();
+  ctx.arc(c, c, size * 0.24, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.lineWidth = size * 0.07;
+  ctx.strokeStyle = COLORS.ink;
+  ctx.stroke();
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }
 
 function legWeight(leg: RouteLeg): number {

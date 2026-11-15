@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { building } from "@/data/buildings/ba";
 import { buildRouteGraph, buildSteps, condenseSteps, findRoute, type RoutePoint } from "@/domain/routing";
 import { buildingEn, buildingHu } from "@/presentation/i18n/messages/building";
-import { describeStep, formatDistance, formatDuration, type StepTextContext } from "./stepText";
+import { describeStep, formatDistance, formatDuration, type NavStep, type StepTextContext } from "./stepText";
 
 const origin: RoutePoint = { type: "anchor", anchorId: "main-entrance" };
 const graph = buildRouteGraph(building);
@@ -40,6 +40,30 @@ describe("describeStep", () => {
     for (const unit of building.units.filter((u) => u.ref)) {
       for (const card of cardsFor(unit.id, "hu")) expect(card.title.length, unit.id).toBeGreaterThan(3);
     }
+  });
+
+  describe("approach step", () => {
+    const anchor = building.anchors.find((a) => a.kind === "entrance")!;
+    const approach: NavStep = { type: "approach", anchorId: anchor.id, levelId: building.levels[0].id, position: [0, 0] };
+    const entranceOrigin: RoutePoint = { type: "anchor", anchorId: anchor.id };
+    const destination: RoutePoint = { type: "unit", unitId: "2.14" };
+    const ctx: StepTextContext = { building, messages: buildingEn, text: (v) => v.en, origin: entranceOrigin, destination };
+    const route = findRoute(building, graph, entranceOrigin, destination, { stepFree: false })!;
+    const indoor = condenseSteps(buildSteps(building, route));
+
+    it("shows the entrance as an enter card", () => {
+      const card = describeStep([approach, ...indoor], 0, ctx);
+      expect(card.icon).toBe("enter");
+      expect(card.title).toBe(buildingEn.step.enter);
+      expect(card.subtitle).toContain(anchor.name.en);
+    });
+
+    it("titles a depart step after an approach like the first step", () => {
+      const steps = [approach, ...indoor];
+      const idx = steps.findIndex((s, i) => i > 0 && s.type === "depart");
+      expect(idx).toBe(1);
+      expect(describeStep(steps, idx, ctx).title).toBe(buildingEn.step.departFrom(anchor.name.en));
+    });
   });
 });
 

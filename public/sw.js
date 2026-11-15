@@ -12,6 +12,8 @@ const MAP_CACHE = "merre-map-v1";
 const MAP_HOST = "tiles.openfreemap.org";
 const MAP_CACHE_MAX_ENTRIES = 400;
 const NAVIGATION_TIMEOUT_MS = 3000;
+/** A stalled tile must fail (MapLibre then asks again) instead of leaving the map blank forever. */
+const MAP_TIMEOUT_MS = 8000;
 
 // ---------------------------------------------------------------- install
 self.addEventListener("install", (event) => {
@@ -84,8 +86,13 @@ self.addEventListener("fetch", (event) => {
       event.respondWith(staleWhileRevalidate(event, RUNTIME_CACHE, { ignoreSearch: shouldIgnoreSearch(url) }));
     }
   } else if (url.hostname === MAP_HOST) {
-    // Map tiles/glyphs: serve what was viewed before, keep tiles fresh, cap the size.
-    event.respondWith(staleWhileRevalidate(event, MAP_CACHE, { cap: MAP_CACHE_MAX_ENTRIES }));
+    if (/^\/[^/]+$/.test(url.pathname)) {
+      // The TileJSON (`/planet`) names this week's tile set: always ask the network first.
+      event.respondWith(networkFirst(event, MAP_CACHE, MAP_TIMEOUT_MS));
+    } else {
+      // Map tiles/glyphs: serve what was viewed before, keep tiles fresh, cap the size.
+      event.respondWith(staleWhileRevalidate(event, MAP_CACHE, { cap: MAP_CACHE_MAX_ENTRIES, timeoutMs: MAP_TIMEOUT_MS }));
+    }
   }
 });
 
@@ -148,17 +155,30 @@ async function cacheFirst(event) {
   return response;
 }
 
-async function staleWhileRevalidate(event, cacheName, { ignoreSearch = false, cap = 0 } = {}) {
+async function networkFirst(event, cacheName, timeoutMs) {
+  const request = event.request;
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetchWithTimeout(request, timeoutMs);
+    if (response.ok && response.type !== "opaque") event.waitUntil(cache.put(request, response.clone()));
+    return response;
+  } catch {
+    return (await cache.match(request)) || Response.error();
+  }
+}
+
+async function staleWhileRevalidate(event, cacheName, { ignoreSearch = false, cap = 0, timeoutMs = 0 } = {}) {
   const request = event.request;
   const cache = await caches.open(cacheName);
   const cached = (await cache.match(request, { ignoreSearch })) || (cacheName === RUNTIME_CACHE ? await matchAny(request, { ignoreSearch }) : undefined);
 
-  const refresh = fetch(request)
-    .then(async (response) => {
+  const refresh = (timeoutMs ? fetchWithTimeout(request, timeoutMs) : fetch(request))
+    .then((response) => {
       // Only real, successful responses are stored: never opaque (status 0) or error responses.
+      // Storing and trimming happen after the response is handed over, so they never delay it.
       if (response.ok && response.type !== "opaque") {
-        await cache.put(request, response.clone());
-        if (cap) await trimCache(cache, cap);
+        const copy = response.clone();
+        event.waitUntil(cache.put(request, copy).then(() => (cap ? trimCache(cache, cap) : undefined)));
       }
       return response;
     })
