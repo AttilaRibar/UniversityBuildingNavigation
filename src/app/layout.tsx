@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import "@fontsource-variable/overpass";
 import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from "@/application/app-info";
 import { I18nProvider } from "@/presentation/i18n/I18nProvider";
@@ -20,7 +21,7 @@ export const viewport: Viewport = {
   themeColor: "#14213d",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="hu">
       <body>
