@@ -11,6 +11,8 @@
 }
 
 .city-map-marker {
+  /* Only the chip itself is clickable, never the empty marker box around it. */
+  pointer-events: none;
   /* Labels stay above the attribution and MapLibre's own controls only where needed. */
   z-index: 1;
 }
@@ -36,6 +38,7 @@
   letter-spacing: 0.01em;
   white-space: nowrap;
   cursor: pointer;
+  pointer-events: auto;
   box-shadow:
     0 0 0 1.5px rgb(255 255 255 / 0.85),
     0 6px 14px rgb(20 33 61 / 0.28);

@@ -244,7 +244,12 @@ export function createCityStyle(hiddenBuildingIds: readonly number[]): StyleSpec
         "source-layer": "place",
         minzoom: 11,
         maxzoom: 16,
-        filter: ["in", ["get", "class"], ["literal", ["suburb", "quarter", "neighbourhood"]]],
+        // Districts only when zoomed out; smaller quarters join in once there is room.
+        filter: [
+          "any",
+          ["==", ["get", "class"], "suburb"],
+          ["all", [">=", ["zoom"], 13], ["in", ["get", "class"], ["literal", ["quarter", "neighbourhood"]]]],
+        ],
         layout: {
           "text-field": ["get", "name"],
           "text-font": FONT_BOLD,

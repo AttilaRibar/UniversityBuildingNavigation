@@ -42,10 +42,13 @@ export interface CityMapProps {
   onStatusChange: (status: CityMapStatus) => void;
 }
 
+/** Half of a typical campus chip's width. */
+const OVERVIEW_SIDE_MARGIN = 64;
+
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
 
-function cameraPadding(obscured: MapObscured, mapHeight: number): PaddingOptions {
+function cameraPadding(obscured: MapObscured, mapHeight: number): Required<PaddingOptions> {
   return {
     top: obscured.top + VIEW_MARGIN.top,
     left: obscured.left + VIEW_MARGIN.side,
@@ -78,6 +81,12 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
   const padding = () => {
     const map = mapRef.current;
     return cameraPadding(latest.current.obscured, map ? map.getContainer().clientHeight : window.innerHeight);
+  };
+
+  /** The overview keeps chips (centred on their campus) from being cut off at the sides. */
+  const overviewPadding = () => {
+    const p = padding();
+    return { ...p, left: p.left + OVERVIEW_SIDE_MARGIN, right: p.right + OVERVIEW_SIDE_MARGIN };
   };
 
   /** Brings the selected building into the clear area, or just applies new padding. Coalesced per frame. */
@@ -134,7 +143,7 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
         container,
         style: createCityStyle(baseMapCopiesOfCampusBuildings),
         bounds: allBuildingsBounds,
-        fitBoundsOptions: { padding: padding() },
+        fitBoundsOptions: { padding: overviewPadding() },
         pitch: CAMERA.pitch,
         bearing: CAMERA.bearing,
         minPitch: CAMERA.pitch,
@@ -182,7 +191,7 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
         flattenCampusBuildings(map);
         cancelGrowth = growCampusBuildings(map);
         // Start a little further out and settle in, so the city "arrives".
-        const target = map.cameraForBounds(allBuildingsBounds, { padding: padding() });
+        const target = map.cameraForBounds(allBuildingsBounds, { padding: overviewPadding() });
         if (target) {
           map.jumpTo({ ...target, zoom: (target.zoom ?? map.getZoom()) - 0.7, bearing: CAMERA.bearing, pitch: CAMERA.pitch });
           map.easeTo({ ...target, bearing: CAMERA.bearing, pitch: CAMERA.pitch, duration: 2000, easing: easeOutCubic });
