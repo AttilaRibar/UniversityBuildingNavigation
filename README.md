@@ -57,7 +57,6 @@ The service worker is registered in production builds only, so test offline beha
 | `npm run dev` | `next dev` | Development server |
 | `npm run build` | `next build && tsx scripts/build-precache.ts` | Static export to `out/`, then writes `out/precache-manifest.json` |
 | `npm run preview` | `npx --yes serve out -l 3000` | Serve the exported `out/` folder on port 3000 |
-| `npm start` | `next start` | Defined in `package.json`; not used for the static export, use `preview` |
 | `npm run lint` | `eslint .` | Lint (Next.js core-web-vitals and TypeScript presets) |
 | `npm run typecheck` | `tsc --noEmit` | Type check |
 | `npm test` | `vitest run` | Unit tests once (`src/**/*.test.ts`, `scripts/**/*.test.ts`) |

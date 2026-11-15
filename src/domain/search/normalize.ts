@@ -1,5 +1,5 @@
-/** Level prefixes in vertical order: basement, ground, 1st, 2nd, 3rd floor. */
-export const LEVEL_ORDER: readonly string[] = ["a", "f", "1", "2", "3"];
+/** Level prefixes in vertical order: basement (A), ground (F), then the numbered upper floors. */
+export const LEVEL_ORDER: readonly string[] = ["a", "f", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const DEFAULT_BUILDING_CODES: readonly string[] = ["ba"];
 
@@ -7,10 +7,10 @@ const SEP = "[\\s.\\-_/]";
 
 /** Letter level (`f6`, `f.06`) or digit level with a separator (`1.32`, `1 3`) or three digits (`132`). */
 const REF_RE = new RegExp(
-  `^(?:([af])${SEP}*(\\d{1,2})|([1-3])(?:${SEP}+(\\d{1,2})|(\\d{2})))(?!\\d)(?:${SEP}+.*)?$`,
+  `^(?:([af])${SEP}*(\\d{1,2})|([1-9])(?:${SEP}+(\\d{1,2})|(\\d{2})))(?!\\d)(?:${SEP}+.*)?$`,
 );
 
-const REF_PREFIX_RE = new RegExp(`^([af1-3])${SEP}*(\\d{0,2})$`);
+const REF_PREFIX_RE = new RegExp(`^([af1-9])${SEP}*(\\d{0,2})$`);
 
 export interface RefPrefix {
   level: string;

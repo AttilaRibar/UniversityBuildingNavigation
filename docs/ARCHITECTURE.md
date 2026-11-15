@@ -170,7 +170,7 @@ These are properties of the current code, not measurements.
 - The indoor data and the three.js scene code are not part of the city screen load: the building data is a dynamic import, and the city map component is loaded with `next/dynamic` and `ssr: false`.
 - The route graph is built once per building and reused; route requests run A* with a binary heap and a straight-line heuristic. The search index is built once on first use and cached.
 - The three.js renderer is created with `powerPreference: "low-power"` and a device pixel ratio capped at 2. Unit outline edges are merged into one `LineSegments` per level with `mergeGeometries`. Geometries and materials are disposed when the scene is disposed.
-- The scene runs a `requestAnimationFrame` loop while it is mounted; it is cancelled on dispose.
+- The scene runs a `requestAnimationFrame` loop while it is mounted, but only draws a frame while something is animating (levels moving, camera flight, route shown) or after a change (interaction, resize, a setter call). The loop is cancelled on dispose.
 - Hashed build assets under `/_next/static/` are served cache-first by the service worker. Map tiles and glyphs are cached stale-while-revalidate and capped at 400 entries.
 - Walkway nodes are merged at 1 cm resolution; features farther than 6 m from a walkway are not connected (and fail validation).
 
@@ -179,7 +179,7 @@ These are properties of the current code, not measurements.
 - **Text alternative.** Every route is available as a list of text instructions, independent of the 3D view. If WebGL is unavailable, `BuildingScreen` shows a message and the search, place and route panels keep working without the model.
 - **Reduced motion.** The scene reads `prefers-reduced-motion`: it disables camera damping, the draw-on animation of the route, the pulse and the moving chevrons, and moves the camera immediately. The city screen wraps its animations in `MotionConfig reducedMotion="user"`, and the bottom sheet uses `useReducedMotion`.
 - **Keyboard and assistive technology.** Controls are native buttons or links with accessible names. The language toggle, chips and map labels expose `aria-pressed`. The bottom sheet collapses with Escape on small screens. Search results and the share status use `aria-live`; the offline chip uses `role="status"` and the update toast `role="alert"`. Primary icon buttons are 44 px.
-- **Limits.** The 3D scene itself is operated by pointer and touch (orbit controls); keyboard users use search and the step list. The 3D canvas has a `role="img"` label that currently uses the Hungarian building name regardless of the language setting.
+- **Limits.** The 3D scene itself is operated by pointer and touch (orbit controls); keyboard users use search and the step list. The 3D canvas has a `role="img"` label with the building name in the active language.
 
 ## Offline strategy
 
@@ -214,11 +214,9 @@ Tests run with Vitest in a Node environment (`vitest.config.ts`). They cover the
 - **QR start points are not implemented.** The data model has `waypoint` anchors, and room links are designed to be printable as QR codes, but the BA data contains only entrance anchors (`main-entrance`, `doberdo-entrance`) and there is no scanner or QR-specific flow.
 - **Only building BA has indoor data.** Other campus buildings appear on the city map only.
 - **Estimated geometry.** All 192 BA units are `estimated`. Room positions inside a wing were spread along the corridor in ascending order, alternating sides. Corrections need on-site verification or surveyed plans.
-- **Level 4 and room number search.** The room-number normaliser in `src/domain/search/normalize.ts` recognises levels `A`, `F`, `1`, `2`, `3`; its tests assert that `4.01` is rejected as a room number. Level 4 rooms exist in the data and work in deep links by id, but the room-number normalisation does not apply to level 4 numbers.
 - **Search normaliser is BA-specific.** The default building code list is `["ba"]`.
 - **Georeference is stored, not used.** `building.json` carries the WGS84 origin and axis bearing, but no runtime code places the indoor model on the city map.
 - **No import-boundary lint rule.** See [the dependency rule](#the-dependency-rule).
 - **No automated tests for UI components and the 3D scene.**
 - **Offline map.** Only tiles the user has already viewed are cached.
 - **Hosting at the domain root only.** There is no `basePath` support.
-- **Tooling note.** `npm start` (`next start`) is not used; the static export is served with `npm run preview`.

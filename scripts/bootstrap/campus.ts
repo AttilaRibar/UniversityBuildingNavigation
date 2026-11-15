@@ -1,6 +1,6 @@
 /**
  * Curates the raw OpenStreetMap research export into the campus dataset the
- * app ships: drops unverified buildings, shortens names and assigns colours.
+ * app ships: keeps the buildings listed in `CURATED`, shortens names and assigns colours.
  *
  * Input:  docs/research/data/campus-buildings.osm.geojson (© OpenStreetMap contributors, ODbL)
  * Output: src/data/campus/buildings.json, src/data/campus/faculties.json

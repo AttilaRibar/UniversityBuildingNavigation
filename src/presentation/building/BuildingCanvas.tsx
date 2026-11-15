@@ -21,6 +21,8 @@ export interface BuildingCanvasProps {
   onUnitTap: (unitId: string) => void;
   onLevelTap: (levelId: string) => void;
   onError: () => void;
+  /** Accessible name of the 3D view. */
+  ariaLabel: string;
 }
 
 /**
@@ -78,5 +80,5 @@ export function BuildingCanvas(props: BuildingCanvasProps) {
     if (focus) scene.focus(focus);
   }, [mode, focus, insets, building]);
 
-  return <div ref={containerRef} className="scene-root" role="img" aria-label={building.name.hu} />;
+  return <div ref={containerRef} className="scene-root" role="img" aria-label={props.ariaLabel} />;
 }

@@ -28,6 +28,9 @@ describe("canonicalRef", () => {
     ["202", "2:2"],
     ["A.01", "a:1"],
     ["3.17", "3:17"],
+    ["4.01", "4:1"],
+    ["428", "4:28"],
+    ["BA.4.12", "4:12"],
   ])("%s -> %s", (input, expected) => {
     expect(canonicalRef(input)).toBe(expected);
   });
@@ -40,7 +43,7 @@ describe("canonicalRef", () => {
     "  ",
     "f",
     "13",
-    "4.01",
+    "0.01",
     "bufe",
     "ba",
   ])("rejects %j", (input) => {
@@ -64,7 +67,7 @@ describe("refPrefixKey", () => {
     expect(refPrefixKey(input)).toEqual(expected);
   });
 
-  it.each(["audmax", "", "f.123", "4."])("rejects %j", (input) => {
+  it.each(["audmax", "", "f.123", "0."])("rejects %j", (input) => {
     expect(refPrefixKey(input)).toBeNull();
   });
 });

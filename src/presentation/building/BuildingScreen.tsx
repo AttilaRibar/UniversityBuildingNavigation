@@ -122,6 +122,7 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
           onUnitTap={select}
           onLevelTap={nav.showLevel}
           onError={() => setWebglFailed(true)}
+          ariaLabel={text(building.name)}
         />
       )}
 
