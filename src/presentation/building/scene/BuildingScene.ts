@@ -105,6 +105,8 @@ export class BuildingScene {
   private pointerDown: { x: number; y: number; time: number } | null = null;
   private disposed = false;
   private size = { width: 1, height: 1 };
+  /** Set whenever something changed outside the animations, so idle frames can be skipped. */
+  private dirty = true;
 
   constructor(
     private readonly container: HTMLElement,
@@ -154,6 +156,7 @@ export class BuildingScene {
     this.controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_ROTATE };
     this.controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
     this.controls.addEventListener("start", () => (this.cameraGoal = null));
+    this.controls.addEventListener("change", () => (this.dirty = true));
 
     this.chevrons = createChevronTexture();
     for (const level of building.levels) this.levels.set(level.id, this.buildLevel(level));
@@ -173,16 +176,19 @@ export class BuildingScene {
   // --- Public API -------------------------------------------------------------
 
   setMode(mode: SceneMode, options: { reframe?: boolean } = {}): void {
+    this.dirty = true;
     this.mode = mode;
     this.applyMode(false);
     if (options.reframe ?? true) this.frameVisible(false);
   }
 
   setInsets(insets: SceneInsets): void {
+    this.dirty = true;
     this.insets = insets;
   }
 
   setLabels(labels: SceneLabels): void {
+    this.dirty = true;
     this.labels = labels;
     for (const view of this.levels.values()) {
       for (const label of view.labels) {
@@ -196,6 +202,7 @@ export class BuildingScene {
 
   /** Paints the destination (and optionally the origin room) in the accent colour. */
   setHighlight(destinationUnitId: string | null, originUnitId: string | null): void {
+    this.dirty = true;
     for (const id of this.highlighted) {
       const mesh = this.unitMeshes.get(id);
       const base = this.unitBaseMaterial.get(id);
@@ -209,6 +216,7 @@ export class BuildingScene {
 
   /** Shows the route; `animate` draws it on from the origin. Pass null to remove it. */
   setRoute(legs: readonly RouteLeg[] | null, originLabel: { levelId: string; position: Vec2 } | null, animate: boolean): void {
+    this.dirty = true;
     this.clearRoute();
     if (!legs || legs.length === 0) return;
     const total = legs.reduce((sum, leg) => sum + legWeight(leg), 0) || 1;
@@ -234,6 +242,7 @@ export class BuildingScene {
 
   /** Frames one step of the route and runs a pulse along it. */
   focus(target: SceneFocus | null): void {
+    this.dirty = true;
     this.clearPulse();
     if (!target) {
       this.frameVisible(false);
@@ -608,6 +617,7 @@ export class BuildingScene {
   };
 
   private resize(): void {
+    this.dirty = true;
     const width = Math.max(1, this.container.clientWidth);
     const height = Math.max(1, this.container.clientHeight);
     this.size = { width, height };
@@ -627,6 +637,13 @@ export class BuildingScene {
     if (this.disposed) return;
     this.frameHandle = requestAnimationFrame(this.loop);
     const dt = Math.min(this.clock.getDelta(), 0.05);
+
+    // A still scene costs nothing: only draw while something moves or was changed.
+    const levelsMoving = [...this.levels.values()].some((v) => Math.abs(v.y - v.targetY) > 0.005 || Math.abs(v.opacity - v.targetOpacity) > 0.005);
+    const animating = levelsMoving || this.cameraGoal !== null || this.routeProgress < 1 || (!this.reducedMotion && this.routeVisuals.length > 0);
+    this.controls.update();
+    if (!animating && !this.dirty) return;
+    this.dirty = false;
 
     for (const view of this.levels.values()) {
       view.y = damp(view.y, view.targetY, 7, dt);
@@ -664,7 +681,6 @@ export class BuildingScene {
       this.pulse.mesh.position.copy(toScene(pointAlong(this.pulse.points, t), 0.7));
     }
 
-    this.controls.update();
     this.container.dataset.zoom = this.camera.zoom < 5.5 ? "far" : this.camera.zoom < 10 ? "mid" : "near";
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
