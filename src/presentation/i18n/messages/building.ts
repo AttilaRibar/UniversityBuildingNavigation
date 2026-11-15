@@ -67,7 +67,10 @@ export const buildingHu = {
     emergency: "Vészhelyzetben a kijelölt menekülési útvonal érvényes, ne ezt az útvonalat kövesd.",
     arrivedTitle: "Megérkeztél!",
   },
+  entranceMarker: "Itt menj be",
   step: {
+    enter: "Lépj be az épületbe",
+    enterAt: (entrance: string) => `${entrance}. A sárga jel mutatja az ajtót.`,
     departFrom: (origin: string) => `Indulj innen: ${origin}`,
     continueStraight: "Menj tovább egyenesen",
     exit: { left: "Kilépve fordulj balra", right: "Kilépve fordulj jobbra" },
@@ -166,7 +169,10 @@ export const buildingEn: BuildingMessages = {
     emergency: "In an emergency follow the marked evacuation route, not this one.",
     arrivedTitle: "You have arrived!",
   },
+  entranceMarker: "Enter here",
   step: {
+    enter: "Enter the building",
+    enterAt: (entrance) => `${entrance}. The yellow pin marks the door.`,
     departFrom: (origin) => `Start from: ${origin}`,
     continueStraight: "Continue straight",
     exit: { left: "Step out and turn left", right: "Step out and turn right" },

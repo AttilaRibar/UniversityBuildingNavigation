@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import type { IndoorBuildingBundle } from "@/data/buildings";
@@ -20,6 +21,9 @@ import { RoutePanel } from "./panels/RoutePanel";
 import type { SceneLabels } from "./scene/BuildingScene";
 import { describeStep, pointName, unitTitle, type StepTextContext } from "./stepText";
 import { positionOf, routeLevelIds, sceneViewOf, useNavigator, type NavigatorPhase } from "./useNavigator";
+
+/** MapLibre needs `window` and WebGL, and only routes from an entrance use it here. */
+const EntranceMap = dynamic(() => import("./EntranceMap"), { ssr: false });
 
 const TOP_BAR = 68;
 const BANNER = 104;
@@ -72,6 +76,8 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
   }, [state.phase, state.route, state.origin, building]);
 
   const showBanner = state.phase === "route" && state.stepIndex !== null;
+  const currentStep = state.stepIndex !== null ? state.steps[state.stepIndex] : undefined;
+  const approach = currentStep?.type === "approach" ? currentStep : null;
   const insets = useMemo(
     () => ({ top: showBanner ? BANNER : TOP_BAR, right: SWITCHER, bottom: sheetInsets.bottom, left: sheetInsets.left }),
     [showBanner, sheetInsets],
@@ -126,8 +132,12 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
         />
       )}
 
+      {approach ? (
+        <EntranceMap building={building} anchorId={approach.anchorId} label={m.entranceMarker} insets={{ ...insets, right: 0 }} />
+      ) : null}
+
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-start gap-2 p-3 pt-[max(0.75rem,env(safe-area-inset-top))]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start gap-2 p-3 pt-[max(0.75rem,env(safe-area-inset-top))]"
         style={{ paddingLeft: sheetInsets.left + 12 }}
       >
         {showBanner && state.stepIndex !== null ? (
@@ -136,16 +146,21 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
           </div>
         ) : (
           <>
-            <Link href="/" aria-label={m.backToCity} className="pointer-events-auto flex size-11 shrink-0 items-center justify-center rounded-full bg-surface shadow-float transition-transform active:scale-95">
+            <Link href="/" aria-label={m.backToCity} className="pointer-events-auto flex size-11 shrink-0 items-center justify-center rounded-full bg-surface shadow-float ring-1 ring-line transition-transform active:scale-95">
               <ArrowLeft />
             </Link>
-            <p className="pointer-events-auto min-w-0 truncate rounded-full bg-surface px-4 py-2.5 font-extrabold shadow-float">{text(building.name)}</p>
+            <p className="pointer-events-auto flex h-11 min-w-0 items-center rounded-full bg-surface px-4 font-extrabold shadow-float ring-1 ring-line">
+              <span className="truncate">{text(building.name)}</span>
+            </p>
             <LanguageToggle className="pointer-events-auto ml-auto" />
           </>
         )}
       </div>
 
-      <div className="pointer-events-none absolute right-3 flex flex-col items-end" style={{ top: (showBanner ? BANNER : TOP_BAR) + 12 }}>
+      <div
+        className={`pointer-events-none absolute right-3 z-10 flex flex-col items-end transition-opacity duration-300 ${approach ? "invisible opacity-0" : ""}`}
+        style={{ top: (showBanner ? BANNER : TOP_BAR) + 12 }}
+      >
         <LevelSwitcher
           levels={building.levels}
           activeLevelId={activeLevelId}

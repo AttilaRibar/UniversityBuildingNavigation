@@ -69,6 +69,14 @@ body {
   overflow: hidden;
 }
 
+/*
+ * Overpass has tall ascenders, so a line box puts its capitals visibly off-centre.
+ * Trimming the box to the cap height lets flexbox centre the letters themselves.
+ */
+.text-trim {
+  text-box: trim-both cap alphabetic;
+}
+
 :focus-visible {
   outline: 3px solid var(--color-ink);
   outline-offset: 2px;

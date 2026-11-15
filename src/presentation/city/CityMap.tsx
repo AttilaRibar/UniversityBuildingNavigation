@@ -15,13 +15,15 @@ import {
   MAX_OBSCURED_SHARE,
   VIEW_MARGIN,
 } from "./cameraConfig";
-import { CAMPUS_LAYER, addCampusLayers, baseMapCopiesOfCampusBuildings, setCampusSelection } from "./campusLayers";
+import { Compass, syncCompass } from "@/presentation/ui/Compass";
+import { CAMPUS_LAYER, CAMPUS_SOURCE, addCampusLayers, baseMapCopiesOfCampusBuildings, setCampusSelection } from "./campusLayers";
 import { allBuildingsBounds, buildingBounds } from "./campuses";
 import "./cityMap.css";
 import { flattenCampusBuildings, growCampusBuildings } from "./introAnimation";
 import { useLabelData } from "./labelData";
 import { MapLabels } from "./mapLabels";
 import { BASE_SOURCE, createCityStyle } from "./mapStyle";
+import { createMapOrbit, type MapOrbit } from "./orbit";
 
 // The worker ships as a separate ES module; the bundler emits it as an asset.
 setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href);
@@ -44,6 +46,10 @@ export interface CityMapProps {
 
 /** Half of a typical campus chip's width. */
 const OVERVIEW_SIDE_MARGIN = 64;
+/** Without a single base-map tile after this long, tell the user rather than show an empty map. */
+const BASE_TILE_TIMEOUT_MS = 9000;
+/** A lost WebGL context that is not restored within this time counts as a failed map. */
+const CONTEXT_RESTORE_MS = 4000;
 
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
@@ -71,6 +77,8 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
   const labelsRef = useRef<MapLabels | null>(null);
   const loadedRef = useRef(false);
   const cameraFrame = useRef(0);
+  const orbitRef = useRef<MapOrbit | null>(null);
+  const compassRef = useRef<HTMLButtonElement>(null);
 
   /** Latest props for map event handlers, which are registered once. */
   const latest = useRef({ selectedId, onSelect, obscured, onStatusChange, reduceMotion, labelData });
@@ -100,6 +108,8 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
         map.easeTo({ padding: padding(), duration: latest.current.reduceMotion ? 0 : 450, easing: easeOutCubic });
         return;
       }
+      // The orbit waits for the flight to land, then turns the building slowly on the spot.
+      if (!latest.current.reduceMotion) orbitRef.current?.start();
       map.flyTo({
         center: [building.location[0], building.location[1]],
         zoom: Math.max(map.getZoom(), FOCUS_ZOOM),
@@ -125,9 +135,11 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
         map.fitBounds(buildingBounds(ids), {
           padding: padding(),
           maxZoom: CAMPUS_MAX_ZOOM,
+          bearing: map.getBearing(),
           duration: latest.current.reduceMotion ? 0 : 1200,
           easing: easeInOutCubic,
         });
+        if (!latest.current.reduceMotion) orbitRef.current?.start();
       },
     });
     labelsRef.current.setSelected(latest.current.selectedId);
@@ -151,7 +163,8 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
         minZoom: CAMERA.minZoom,
         maxZoom: CAMERA.maxZoom,
         maxBounds: BUDAPEST_BOUNDS,
-        dragRotate: false,
+        // Turning is allowed (right-drag, ctrl-drag, two-finger twist); the tilt stays fixed.
+        dragRotate: true,
         pitchWithRotate: false,
         touchPitch: false,
         rollEnabled: false,
@@ -163,29 +176,45 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
       return;
     }
     mapRef.current = map;
-    map.touchZoomRotate.disableRotation();
-    map.keyboard.disableRotation();
     map.getCanvas().setAttribute("aria-label", latest.current.labelData.mapLabel);
+    const orbit = createMapOrbit(map);
+    orbitRef.current = orbit;
 
+    let status: CityMapStatus | null = null;
+    const setStatus = (next: CityMapStatus) => {
+      if (status === next) return;
+      status = next;
+      latest.current.onStatusChange(next);
+    };
     let baseTileLoaded = false;
-    let degraded = false;
     let cancelGrowth = () => {};
+    let restoreTimer = 0;
+
+    // A stalled tile request must not keep the whole map blank, so tell the user after a while.
+    const tileWatchdog = window.setTimeout(() => {
+      if (!baseTileLoaded) setStatus("degraded");
+    }, BASE_TILE_TIMEOUT_MS);
 
     map.on("sourcedata", (e) => {
-      if (e.sourceId === BASE_SOURCE && e.tile) baseTileLoaded = true;
+      if (e.sourceId !== BASE_SOURCE || !e.tile || baseTileLoaded) return;
+      baseTileLoaded = true;
+      if (loadedRef.current) setStatus("ready");
     });
     map.on("error", (e) => {
       const sourceId = (e as { sourceId?: unknown }).sourceId;
-      if (degraded || baseTileLoaded || (sourceId !== undefined && sourceId !== BASE_SOURCE)) return;
-      degraded = true;
-      latest.current.onStatusChange("degraded");
+      if (baseTileLoaded || (sourceId !== undefined && sourceId !== BASE_SOURCE)) return;
+      setStatus("degraded");
     });
-    map.on("webglcontextlost", () => latest.current.onStatusChange("failed"));
+    // The map rebuilds its style after a context restore; `style.load` below re-adds our layers.
+    map.on("webglcontextlost", () => {
+      window.clearTimeout(restoreTimer);
+      restoreTimer = window.setTimeout(() => setStatus("failed"), CONTEXT_RESTORE_MS);
+    });
+    map.on("webglcontextrestored", () => window.clearTimeout(restoreTimer));
+    map.on("rotate", () => syncCompass(compassRef.current, map.getBearing(), CAMERA.bearing));
 
-    map.on("load", () => {
+    const firstSetup = () => {
       loadedRef.current = true;
-      addCampusLayers(map);
-      setCampusSelection(map, latest.current.selectedId);
       const intro = !latest.current.reduceMotion && latest.current.selectedId === null;
       if (intro) {
         flattenCampusBuildings(map);
@@ -199,7 +228,17 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
       }
       buildLabels(map, intro);
       if (latest.current.selectedId) scheduleCamera();
-      if (!degraded) latest.current.onStatusChange("ready");
+      if (status !== "degraded") setStatus("ready");
+    };
+
+    // Our overlays only need the style, not the base tiles: waiting for `load` (all tiles
+    // of the first view) left the map empty whenever a single tile request stalled.
+    map.on("style.load", () => {
+      if (!map.getSource(CAMPUS_SOURCE)) {
+        addCampusLayers(map);
+        setCampusSelection(map, latest.current.selectedId);
+      }
+      if (!loadedRef.current) firstSetup();
     });
 
     map.on("click", (e) => {
@@ -210,9 +249,18 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
     map.on("mouseenter", CAMPUS_LAYER, () => (map.getCanvas().style.cursor = "pointer"));
     map.on("mouseleave", CAMPUS_LAYER, () => (map.getCanvas().style.cursor = ""));
 
+    // Coming back from the back/forward cache or a hidden tab: make sure the canvas matches the box.
+    const onPageShow = () => map.resize();
+    window.addEventListener("pageshow", onPageShow);
+
     return () => {
+      window.removeEventListener("pageshow", onPageShow);
+      window.clearTimeout(tileWatchdog);
+      window.clearTimeout(restoreTimer);
       cancelAnimationFrame(cameraFrame.current);
       cancelGrowth();
+      orbit.destroy();
+      orbitRef.current = null;
       labelsRef.current?.destroy();
       labelsRef.current = null;
       loadedRef.current = false;
@@ -229,6 +277,7 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
     setCampusSelection(map, selectedId);
     labelsRef.current?.setSelected(selectedId);
     if (selectedId) scheduleCamera();
+    else orbitRef.current?.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
@@ -245,9 +294,19 @@ export default function CityMap({ selectedId, onSelect, obscured, onStatusChange
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
 
+  const resetRotation = () => {
+    orbitRef.current?.stop();
+    mapRef.current?.easeTo({ bearing: CAMERA.bearing, duration: latest.current.reduceMotion ? 0 : 700, easing: easeInOutCubic });
+  };
+
   return (
     <div className="city-map">
       <div ref={containerRef} className="size-full" />
+      <Compass
+        ref={compassRef}
+        onReset={resetRotation}
+        className="absolute top-[calc(max(12px,env(safe-area-inset-top))+56px)] right-3 z-10 md:top-[72px] md:right-4"
+      />
       <p
         className="city-map-attribution"
         style={{ bottom: `calc(min(${obscured.bottom}px, ${MAX_OBSCURED_SHARE * 100}%) + 6px)` }}

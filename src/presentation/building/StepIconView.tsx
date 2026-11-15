@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowUpLeft, ArrowUpRight, Elevator, Flag, Stairs, TurnLeft, TurnRight, UTurn } from "@/presentation/ui/icons";
+import { ArrowUp, ArrowUpLeft, ArrowUpRight, Elevator, Enter, Flag, Stairs, TurnLeft, TurnRight, UTurn } from "@/presentation/ui/icons";
 import type { StepIcon } from "./stepText";
 
 const ICONS = {
@@ -12,6 +12,7 @@ const ICONS = {
   stairs_down: Stairs,
   elevator_up: Elevator,
   elevator_down: Elevator,
+  enter: Enter,
   arrive: Flag,
 } satisfies Record<StepIcon, unknown>;
 
