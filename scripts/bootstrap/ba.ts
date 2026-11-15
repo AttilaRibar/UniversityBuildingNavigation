@@ -385,7 +385,7 @@ function levelOne(): LevelBuilder {
 function levelTwo(): LevelBuilder {
   const lb = new LevelBuilder("2");
   barSlabWithAtria(lb);
-  [STUB, RECTOR_WING, DRUM, WING].forEach((s) => lb.slab(s));
+  [STUB, RECTOR_WING, WING].forEach((s) => lb.slab(s));
 
   // Rector wing: council room and cabinet at the back, rector and cabinet offices at the front.
   const cabinet = (ref: string) => office(ref, RECTOR, t("Rektori Kabinet", "Rector's Cabinet"));
