@@ -22,7 +22,7 @@ function RoomRow({ hit, levelName }: { hit: SearchHit; levelName: string | undef
   const subtitle = entry.ref && entry.name ? text(entry.name) : entry.occupant;
   const place = [building?.code ?? (building ? text(building.name) : null), levelName ?? `${c.level} ${entry.levelId}`]
     .filter(Boolean)
-    .join(" · ");
+    .join(" • ");
   return (
     <Link
       href={buildingHref(entry.buildingId, { to: entry.unitId })}
@@ -35,7 +35,7 @@ function RoomRow({ hit, levelName }: { hit: SearchHit; levelName: string | undef
         {subtitle ? <span className="block truncate text-[16px] leading-tight font-bold text-ink">{subtitle}</span> : null}
         <span className="mt-0.5 block truncate text-sm text-muted">
           {place}
-          {entry.capacity ? ` · ${m.capacity(entry.capacity)}` : ""}
+          {entry.capacity ? ` • ${m.capacity(entry.capacity)}` : ""}
         </span>
       </span>
       <ChevronRight size={20} className="shrink-0 text-muted transition-transform duration-200 group-hover:translate-x-0.5" />

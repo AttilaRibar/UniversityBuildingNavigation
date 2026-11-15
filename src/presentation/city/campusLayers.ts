@@ -9,6 +9,11 @@ const HALO_LAYER = "campus-halo";
 
 /** Enough to stay clear of the grey base-map footprint underneath, too little to notice. */
 const INFLATE_METRES = 0.6;
+/**
+ * Building parts in OSM can have their own ids (and so escape the filter on
+ * the base map); a slightly taller roof keeps them from flickering through.
+ */
+const RAISE_METRES = 1.5;
 const ACCENT = "#ffd21f";
 
 interface CampusFeatureProps {
@@ -29,7 +34,7 @@ const campusMapData: FeatureCollection<Polygon | MultiPolygon, CampusFeatureProp
         id: f.properties.id,
         color: f.properties.color,
         mutedColor: muteColor(f.properties.color),
-        height: f.properties.height,
+        height: f.properties.height + RAISE_METRES,
       },
     }),
   ),

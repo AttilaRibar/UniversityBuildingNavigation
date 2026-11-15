@@ -36,6 +36,8 @@ export function SearchField({ value, onChange, placeholder, ariaLabel, onFocus, 
         aria-label={ariaLabel}
         onFocus={onFocus}
         onChange={(e) => onChange(e.target.value)}
+        // The focus ring below replaces the global outline, which would double it.
+        style={{ outline: "none" }}
         className={
           "h-13 w-full rounded-card bg-surface-2 pr-12 pl-12 text-[17px] font-semibold text-ink ring-1 ring-transparent ring-inset " +
           "transition-[box-shadow,background-color] duration-150 placeholder:font-medium placeholder:text-muted " +

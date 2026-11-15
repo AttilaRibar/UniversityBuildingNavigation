@@ -49,10 +49,12 @@ export function BuildingCardHeader({
         key={building.id}
         ref={titleRef}
         tabIndex={-1}
+        // Focus lands here for screen readers only; a ring around a heading would just look like a bug.
+        style={{ outline: "none" }}
         initial={{ opacity: 0, x: 12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ type: "spring", stiffness: 400, damping: 34 }}
-        className="flex min-w-0 flex-1 items-center gap-2 text-[24px] leading-tight font-extrabold tracking-tight text-ink outline-none"
+        className="flex min-w-0 flex-1 items-center gap-2 text-[24px] leading-tight font-extrabold tracking-tight text-ink"
       >
         <span className="truncate">{text(building.name)}</span>
         {building.code ? <CodeBadge code={building.code} className="h-7 text-[15px]" /> : null}
@@ -95,7 +97,9 @@ export function BuildingCard({ building }: { building: CampusBuilding }) {
   return (
     <motion.div key={building.id} variants={stagger} initial="hidden" animate="shown" className="px-1 pt-1">
       <motion.p variants={item} className="text-[15px] leading-snug text-ink-soft">
-        <span className="font-bold text-ink">{m.kind[building.kind]}</span> · {text(building.description)}
+        <span className="font-bold text-ink">{m.kind[building.kind]}</span>
+        {" • "}
+        {text(building.description)}
       </motion.p>
 
       <motion.div variants={item} className="mt-4 flex flex-col gap-2.5">
