@@ -25,7 +25,7 @@ describe("condenseSteps", () => {
   it("folds a short approach to a connector into one step", () => {
     const result = condenseSteps([depart(1.8), turn("left", 3), turn("right", 1.9), stairs, depart(20, "1"), arrive]);
     expect(result.map((s) => s.type)).toEqual(["depart", "connector", "depart", "arrive"]);
-    expect(result[0]).toMatchObject({ distance: 6.7 });
+    expect((result[0] as { distance: number }).distance).toBeCloseTo(6.7);
   });
 
   it("turns a few steps plus a turn into a depart with an exit side", () => {
