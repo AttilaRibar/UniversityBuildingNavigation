@@ -74,10 +74,10 @@ Billing: the free plan needs no card and stops ingesting at the monthly free all
 ### How a release reaches users
 
 - **Pages.** The service worker fetches pages network-first with a 3 second timeout. An online visitor gets the new HTML on the next page load, and with it the new hashed JavaScript chunks. A tab that stays open keeps the build it loaded until it reloads.
-- **Service worker and update toast.** A browser installs a new service worker only when the bytes of `/sw.js` change. `npm run build` copies `public/sw.js` unchanged; the per-build version lives in `precache-manifest.json`. So:
-  - A release that does not touch `public/sw.js` installs no new worker. No update toast appears, and the precache from the worker's install stays in place.
-  - A release that changes `public/sw.js` installs a new worker in the background. It waits until the visitor presses "Update" in the toast ("A new version is available"); the page then reloads once, and the old precaches are deleted.
-  - To make every installed copy precache the new build (for example after data corrections that people need offline), change `public/sw.js` in the release, for example a version note in its header comment.
+- **Service worker and update toast.** A browser installs a new service worker only when the bytes of `/sw.js` change. `npm run build` appends the build version (a hash of the precached files' contents) to `out/sw.js`, so every release that changes a precached file ships a new worker:
+  - The new worker installs in the background on the visitor's next visit and precaches the new build.
+  - It waits until the visitor presses "Update" in the toast ("A new version is available"); the page then reloads once, and the old precaches are deleted.
+  - A release that changes no precached file (for example only `vercel.json`) produces the same `sw.js` and installs nothing new.
 
 ## Rollback
 
@@ -88,7 +88,7 @@ Use Vercel's **Instant Rollback**: project overview → Production Deployment ti
 - After a rollback, Vercel stops assigning the production domain to new deployments. Pushes to `main` still build but do not go live until you undo the rollback: project overview → **Manage** on the production tile → promote a deployment (or `vercel promote <deployment-url>`).
 - For a fix that should go through CI, revert the commit on `main` instead (`git revert <sha>`, pull request, merge); Vercel then deploys the reverted state.
 
-Visitors who loaded the bad build get the restored one on their next page load (pages are network-first). If the bad release changed `public/sw.js`, the rollback serves the previous `sw.js` again. Browsers that already installed the bad worker see a different `sw.js` on their next update check, install it as a new worker and show the update toast.
+Visitors who loaded the bad build get the restored one on their next page load (pages are network-first). The restored deployment serves its own `sw.js`, whose build stamp differs from the bad one, so browsers that already installed the bad worker install the restored one on their next update check and show the update toast.
 
 ## Verifying a deployment
 

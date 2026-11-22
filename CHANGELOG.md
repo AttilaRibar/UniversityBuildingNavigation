@@ -50,6 +50,9 @@ Deployed on Vercel at https://merre-chi.vercel.app.
 - On short screens the bottom sheet could cover the lower floors in the level switcher. The buttons now shrink (down to 32 px) and the list scrolls if needed.
 - A failed load of the room search data was cached for the rest of the visit, so room search stayed empty. It is now retried on the next search.
 - Copying a room link without clipboard access failed silently. It now says "The link could not be copied."
+- New releases never reached installed copies: every build shipped a byte-identical `sw.js`, so browsers installed no new service worker, kept the first precache and never showed the update toast. The build now stamps its version into `sw.js`; the version is a hash of the file contents rather than sizes.
+- Offline navigations prefer the precached page, whose chunks belong to the same build, over an older page in the runtime cache.
+- The 404 page is no longer precached.
 
 ### Security
 

@@ -27,7 +27,7 @@ Live: **https://merre-chi.vercel.app** (version 1.0.0, see [CHANGELOG.md](CHANGE
 
 ## Privacy and analytics
 
-Production builds with a PostHog key send anonymous usage statistics to PostHog EU Cloud, for example page views, searches (the text trimmed, lower-cased and cut to 40 characters, with the result counts), selected buildings and rooms, whether a route was started and finished, errors and load speed. Analytics sets no cookies and writes nothing to browser storage; PostHog counts visitors with a daily changing hash on its servers. Nothing is sent when the browser sends Do Not Track or Global Privacy Control, or after the visitor switches statistics off on the privacy page (completely from the next page load, see [known gaps](docs/ANALYTICS.md#known-gaps)).
+Production builds with a PostHog key send anonymous usage statistics to PostHog EU Cloud, for example page views, searches (the text trimmed, lower-cased and cut to 40 characters, with the result counts), selected buildings and rooms, whether a route was started and finished, errors and load speed. Analytics sets no cookies and writes nothing to browser storage; PostHog counts visitors with a daily changing hash on its servers. Nothing is sent when the browser sends Do Not Track or Global Privacy Control, or after the visitor switches statistics off on the privacy page.
 
 - Privacy page for visitors: `/privacy/` (https://merre-chi.vercel.app/privacy/)
 - Event catalogue, privacy rules for new events, testing: [docs/ANALYTICS.md](docs/ANALYTICS.md)

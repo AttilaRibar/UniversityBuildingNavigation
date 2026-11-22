@@ -287,7 +287,7 @@ The domain returns steps as data (`depart`, `turn` with a direction, `connector`
 Call sites know only `track()` and the event catalogue; PostHog sits behind the `AnalyticsSink` port and is loaded only when allowed, after the page is idle.
 
 - Gain: no consent banner (nothing is stored in the browser), no vendor code in components, another vendor needs only a new adapter, a change in the composition root and the CSP, analytics cannot break or slow down the first paint, and visitors with analytics off never download the SDK (it is also left out of the precache).
-- Cost: visitors are counted per day only; there is no country data; events fired in the first moments are buffered rather than sent at once; opting out stops PostHog's automatic events only from the next page load ([ANALYTICS.md](ANALYTICS.md#known-gaps)). The composition root is an exception to the layer table.
+- Cost: visitors are counted per day only; there is no country data; events fired in the first moments are buffered rather than sent at once ([ANALYTICS.md](ANALYTICS.md#known-gaps)). The composition root is an exception to the layer table.
 
 ## Performance notes
 
@@ -310,13 +310,13 @@ These are properties of the current code, not measurements.
 
 ## Offline strategy
 
-- **Install.** On install, `sw.js` fetches `/precache-manifest.json` (written by `scripts/build-precache.ts` after `next build`) and stores every listed URL in a cache named `merre-precache-<version>`. The version is a hash of the URL list and file sizes. A single failing URL does not abort the install.
+- **Install.** On install, `sw.js` fetches `/precache-manifest.json` (written by `scripts/build-precache.ts` after `next build`) and stores every listed URL in a cache named `merre-precache-<version>`. The version is a hash of the URLs and the file contents. The 404 page and the analytics SDK chunk are not listed. A single failing URL does not abort the install.
 - **Precached content.** Prerendered pages (`index.html` files), `_next/static/*` except the PostHog SDK chunk (any `.js` containing `[PostHog.js]`), icons, `manifest.webmanifest`, and RSC payload `.txt` files used by client navigation. The SDK chunk is cached on first use by visitors who have analytics on.
 - **Navigations.** Network-first with a 3 second timeout. Successful pages are stored under their query-less URL in the runtime cache. When offline or slow, a cached page is served, matched without the query string, with the cached `/` as the last fallback.
 - **Static assets.** `/_next/static/*` is cache-first.
 - **Other same-origin requests.** Stale-while-revalidate in `merre-runtime-v1`.
 - **Map tiles.** The TileJSON (`https://tiles.openfreemap.org/planet`) is network-first. Tiles and glyphs from `tiles.openfreemap.org` are stale-while-revalidate in `merre-map-v1`, capped at 400 entries (oldest removed first). Map requests time out after 8 s. Only successful, non-opaque responses are stored. Tiles that were never viewed are not available offline.
-- **Updates.** A browser installs a new worker only when the bytes of `/sw.js` change, and the build copies `public/sw.js` unchanged. A release that does not touch `public/sw.js` therefore installs no new worker and creates no new precache; online visitors still get the new pages, because navigations are network-first. When a new worker does install, it does not call `skipWaiting` on its own. The page shows an update toast; accepting it sends `SKIP_WAITING`, and the page reloads once when the new worker takes control. On activation, precaches of older builds are deleted; if the manifest cannot be fetched at that moment, nothing is deleted. See [OPERATIONS.md](OPERATIONS.md#how-a-release-reaches-users).
+- **Updates.** A browser installs a new worker only when the bytes of `/sw.js` change, so `scripts/build-precache.ts` appends the build version to `out/sw.js` (`// build <version>`). Every build that changes a precached file therefore ships a new worker, which precaches the new build in the background. It does not call `skipWaiting` on its own. The page shows an update toast; accepting it sends `SKIP_WAITING`, and the page reloads once when the new worker takes control. On activation, precaches of older builds are deleted; if the manifest cannot be fetched at that moment, nothing is deleted. See [OPERATIONS.md](OPERATIONS.md#how-a-release-reaches-users).
 - **Never cached by the worker.** `/sw.js` and `/precache-manifest.json`.
 - **Registration.** Production builds only, in `useServiceWorker`.
 
@@ -346,8 +346,6 @@ Tests run with Vitest in a Node environment (`vitest.config.ts`). They cover the
 - **Estimated geometry.** All 192 BA units are `estimated`. Room positions inside a wing were spread along the corridor in ascending order, alternating sides. Corrections need on-site verification or surveyed plans.
 - **Search normaliser is BA-specific.** The default building code list is `["ba"]`.
 - **Georeference is used only for the entrance.** `building.json` carries the WGS84 origin and axis bearing; `georef.ts` uses them to pin the entrance door on the approach map, but the indoor model itself is not placed on the city map.
-- **Service worker updates depend on `public/sw.js` changing.** The worker file is not versioned per build, so most releases show no update toast and keep the precache from the worker's install. Offline navigations can then return a page from that older precache. Writing the build version into `sw.js` at build time would fix both.
-- **Opting out of analytics is complete only after a reload.** See [ANALYTICS.md](ANALYTICS.md#known-gaps).
 - **CSP allows inline scripts.** Needed for a static export without nonces (see [Security headers](#security-headers)).
 - **No import-boundary lint rule.** See [the dependency rule](#the-dependency-rule).
 - **No automated tests for UI components, the 3D scene, the analytics adapter and the service worker.**

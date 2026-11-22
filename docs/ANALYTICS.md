@@ -77,7 +77,7 @@ The pieces:
 | `src/presentation/analytics/consent.ts` | `readOptOut()`, `writeOptOut()` (key `merre.analyticsOptOut`) and `browserSignalsNoTracking()` (`navigator.doNotTrack === "1"`, `window.doNotTrack === "1"` or `navigator.globalPrivacyControl === true`). |
 | `src/presentation/analytics/campaign.ts` | `takeCampaignParams()`: reads `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` from the landing URL (each capped at 100 characters) and removes them from the address bar. |
 | `src/presentation/analytics/useTrackedSearch.ts` | Sends `search_performed` once the search text has stayed unchanged for 1.2 s and its result count is known. |
-| `src/presentation/pages/PrivacyView.tsx` | The privacy page and its opt-out switch. |
+| `src/presentation/pages/PrivacyView.tsx` | The privacy page and its opt-out switch. Turning it off stops everything at once, the SDK's automatic events included: with `cookieless_mode: "always"` PostHog ignores `opt_out_capturing()`, so the adapter's `before_send` drops every event after `optOut()`. |
 | `scripts/build-precache.ts` | Leaves the PostHog SDK chunk (any `.js` file containing `[PostHog.js]`) out of the service worker precache, so visitors with analytics off never download it. Visitors with analytics on fetch it once; the worker then serves it cache-first. |
 
 ### PostHog configuration
@@ -145,7 +145,7 @@ The source of truth is the `AnalyticsEvents` interface in `src/application/analy
 | `problem_report_opened` | The "Wrong room position or route? Let us know" link on the room card is opened | `building`; `room` | `src/presentation/building/panels/PlacePanel.tsx` |
 | `language_changed` | The language toggle switches to the other language | `locale`: `hu` or `en` | `src/presentation/ui/LanguageToggle.tsx` |
 | `install_prompt_answered` | The browser's install prompt, opened from the install banner, is answered | `outcome`: `accepted` or `dismissed` | `src/presentation/pwa/useInstallPrompt.ts` |
-| `map_unavailable` | A map cannot be shown | `screen`: `city` or `building`; `reason`: `failed` (city map could not start, or its WebGL context was not restored), `tiles` (city base tiles did not load: the map is degraded), `webgl` (indoor 3D view could not start). The type also allows `screen: "entrance"`, which no code sends yet | `src/presentation/city/CityOverview.tsx`, `src/presentation/building/BuildingScreen.tsx` |
+| `map_unavailable` | A map cannot be shown | `screen`: `city`, `building` or `entrance`; `reason`: `failed` (city map could not start, or its WebGL context was not restored), `tiles` (city base tiles did not load: the map is degraded), `webgl` (indoor 3D view or the entrance street map could not start) | `src/presentation/city/CityOverview.tsx`, `src/presentation/building/BuildingScreen.tsx`, `src/presentation/building/EntranceMap.tsx` |
 | `building_load_failed` | The building data chunk failed to load; the retry screen is shown | `building` | `src/presentation/building/BuildingExplorer.tsx` |
 
 Handled errors sent with `trackException()` (as `$exception`):
@@ -222,7 +222,6 @@ Suggested starting set:
 
 ## Known gaps
 
-- **Opting out takes full effect on the next page load.** With `cookieless_mode: "always"`, PostHog ignores `opt_out_capturing()` (stated in PostHog's cookieless tracking docs and visible in the SDK source). After the switch on `/privacy/` is turned off, the app's own events stop at once, but the SDK's automatic `$pageview`, `$pageleave`, `$web_vitals` and `$exception` events continue until the page is reloaded. From the next page load nothing is sent.
 - **Unique visitors are per day.** The same person counts again each day, and two people on the same network with the same browser version can count as one.
 - **No country data.** See [GeoIP](#what-is-collected).
 - **`rooms` in `search_performed` is capped** by the number of results each screen shows (12 or 30), so it is not the total number of matches.
