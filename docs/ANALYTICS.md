@@ -1,6 +1,6 @@
 # Analytics
 
-Merre sends anonymous, cookieless usage statistics to PostHog EU Cloud. This page covers why PostHog was chosen, how the integration works, every event the app sends, the privacy rules for new events, local testing, and the first insights worth building. Account setup and Vercel configuration are in [OPERATIONS.md](OPERATIONS.md#posthog-first-time-setup). What visitors are told is on the privacy page (`/privacy/`, texts in `src/presentation/i18n/messages/privacy.ts`).
+Merre sends anonymous, cookieless usage statistics to PostHog EU Cloud (named events) and to Vercel Web Analytics (visitors and page views, see [Vercel Web Analytics](#vercel-web-analytics)). This page covers why PostHog was chosen, how the integration works, every event the app sends, the privacy rules for new events, local testing, and the first insights worth building. Account setup and Vercel configuration are in [OPERATIONS.md](OPERATIONS.md#posthog-first-time-setup). What visitors are told is on the privacy page (`/privacy/`, texts in `src/presentation/i18n/messages/privacy.ts`).
 
 ## Summary
 
@@ -98,13 +98,25 @@ Set in `createPostHogSink()` in `src/infrastructure/analytics/posthog.ts`:
 | `capture_exceptions` | `true` | Uncaught errors become `$exception` events |
 | `capture_performance` | `{ web_vitals: true, network_timing: false }` | `$web_vitals` events; no network timing |
 | `respect_dnt` | `true` | The SDK checks Do Not Track as well |
-| `before_send` | adds the stored `utm_*` values | Every event of the page load carries the landing page's campaign parameters |
+| `before_send` | drops everything after an opt-out; adds `deploy_env` and the stored `utm_*` values | Every event of the page load carries the landing page's campaign parameters and the build's environment: `production`, `preview` (Vercel preview deployments) or `local`. Filter insights to `deploy_env = production` |
 
 ### Campaign parameters
 
 The flyer's QR codes carry `utm_source=szorolap&utm_medium=print` (see [flyer/README.md](flyer/README.md)). The SDK reads campaign parameters from the current URL, but the indoor screen rewrites its URL on mount, before the SDK loads. So `takeCampaignParams()` runs first in `instrumentation-client.ts`, on every page load and even with analytics off: it keeps the values for the adapter's `before_send` hook and removes them from the address bar. A link copied after scanning a QR code therefore does not count as flyer traffic again.
 
 Room links in the city search results carry `src=search` (`buildingHref(..., { source: "search" })` in `src/application/links.ts`). The indoor screen reads it once for the `room_selected` source and drops it from the address bar with its next URL sync.
+
+## Vercel Web Analytics
+
+`src/presentation/analytics/VercelAnalytics.tsx`, rendered once in the root layout, loads Vercel's script (`@vercel/analytics/next`, pinned to `2.0.1`) from `/_vercel/insights/script.js` on the site's own origin, so the CSP needs no extra host.
+
+- **What it records:** one page view per path change (`route` and `path` from the Next.js router); the `?to=` rewrites of the indoor screen do not count. The Vercel dashboard shows visitors, pages, referrers, UTM sources, countries, browsers, operating systems and devices. The script sets no cookies and writes nothing to browser storage. Vercel identifies a visitor by a hash of the request that is discarded after 24 hours, and stores no IP address.
+- **When it runs:** production builds made on Vercel (`MERRE_DEPLOY_ENV`, inlined from `VERCEL_ENV` by `next.config.ts`), when the browser sends neither Do Not Track nor Global Privacy Control and the visitor has not opted out. The opt-out on `/privacy/` takes effect immediately: `beforeSend` drops every page view once it is set.
+- **Campaign parameters:** `beforeSend` adds the landing page's `utm_*` values back to the page view URL (`withCampaign()` in `src/presentation/analytics/campaign.ts`), because `takeCampaignParams()` removed them from the address bar before the script loaded.
+- **No custom events:** on the Hobby plan Vercel records page views only (50,000 events per month; collection pauses when the limit is reached). All named events go to PostHog. With a Pro plan, `track()` from `@vercel/analytics` could mirror a few key events.
+- **Setup:** Web Analytics has to be enabled for the Vercel project; see [OPERATIONS.md](OPERATIONS.md#vercel-web-analytics-setup).
+
+Which tool answers what: Vercel for "how many people visit, from where, on which device"; PostHog for "what do they search, which rooms, do routes get finished, what breaks".
 
 ## What is collected
 

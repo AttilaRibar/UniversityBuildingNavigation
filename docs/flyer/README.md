@@ -10,8 +10,8 @@ megjegyzések (nem hivatalos, becsült BA-adatok, belső térkép csak a BA-hoz)
 | `build-flyer.mjs` | Ebből készül a PDF és az előnézet, és közben ellenőrzi a tördelést. |
 | `merre-szorolap.pdf` | A nyomdába menő fájl (generált). |
 | `preview-1.png`, `preview-2.png` | Elő- és hátlap előnézete, 1× méretben (generált). |
-| `assets/qr-main.svg` | QR az előlapra: `https://merre-chi.vercel.app/?utm_source=szorolap&utm_medium=print` |
-| `assets/qr-f06.svg` | Kis QR a hátlapra: `https://merre-chi.vercel.app/building/ba/?to=F.06&utm_source=szorolap&utm_medium=print` |
+| `assets/qr-main.svg` | QR az előlapra: `https://oe-merre.vercel.app/?utm_source=szorolap&utm_medium=print` |
+| `assets/qr-f06.svg` | Kis QR a hátlapra: `https://oe-merre.vercel.app/building/ba/?to=F.06&utm_source=szorolap&utm_medium=print` |
 | `assets/p22-…jpg`, `assets/p21-…jpg` | Telefonos képernyőképek, 900 px szélesre és 82%-os JPEG-re kicsinyítve. |
 | `assets/logo.svg` | Másolat a `public/icons/logo.svg`-ről. |
 | `assets/fonts/` | Overpass 500/700/800, latin és latin-ext (az ő/ű miatt), plusz a licenc (`OFL.txt`). |

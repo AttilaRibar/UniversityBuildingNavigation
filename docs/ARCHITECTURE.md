@@ -161,6 +161,8 @@ At startup `src/instrumentation-client.ts`:
 
 If the adapter chunk or the SDK fails to load, analytics is turned off for the page load. `track()` never throws, and a failing vendor call is swallowed. The event catalogue, the PostHog options and the privacy rules are in [ANALYTICS.md](ANALYTICS.md).
 
+Vercel Web Analytics is separate from the facade: `presentation/analytics/VercelAnalytics.tsx` in the root layout renders Vercel's `<Analytics />` only on Vercel production builds (`MERRE_DEPLOY_ENV`, inlined from `VERCEL_ENV` by `next.config.ts`) and only when `analyticsAllowed()` holds. It records page views; its `beforeSend` drops them after an opt-out and adds back the landing campaign. The service worker leaves `/_vercel/*` to the network.
+
 ## Error handling
 
 | Situation | What the user sees | Where |
@@ -192,7 +194,7 @@ Error boundaries in this Next.js version receive `retry()` (see `node_modules/ne
 | `/sw.js` | `public/sw.js` | Service worker, copied as is |
 | `/precache-manifest.json` | `scripts/build-precache.ts`, run after `next build` | List of URLs to precache and a build version |
 
-Metadata: the root layout sets `metadataBase` from `SITE_URL` (`src/application/app-info.ts`: `NEXT_PUBLIC_SITE_URL`, default `https://merre-chi.vercel.app`), a title template, Open Graph and Twitter card data with `og-image.png`. Each page sets its canonical URL (`alternates.canonical`). The building page repeats the Open Graph image, because a child `openGraph` object replaces the parent's.
+Metadata: the root layout sets `metadataBase` from `SITE_URL` (`src/application/app-info.ts`: `NEXT_PUBLIC_SITE_URL`, default `https://oe-merre.vercel.app`), a title template, Open Graph and Twitter card data with `og-image.png`. Each page sets its canonical URL (`alternates.canonical`). The building page repeats the Open Graph image, because a child `openGraph` object replaces the parent's.
 
 ## Security headers
 

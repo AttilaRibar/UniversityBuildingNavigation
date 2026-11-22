@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Only the version deployed at https://merre-chi.vercel.app, built from the `main` branch, receives fixes. There are no maintained release branches.
+Only the version deployed at https://oe-merre.vercel.app, built from the `main` branch, receives fixes. There are no maintained release branches.
 
 | Version | Supported |
 | --- | --- |

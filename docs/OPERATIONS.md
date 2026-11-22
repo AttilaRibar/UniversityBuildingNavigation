@@ -8,8 +8,9 @@ Runbook for the deployed site: first-time setup, configuration, releases, rollba
 | --- | --- | --- |
 | Source code | GitHub, `AttilaRibar/UniversityBuildingNavigation` | `main` is the production branch |
 | CI | GitHub Actions, `.github/workflows/ci.yml` | On every pull request and every push to `main`: `npm ci`, `npm audit --omit=dev --audit-level=high`, lint, typecheck, tests, data validation, build. CI does not deploy |
-| Hosting | Vercel project `merre` | Git integration with the repository. Production URL: https://merre-chi.vercel.app |
-| Analytics | PostHog EU Cloud project | Receives events from production builds that have `NEXT_PUBLIC_POSTHOG_KEY` |
+| Hosting | Vercel project `merre` | Git integration with the repository. Production URL: https://oe-merre.vercel.app. The first address, `merre-chi.vercel.app`, redirects to it (307, path and query string kept) |
+| Analytics: events | PostHog EU Cloud project | Receives events from production builds that have `NEXT_PUBLIC_POSTHOG_KEY` |
+| Analytics: visitors | Vercel Web Analytics | Page views of Vercel builds, once Web Analytics is enabled for the project ([setup](#vercel-web-analytics-setup)) |
 | Map tiles and fonts | `tiles.openfreemap.org` | Third party, no account or key |
 | Problem reports and feedback | GitHub issues of the repository | Linked from the room card and the footer |
 
@@ -27,7 +28,7 @@ There is no server, database or backend to operate. The deployed site is the sta
 | Node.js version | 22.x | Project settings; `package.json` requires `>=22` |
 | Deployment Protection | Vercel Authentication, Standard Protection | Project settings |
 
-With Standard Protection, preview deployments and generated deployment URLs ask for a Vercel login with access to the team. The production domain `merre-chi.vercel.app` is public.
+With Standard Protection, preview deployments and generated deployment URLs ask for a Vercel login with access to the team. The production domain `oe-merre.vercel.app` is public.
 
 `vercel.json` also sets the response headers (CSP and other security headers, caching). See [Verifying a deployment](#verifying-a-deployment) for the expected values and [ARCHITECTURE.md](ARCHITECTURE.md#security-headers) for the reasoning.
 
@@ -37,11 +38,13 @@ All of them are optional and read at build time. `NEXT_PUBLIC_*` values are inli
 
 | Variable | Default when unset | Effect | Vercel environments |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_POSTHOG_KEY` | unset: analytics off | PostHog project API key (`phc_…`). It can only write events and is visible in the shipped JavaScript by design | Production. Leave Preview unset so preview builds send nothing (the privacy page then says the deployment has no statistics). Set it for Preview only to test analytics on a preview, and filter that traffic by `$host` in PostHog |
+| `NEXT_PUBLIC_POSTHOG_KEY` | unset: PostHog off | PostHog project API key (`phc_…`). It can only write events and is visible in the shipped JavaScript by design | Production. It is currently also set for Preview and Development: every event carries `deploy_env` (`production`, `preview` or `local`), so filter PostHog insights to `deploy_env = production`. Development builds (`next dev`) never send anything |
 | `NEXT_PUBLIC_POSTHOG_HOST` | `https://eu.i.posthog.com` | Ingestion host | Normally unset. If you change it, also change `connect-src` in the CSP in `vercel.json`, or the browser blocks the requests |
-| `NEXT_PUBLIC_SITE_URL` | `https://merre-chi.vercel.app` | Origin for `metadataBase`, canonical and Open Graph URLs, `sitemap.xml` and `robots.txt` (`SITE_URL` in `src/application/app-info.ts`; trailing slashes are removed) | Production, once a custom domain is attached. Preview builds can leave it unset; their canonical URLs then point to production |
+| `NEXT_PUBLIC_SITE_URL` | `https://oe-merre.vercel.app` | Origin for `metadataBase`, canonical and Open Graph URLs, `sitemap.xml` and `robots.txt` (`SITE_URL` in `src/application/app-info.ts`; trailing slashes are removed) | Production, once a custom domain is attached. Preview builds can leave it unset; their canonical URLs then point to production |
 
 Locally, put them in `.env.local` (git-ignored, like every `.env*` file) or pass them on the command line.
+
+Set by Vercel, not by you: `VERCEL_ENV` (`production` or `preview`). `next.config.ts` inlines it as `MERRE_DEPLOY_ENV`. It switches Vercel Web Analytics on for Vercel builds only and becomes the `deploy_env` property of PostHog events. A local `npm run build` leaves it empty, so local builds load no Vercel script (simulate a Vercel build with `VERCEL_ENV=production npm run build`).
 
 ## PostHog first-time setup
 
@@ -51,13 +54,24 @@ Do this once, before the first production build with a key.
 2. In the project settings (Settings → Project):
    - **Web analytics → Cookieless server hash mode** (some PostHog pages call it "Enable cookieless tracking"): switch it on and save. **Required.** The SDK runs with `cookieless_mode: "always"`; without this setting PostHog discards every cookieless event and the project stays empty.
    - **IP data capture → Discard client IP data**: switch it on. **Required.** The privacy page tells visitors that IP addresses are not stored. PostHog documents that new EU Cloud projects have it on by default; check it anyway.
-   - **Filter out internal and test users**: add a filter such as `$host` is not `localhost:3000`, so local test builds do not show up in insights.
+   - **Filter out internal and test users**: add the filter `deploy_env` = `production`, so preview and local builds do not show up in insights.
+   - **Authorized URLs** (toolbar and web analytics domains): add `https://oe-merre.vercel.app`. Remove `https://merre-chi.vercel.app` if it is listed; that address now only redirects.
    - Leave session replay, surveys, autocapture and heatmaps off. The SDK does not load PostHog's remote configuration (`advanced_disable_flags: true` in `src/infrastructure/analytics/posthog.ts`), so these switches have no effect on Merre, but the dashboard should match what is collected.
 3. Copy the **Project API key** (`phc_…`) into the Vercel environment variable `NEXT_PUBLIC_POSTHOG_KEY` for Production, then redeploy.
 4. Verify: open the production site in a normal browser window, use it for a minute, and check that `$pageview` and named events appear in PostHog's Activity view. If requests to `eu.i.posthog.com` succeed in the browser but nothing appears, the cookieless setting from step 2 is missing.
 5. Build the first insights listed in [ANALYTICS.md](ANALYTICS.md#first-insights-and-dashboards).
 
 Billing: the free plan needs no card and stops ingesting at the monthly free allowance, so it cannot cost money. If you move to pay-as-you-go, set a billing limit for every product straight away (Organization → Billing): a cap for product analytics and error tracking, and `$0` for products the app does not use (session replay, feature flags, surveys). Current allowances and the plan comparison are in [ANALYTICS.md](ANALYTICS.md#why-posthog).
+
+## Vercel Web Analytics setup
+
+Vercel Web Analytics counts visitors and page views in the Vercel dashboard (pages, referrers, countries, devices, UTM sources). It complements PostHog, which records the named events. The component is `src/presentation/analytics/VercelAnalytics.tsx`; it follows the same consent rules as PostHog.
+
+1. Vercel → project `merre` → **Analytics** → **Enable** (or `vercel project web-analytics enable merre`).
+2. Redeploy production. Until Web Analytics is enabled, `/_vercel/insights/script.js` returns 404 and the browser console shows "[Vercel Web Analytics] Failed to load script"; the app works regardless.
+3. Verify: `curl -s -o /dev/null -w '%{http_code}\n' "$SITE/_vercel/insights/script.js"` prints `200`, and visits appear in the Analytics tab within a few minutes.
+
+Limits on the Hobby plan (checked 2026-11-22 on vercel.com/docs/analytics/limits-and-pricing): 50,000 events per month, page views only (custom events need Pro), and collection pauses for the rest of the billing cycle once the limit is reached. The app therefore sends Vercel page views only; every named event goes to PostHog. Pro charges per event, but Pro itself is a fixed monthly subscription.
 
 ## Release procedure
 
@@ -95,7 +109,7 @@ Visitors who loaded the bad build get the restored one on their next page load (
 Set the address once:
 
 ```bash
-SITE=https://merre-chi.vercel.app
+SITE=https://oe-merre.vercel.app
 ```
 
 Security headers on a page (all seven must be present; `strict-transport-security` is added by Vercel itself):
@@ -136,7 +150,7 @@ curl -s "$SITE/precache-manifest.json" | head -5
 curl -s -o /dev/null -w '%{http_code}\n' "$SITE/no-such-page/"
 ```
 
-`robots.txt` must name `$SITE/sitemap.xml`; the sitemap lists `/`, `/building/ba/` and `/privacy/` with the same origin. If they show `merre-chi.vercel.app` after a custom domain was attached, `NEXT_PUBLIC_SITE_URL` was not set for that build. The unknown path must return `404`.
+`robots.txt` must name `$SITE/sitemap.xml`; the sitemap lists `/`, `/building/ba/` and `/privacy/` with the same origin. If they show another origin, `NEXT_PUBLIC_SITE_URL` (or the default `SITE_URL`) does not match the production domain. The unknown path must return `404`.
 
 Whether the build has an analytics key (prints the `phc_…` key, or nothing):
 
@@ -147,7 +161,7 @@ for f in $(curl -s "$SITE/" | grep -o '/_next/static/chunks/[^"]*\.js' | sort -u
 In a browser, with DevTools open:
 
 - Console: no `Content-Security-Policy` violation messages ("Refused to connect", "Refused to load") on `/`, on `/building/ba/?to=1.32` (press "Route here", then "Start", so the street map of the first step loads) and on `/privacy/`.
-- Network: map tiles load from `tiles.openfreemap.org`; after the page is idle, analytics requests go to `eu.i.posthog.com` (only with a key, and only if the browser sends neither Do Not Track nor Global Privacy Control).
+- Network: map tiles load from `tiles.openfreemap.org`; after the page is idle, analytics requests go to `eu.i.posthog.com` (only with a key) and to `/_vercel/insights/view` (only with Web Analytics enabled), in both cases only if the browser sends neither Do Not Track nor Global Privacy Control.
 - Application: the service worker `/sw.js` is activated, and the site sets no cookies (on a preview deployment, Vercel's own login cookie is expected).
 - A link preview: paste `$SITE/building/ba/?to=F.06` into a chat app or an Open Graph checker; it should show `og-image.png` and the building title.
 
@@ -155,10 +169,10 @@ In a browser, with DevTools open:
 
 1. Vercel → project `merre` → Settings → Domains → add the domain and set the DNS records Vercel shows.
 2. Set `NEXT_PUBLIC_SITE_URL` to `https://<domain>` (no trailing slash needed) for Production and redeploy. Canonical URLs, Open Graph URLs, `sitemap.xml` and `robots.txt` follow.
-3. Keep `merre-chi.vercel.app` assigned to the project. Printed flyers carry it in their QR codes, and installed apps and their offline caches belong to the origin they were installed from. If you redirect it to the new domain instead, check that the query string survives the redirect: `/?utm_source=szorolap&utm_medium=print` and `/building/ba/?to=F.06&utm_source=szorolap&utm_medium=print` must arrive intact.
+3. Keep the previous address assigned to the project and redirect it to the new one (Settings → Domains → Edit → Redirect to). Installed apps and their offline caches belong to the origin they were installed from, and links shared earlier carry the old address. Check that path and query string survive the redirect: `/?utm_source=szorolap&utm_medium=print` and `/building/ba/?to=F.06&utm_source=szorolap&utm_medium=print` must arrive intact. This is how `merre-chi.vercel.app` → `oe-merre.vercel.app` is set up (307; a permanent 308 would tell search engines the move is final).
 4. The flyer QR codes: follow [flyer/README.md](flyer/README.md), section "Ha változik a cím" (change `SITE` in `docs/flyer/build-flyer.mjs`, regenerate and verify the QR codes, update the visible short address in `flyer.html`). Flyers already printed keep the old address.
 5. Nothing else needs to change: the CSP uses `'self'`, and the manifest, the service worker scope and the precache URLs are root-relative.
-6. If insights in PostHog filter by `$host`, add the new host.
+6. In PostHog, add the new address to the project's Authorized URLs, and update insights that filter by `$host`. Vercel Web Analytics needs no change; it reports per project.
 
 ## Updating building data
 
