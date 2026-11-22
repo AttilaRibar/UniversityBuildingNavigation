@@ -10,20 +10,25 @@
  * - the visitor has not opted out on the privacy page.
  */
 import { attachAnalyticsSink, disableAnalytics } from "@/application/analytics";
+import { takeCampaignParams } from "@/presentation/analytics/campaign";
 import { browserSignalsNoTracking, readOptOut } from "@/presentation/analytics/consent";
 
 const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
 
+let campaign: Record<string, string> = {};
+
 function start(): void {
   import("@/infrastructure/analytics/posthog")
-    .then(({ createPostHogSink }) => createPostHogSink({ key: key as string, host }))
+    .then(({ createPostHogSink }) => createPostHogSink({ key: key as string, host, campaign }))
     .then(attachAnalyticsSink)
     // Offline, blocked by an extension, or the vendor is down: the app carries on without analytics.
     .catch(() => disableAnalytics());
 }
 
 try {
+  // Always, even with analytics off: shared links should not carry the flyer's utm_* along.
+  campaign = takeCampaignParams() as Record<string, string>;
   if (process.env.NODE_ENV !== "production" || !key || browserSignalsNoTracking() || readOptOut()) {
     disableAnalytics();
   } else if ("requestIdleCallback" in window) {

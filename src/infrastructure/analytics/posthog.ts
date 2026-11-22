@@ -5,6 +5,8 @@ export interface PostHogSettings {
   key: string;
   /** Ingestion host, e.g. https://eu.i.posthog.com for the EU cloud. */
   host: string;
+  /** utm_* values of the landing URL, already removed from the address bar; added to every event of this page load. */
+  campaign?: Record<string, string>;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface PostHogSettings {
  *   `src/application/analytics.ts`, page views, page leaves, web vitals and errors.
  * - The `no-external` bundle never loads extra scripts, which keeps the CSP short.
  */
-export async function createPostHogSink({ key, host }: PostHogSettings): Promise<AnalyticsSink> {
+export async function createPostHogSink({ key, host, campaign = {} }: PostHogSettings): Promise<AnalyticsSink> {
   const { default: posthog } = await import("posthog-js/no-external");
   posthog.init(key, {
     api_host: host,
@@ -37,6 +39,13 @@ export async function createPostHogSink({ key, host }: PostHogSettings): Promise
     capture_exceptions: true,
     capture_performance: { web_vitals: true, network_timing: false },
     respect_dnt: true,
+    // The SDK reads utm_* from the current URL, which no longer has them (see takeCampaignParams).
+    before_send: (event) => {
+      for (const [name, value] of Object.entries(campaign)) {
+        if (event.properties[name] == null) event.properties[name] = value;
+      }
+      return event;
+    },
   });
   return {
     capture: (name, properties) => posthog.capture(name, properties),
