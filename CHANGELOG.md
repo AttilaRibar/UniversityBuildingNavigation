@@ -4,7 +4,13 @@ All notable changes to Merre are listed here. The format follows [Keep a Changel
 
 ## Unreleased
 
-Nothing yet.
+### Changed
+
+- The sheet and the desktop side panel have a slim overlay scrollbar of their own instead of the platform one (`presentation/ui/ScrollArea.tsx`). It shows while scrolling or hovering, can be dragged with a mouse, and the list fades out at an edge where it continues.
+
+### Fixed
+
+- The round joints and ends of the route line no longer blink navy as the chevrons scroll past, and the speckled z-fighting at bends is gone (`ribbon` in `presentation/building/scene/geometry.ts`).
 
 ## 1.1.0 – 2026-11-22
 
