@@ -23,6 +23,9 @@ export interface PostHogSettings {
  */
 export async function createPostHogSink({ key, host, campaign = {} }: PostHogSettings): Promise<AnalyticsSink> {
   const { default: posthog } = await import("posthog-js/no-external");
+  // With cookieless_mode "always" the SDK ignores opt_out_capturing(), so its automatic
+  // events (page views, page leaves, web vitals, errors) are dropped here instead.
+  let optedOut = false;
   posthog.init(key, {
     api_host: host,
     defaults: "2026-01-30",
@@ -41,6 +44,7 @@ export async function createPostHogSink({ key, host, campaign = {} }: PostHogSet
     respect_dnt: true,
     // The SDK reads utm_* from the current URL, which no longer has them (see takeCampaignParams).
     before_send: (event) => {
+      if (optedOut) return null;
       for (const [name, value] of Object.entries(campaign)) {
         if (event.properties[name] == null) event.properties[name] = value;
       }
@@ -50,6 +54,8 @@ export async function createPostHogSink({ key, host, campaign = {} }: PostHogSet
   return {
     capture: (name, properties) => posthog.capture(name, properties),
     captureException: (error, properties) => posthog.captureException(error, properties),
-    optOut: () => posthog.opt_out_capturing(),
+    optOut: () => {
+      optedOut = true;
+    },
   };
 }

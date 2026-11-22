@@ -3,6 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Map as MapLibreMap, Marker, setWorkerUrl } from "maplibre-gl";
 import { useEffect, useMemo, useRef } from "react";
+import { track } from "@/application/analytics";
 import { campusBuildingById } from "@/data/campus";
 import { bearingBetween, localToLngLat } from "@/domain/geometry/georef";
 import type { IndoorBuilding } from "@/domain/indoor/model";
@@ -85,6 +86,7 @@ export default function EntranceMap({ building, anchorId, label, insets }: Entra
       });
     } catch {
       // No WebGL: the instruction banner still says which door to use.
+      track("map_unavailable", { screen: "entrance", reason: "webgl" });
       return;
     }
     mapRef.current = map;
