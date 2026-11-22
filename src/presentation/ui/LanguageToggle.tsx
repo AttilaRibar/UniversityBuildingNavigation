@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/application/analytics";
 import { LOCALES, useI18n, useMessages } from "@/presentation/i18n/I18nProvider";
 import { commonEn, commonHu } from "@/presentation/i18n/messages/common";
 
@@ -24,7 +25,11 @@ export function LanguageToggle({ className }: { className?: string }) {
             lang={l}
             aria-pressed={active}
             aria-label={LANGUAGE_NAMES[l]}
-            onClick={() => setLocale(l)}
+            onClick={() => {
+              if (l === locale) return;
+              setLocale(l);
+              track("language_changed", { locale: l });
+            }}
             className={
               "relative flex h-9 min-w-11 items-center justify-center rounded-full px-2.5 text-sm leading-none font-extrabold uppercase tracking-wide " +
               "transition-colors duration-200 active:scale-95 " +

@@ -11,11 +11,12 @@ export function useUnitText(building: IndoorBuilding) {
   const { text } = useI18n();
   const m = useMessages(buildingHu, buildingEn);
   const title = useCallback((unit: Unit) => unitTitle(unit, { messages: m, text }), [m, text]);
-  /** "Lecture room · Ground floor" or, for a numbered room with a name, the name first. */
+  /** "Lecture room • Ground floor" or, for a numbered room with a name, the name first. */
   const subtitle = useCallback(
     (unit: Unit) => {
       const what = unit.ref && unit.name ? text(unit.name) : m.category[unit.category];
-      return `${what} · ${text(levelById(building, unit.levelId).name)}`;
+      // "1. emelet" must not break after the number.
+      return `${what} • ${text(levelById(building, unit.levelId).name).replace(/ /g, "\u00a0")}`;
     },
     [building, m, text],
   );

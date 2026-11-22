@@ -13,7 +13,9 @@ export interface RoutePanelProps {
   steps: readonly NavStep[];
   cards: readonly StepCard[];
   stepIndex: number | null;
-  heading: string;
+  /** Display names of both ends, e.g. "Főbejárat (Bécsi út)" and "1.32". */
+  originName: string;
+  destinationName: string;
   stepFree: boolean;
   onStep: (index: number | null) => void;
   onToggleStepFree: () => void;
@@ -25,16 +27,21 @@ const remainingFrom = (steps: readonly NavStep[], index: number): number =>
   steps.slice(index).reduce((sum, step) => sum + (step.type === "depart" || step.type === "turn" ? step.distance : 0), 0);
 
 /** Sheet content while a route is shown: controls for stepping through it and the full text list. */
-export function RoutePanel({ m, route, steps, cards, stepIndex, heading, stepFree, onStep, onToggleStepFree, onEnd, onArrived }: RoutePanelProps) {
+export function RoutePanel({ m, route, steps, cards, stepIndex, originName, destinationName, stepFree, onStep, onToggleStepFree, onEnd, onArrived }: RoutePanelProps) {
   const last = steps.length - 1;
   const summary = m.route.summary(formatDistance(route.distance, m), formatDuration(route.duration, m));
 
   return (
-    <div className="px-5 pb-8">
+    <div className="px-2 pb-8">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-lg leading-tight font-extrabold">{stepIndex === null ? heading : m.route.stepOf(stepIndex + 1, steps.length)}</p>
-          <p className="text-sm font-semibold text-muted">{stepIndex === null ? summary : m.route.remaining(formatDistance(remainingFrom(steps, stepIndex), m))}</p>
+          {/* Two short lines, so the start button stays visible above the fold on small phones. */}
+          <p className="truncate text-lg leading-tight font-extrabold">
+            {stepIndex === null ? m.route.to(destinationName) : m.route.stepOf(stepIndex + 1, steps.length)}
+          </p>
+          <p className="truncate text-sm font-semibold text-muted">
+            {stepIndex === null ? `${m.route.from(originName)} • ${summary}` : m.route.remaining(formatDistance(remainingFrom(steps, stepIndex), m))}
+          </p>
         </div>
         <button type="button" onClick={onEnd} aria-label={m.route.end} className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-2 hover:bg-line">
           <Close />
@@ -66,9 +73,9 @@ export function RoutePanel({ m, route, steps, cards, stepIndex, heading, stepFre
       </div>
 
       <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-card bg-surface-2 p-3">
-        <span className="flex items-center gap-3">
+        <span className="flex min-w-0 flex-1 items-center gap-3">
           <Wheelchair className="shrink-0" />
-          <span>
+          <span className="min-w-0">
             <span className="block font-extrabold">{m.route.stepFree}</span>
             <span className="block text-sm text-muted">{m.route.stepFreeHint}</span>
           </span>

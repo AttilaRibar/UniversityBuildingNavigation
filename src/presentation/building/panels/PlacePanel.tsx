@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/application/analytics";
+import { REPOSITORY_URL } from "@/application/app-info";
+import { buildingHref, reportProblemHref } from "@/application/links";
 import type { IndoorBuilding, Unit } from "@/domain/indoor/model";
 import type { Route } from "@/domain/routing";
 import { Button } from "@/presentation/ui/Button";
-import { Close, Navigation, Share } from "@/presentation/ui/icons";
+import { ChevronRight, Close, Navigation, Pin, Share } from "@/presentation/ui/icons";
 import { formatDistance, formatDuration } from "../stepText";
 import { useUnitText } from "./useUnitText";
 
 export interface PlacePanelProps {
   building: IndoorBuilding;
+  /** Short display name of the building, e.g. "BA épület". */
+  buildingName: string;
   unit: Unit;
   route: Route | null;
   originName: string;
@@ -20,57 +25,70 @@ export interface PlacePanelProps {
   closeLabel: string;
 }
 
+type ShareStatus = "idle" | "copied" | "failed";
+
 /** The card of a selected room: what it is, where it is, and the button that starts the route. */
-export function PlacePanel({ building, unit, route, originName, stepFree, onRoute, onChangeOrigin, onClose, closeLabel }: PlacePanelProps) {
+export function PlacePanel({ building, buildingName, unit, route, originName, stepFree, onRoute, onChangeOrigin, onClose, closeLabel }: PlacePanelProps) {
   const { title, subtitle, m } = useUnitText(building);
-  const [copied, setCopied] = useState(false);
+  const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
+
+  const flash = (status: ShareStatus) => {
+    setShareStatus(status);
+    window.setTimeout(() => setShareStatus("idle"), 2500);
+  };
 
   const share = async () => {
-    const data = { title: title(unit), url: window.location.href };
-    try {
-      if (navigator.share) await navigator.share(data);
-      else {
-        await navigator.clipboard.writeText(data.url);
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 2500);
+    const data = { title: `${title(unit)} – ${buildingName}`, url: window.location.href };
+    if (navigator.share) {
+      try {
+        await navigator.share(data);
+        track("link_shared", { building: building.id, room: unit.id, method: "native" });
+      } catch {
+        // The share sheet was dismissed: nothing to do.
       }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(data.url);
+      track("link_shared", { building: building.id, room: unit.id, method: "clipboard" });
+      flash("copied");
     } catch {
-      // The share sheet was dismissed: nothing to do.
+      // No clipboard access (insecure context, denied permission).
+      flash("failed");
     }
   };
 
+  const meta = [unit.occupant, unit.capacity ? `${m.place.capacity}: ${m.place.seats(unit.capacity)}` : null].filter(Boolean).join(" • ");
+  const reportSubject = `${buildingName} – ${title(unit)}`;
+  // The address bar is synced after render, so the exact page link is filled in on click.
+  const reportHref = reportProblemHref(REPOSITORY_URL, { subject: reportSubject, pageUrl: buildingHref(building.id, { to: unit.id }) });
+
   return (
-    <div className="animate-rise px-5 pb-8">
+    <div className="animate-rise px-2 pb-8">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-5xl leading-none font-extrabold tracking-tight">{title(unit)}</h2>
-          <p className="mt-2 text-base text-ink-soft">
-            {subtitle(unit)}
-            {unit.occupant ? ` · ${unit.occupant}` : ""}
-          </p>
+          <p className="mt-2 text-base leading-snug text-ink-soft">{subtitle(unit)}</p>
+          {meta ? <p className="mt-1 text-sm leading-snug text-muted">{meta}</p> : null}
         </div>
         <button type="button" onClick={onClose} aria-label={closeLabel} className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-2 hover:bg-line">
           <Close />
         </button>
       </div>
 
-      <dl className="mt-4 flex gap-6">
-        {unit.capacity ? (
-          <div>
-            <dt className="text-xs text-muted">{m.place.capacity}</dt>
-            <dd className="font-extrabold">{m.place.seats(unit.capacity)}</dd>
-          </div>
-        ) : null}
-        <div className="min-w-0">
-          <dt className="text-xs text-muted">{m.place.startFrom}</dt>
-          <dd className="flex items-center gap-2 font-extrabold">
-            <span className="truncate">{originName}</span>
-            <button type="button" onClick={onChangeOrigin} className="shrink-0 rounded-md px-1.5 py-1 text-sm font-bold text-ink underline decoration-accent decoration-2 underline-offset-2 hover:bg-surface-2">
-              {m.place.change}
-            </button>
-          </dd>
-        </div>
-      </dl>
+      <button
+        type="button"
+        onClick={onChangeOrigin}
+        className="mt-4 flex w-full items-center gap-3 rounded-card bg-surface-2 px-3 py-2.5 text-left transition-colors duration-150 hover:bg-line"
+      >
+        <Pin size={20} className="shrink-0 text-muted" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs text-muted">{m.place.startFrom}</span>
+          <span className="block leading-snug font-extrabold">{originName}</span>
+        </span>
+        <span className="shrink-0 text-sm font-bold underline decoration-accent decoration-2 underline-offset-2">{m.place.change}</span>
+        <ChevronRight size={18} className="-mr-1 shrink-0 text-muted" />
+      </button>
 
       {route ? (
         <p className="mt-3 text-sm font-semibold text-ink-soft">{m.route.summary(formatDistance(route.distance, m), formatDuration(route.duration, m))}</p>
@@ -89,9 +107,21 @@ export function PlacePanel({ building, unit, route, originName, stepFree, onRout
         </Button>
       </div>
       <p aria-live="polite" className="mt-2 min-h-5 text-sm font-semibold text-ink-soft">
-        {copied ? m.place.linkCopied : ""}
+        {shareStatus === "copied" ? m.place.linkCopied : shareStatus === "failed" ? m.place.shareFailed : ""}
       </p>
-      {unit.accuracy === "estimated" && unit.ref ? <p className="text-xs text-muted">{m.place.estimated}</p> : null}
+      {unit.accuracy === "estimated" && unit.ref ? <p className="text-xs leading-relaxed text-muted">{m.place.estimated}</p> : null}
+      <a
+        href={reportHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          e.currentTarget.href = reportProblemHref(REPOSITORY_URL, { subject: reportSubject, pageUrl: window.location.href });
+          track("problem_report_opened", { building: building.id, room: unit.id });
+        }}
+        className="mt-2 inline-flex min-h-11 items-center text-xs font-bold text-ink-soft underline decoration-line decoration-2 underline-offset-2 hover:decoration-accent"
+      >
+        {m.place.reportProblem}
+      </a>
     </div>
   );
 }

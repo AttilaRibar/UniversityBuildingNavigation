@@ -29,6 +29,11 @@ function loadRoomSearchData(): Promise<RoomSearchData> {
       index,
       levelNames: new Map(bundles.flatMap(({ building }) => building.levels.map((l) => [`${building.id}/${l.id}`, l.name] as const))),
     }),
+    (error: unknown) => {
+      // Offline before the indoor data was ever cached: try again on the next search.
+      dataPromise = null;
+      throw error;
+    },
   );
   return dataPromise;
 }
@@ -38,24 +43,27 @@ export function useRoomSearch(query: string): RoomSearchResult {
   const [data, setData] = useState<RoomSearchData | null>(null);
   const wanted = query.trim() !== "";
 
+  const [failedQuery, setFailedQuery] = useState<string | null>(null);
+
   useEffect(() => {
     if (!wanted || data) return;
     let alive = true;
     loadRoomSearchData().then(
       (loaded) => alive && setData(loaded),
-      () => alive && setData({ index: { entries: [] }, levelNames: new Map() }),
+      // Show building results only; the next query change tries the rooms again.
+      () => alive && setFailedQuery(query),
     );
     return () => {
       alive = false;
     };
-  }, [wanted, data]);
+  }, [wanted, data, query]);
 
   return useMemo(
     () => ({
-      loading: wanted && data === null,
+      loading: wanted && data === null && failedQuery !== query,
       hits: data && wanted ? search(data.index, query, { limit: RESULT_LIMIT }) : [],
       levelName: (buildingId, levelId) => data?.levelNames.get(`${buildingId}/${levelId}`),
     }),
-    [data, query, wanted],
+    [data, query, wanted, failedQuery],
   );
 }

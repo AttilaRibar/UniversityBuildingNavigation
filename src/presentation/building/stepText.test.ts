@@ -67,6 +67,20 @@ describe("describeStep", () => {
   });
 });
 
+describe("Hungarian wording", () => {
+  it("says only the distance under a turn, without repeating a verb", () => {
+    const subtitles = cardsFor("2.14", "hu").map((c) => c.subtitle ?? "");
+    expect(subtitles.some((s) => /m-t\b/.test(s))).toBe(false);
+    expect(subtitles.filter((s) => /^(Kb\. )?\d+ m/.test(s)).length).toBeGreaterThan(0);
+  });
+
+  it("puts the right article and suffix after the step count", () => {
+    expect(buildingHu.route.stepOf(1, 10)).toBe("1. lépés a 10-ből");
+    expect(buildingHu.route.stepOf(2, 5)).toBe("2. lépés az 5-ből");
+    expect(buildingHu.route.stepOf(3, 6)).toBe("3. lépés a 6-ból");
+  });
+});
+
 describe("formatters", () => {
   it("rounds walking distances to something a person would say", () => {
     expect(formatDistance(3.4, buildingHu)).toBe("3 m");

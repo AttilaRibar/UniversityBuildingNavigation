@@ -2,15 +2,19 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { track } from "@/application/analytics";
+import { campusBuildingById } from "@/data/campus";
 import type { IndoorBuildingBundle } from "@/data/buildings";
 import { useI18n, useMessages } from "@/presentation/i18n/I18nProvider";
 import { buildingEn, buildingHu } from "@/presentation/i18n/messages/building";
 import { commonEn, commonHu } from "@/presentation/i18n/messages/common";
-import { ArrowLeft } from "@/presentation/ui/icons";
+import { FooterLinks } from "@/presentation/ui/FooterLinks";
+import { ArrowLeft, Flag } from "@/presentation/ui/icons";
 import { LanguageToggle } from "@/presentation/ui/LanguageToggle";
 import { SearchField } from "@/presentation/ui/SearchField";
 import { Sheet, type SheetInsets, type SheetSnap } from "@/presentation/ui/Sheet";
+import { useViewportHeight } from "@/presentation/ui/useViewportHeight";
 import { BuildingCanvas } from "./BuildingCanvas";
 import { InstructionBanner } from "./InstructionBanner";
 import { LevelSwitcher } from "./LevelSwitcher";
@@ -28,11 +32,17 @@ const EntranceMap = dynamic(() => import("./EntranceMap"), { ssr: false });
 const TOP_BAR = 68;
 const BANNER = 104;
 const SWITCHER = 60;
+/** Gap kept between the level switcher and the top of the sheet. */
+const SWITCHER_GAP = 12;
+const ARRIVED_TOAST_MS = 3500;
 
 /** The indoor map screen: 3D model, floor picker, and a sheet that changes with the navigation phase. */
 export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
   const { building } = bundle;
   const { text } = useI18n();
+  const viewportHeight = useViewportHeight();
+  // The campus name ("BA épület") is short enough for the top bar; the indoor name adds the address.
+  const shortName = campusBuildingById(building.id)?.name ?? building.name;
   const m = useMessages(buildingHu, buildingEn);
   const common = useMessages(commonHu, commonEn);
   const nav = useNavigator(building);
@@ -47,6 +57,13 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
   const [pickingOrigin, setPickingOrigin] = useState(false);
   const [sheetInsets, setSheetInsets] = useState<SheetInsets>({ left: 0, bottom: 0 });
   const [webglFailed, setWebglFailed] = useState(false);
+  const [arrivedAt, setArrivedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!arrivedAt) return;
+    const timer = window.setTimeout(() => setArrivedAt(null), ARRIVED_TOAST_MS);
+    return () => window.clearTimeout(timer);
+  }, [arrivedAt]);
 
   const labels = useMemo<SceneLabels>(
     () => ({
@@ -84,8 +101,8 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
   );
 
   const select = useCallback(
-    (unitId: string) => {
-      nav.selectDestination(unitId);
+    (unitId: string, source: "search" | "list" | "map" = "list") => {
+      nav.selectDestination(unitId, source);
       setQuery("");
       setPickingOrigin(false);
       setSnap("half");
@@ -111,6 +128,9 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
       />
     ) : undefined;
 
+  const switcherTop = (showBanner ? BANNER : TOP_BAR) + 12;
+  const switcherMaxHeight = viewportHeight > 0 ? viewportHeight - switcherTop - sheetInsets.bottom - SWITCHER_GAP : undefined;
+
   return (
     <main className="app-viewport">
       {webglFailed ? (
@@ -125,9 +145,12 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
           originUnitId={state.origin.type === "unit" && state.phase !== "explore" ? state.origin.unitId : null}
           route={sceneRoute}
           insets={insets}
-          onUnitTap={select}
+          onUnitTap={(unitId) => select(unitId, "map")}
           onLevelTap={nav.showLevel}
-          onError={() => setWebglFailed(true)}
+          onError={() => {
+            setWebglFailed(true);
+            track("map_unavailable", { screen: "building", reason: "webgl" });
+          }}
           ariaLabel={text(building.name)}
         />
       )}
@@ -149,9 +172,11 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
             <Link href="/" aria-label={m.backToCity} className="pointer-events-auto flex size-11 shrink-0 items-center justify-center rounded-full bg-surface shadow-float ring-1 ring-line transition-transform active:scale-95">
               <ArrowLeft />
             </Link>
-            <p className="pointer-events-auto flex h-11 min-w-0 items-center rounded-full bg-surface px-4 font-extrabold shadow-float ring-1 ring-line">
-              <span className="truncate">{text(building.name)}</span>
-            </p>
+            <h1 className="pointer-events-auto flex h-11 min-w-0 items-center rounded-full bg-surface px-4 font-extrabold shadow-float ring-1 ring-line">
+              <span className="truncate" title={text(building.name)}>
+                {text(shortName)}
+              </span>
+            </h1>
             <LanguageToggle className="pointer-events-auto ml-auto" />
           </>
         )}
@@ -159,7 +184,7 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
 
       <div
         className={`pointer-events-none absolute right-3 z-10 flex flex-col items-end transition-opacity duration-300 ${approach ? "invisible opacity-0" : ""}`}
-        style={{ top: (showBanner ? BANNER : TOP_BAR) + 12 }}
+        style={{ top: switcherTop }}
       >
         <LevelSwitcher
           levels={building.levels}
@@ -167,6 +192,7 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
           routeLevelIds={state.phase === "route" && state.route ? routeLevelIds(state.route) : []}
           onSelect={nav.showLevel}
           disabled={state.phase === "route"}
+          maxHeight={switcherMaxHeight}
           labels={{ group: m.levelSwitcher, allLevels: m.allLevels, level: (level) => text(level.name) }}
         />
       </div>
@@ -177,6 +203,7 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
         ariaLabel={text(building.name)}
         header={header}
         peekHeight={state.phase === "route" ? 176 : 152}
+        contentKey={pickingOrigin ? "origin" : `${state.phase}:${state.destination?.id ?? ""}`}
         onInsetsChange={setSheetInsets}
       >
         {pickingOrigin ? (
@@ -196,7 +223,8 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
             steps={state.steps}
             cards={cards}
             stepIndex={state.stepIndex}
-            heading={`${originName} → ${unitTitle(state.destination, textContext)}`}
+            originName={originName}
+            destinationName={unitTitle(state.destination, textContext)}
             stepFree={state.stepFree}
             onStep={(index) => {
               nav.goToStep(index);
@@ -204,11 +232,15 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
             }}
             onToggleStepFree={nav.toggleStepFree}
             onEnd={nav.endRoute}
-            onArrived={nav.clearDestination}
+            onArrived={() => {
+              setArrivedAt(unitTitle(state.destination!, textContext));
+              nav.completeRoute();
+            }}
           />
         ) : state.phase !== "explore" && state.destination ? (
           <PlacePanel
             building={building}
+            buildingName={text(shortName)}
             unit={state.destination}
             route={state.route}
             originName={originName}
@@ -222,9 +254,31 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
             onRoute={nav.startRoute}
           />
         ) : (
-          <ExplorePanel building={building} query={query} onSelect={select} onNearest={nav.selectNearest} />
+          <ExplorePanel
+            building={building}
+            query={query}
+            onSelect={(unitId) => select(unitId, query.trim() ? "search" : "list")}
+            onNearest={nav.selectNearest}
+            footer={<FooterLinks className="mt-2" />}
+          />
         )}
       </Sheet>
+
+      {arrivedAt ? (
+        <div
+          role="status"
+          className="pointer-events-none absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+56px)] z-30 flex justify-center px-4"
+          style={{ paddingLeft: sheetInsets.left + 16 }}
+        >
+          <p className="flex animate-pop items-center gap-3 rounded-card border-[2.5px] border-ink bg-accent px-4 py-3 text-ink shadow-float">
+            <Flag size={24} className="shrink-0" />
+            <span>
+              <span className="block text-lg leading-tight font-extrabold">{m.route.arrivedTitle}</span>
+              <span className="block text-sm font-semibold text-ink-soft">{m.route.arrivedBody(arrivedAt)}</span>
+            </span>
+          </p>
+        </div>
+      ) : null}
     </main>
   );
 }

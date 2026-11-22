@@ -25,6 +25,8 @@ export interface SheetProps {
   peekHeight?: number;
   /** Called whenever the covered area changes, so maps can keep their subject visible. */
   onInsetsChange?: (insets: SheetInsets) => void;
+  /** Identifies what the body shows; when it changes, the body scrolls back to the top. */
+  contentKey?: string;
 }
 
 const SNAPS: readonly SheetSnap[] = ["peek", "half", "full"];
@@ -74,13 +76,14 @@ function isInteractive(target: EventTarget | null): boolean {
  * Bottom sheet on phones (three snap points, drag with velocity-aware
  * snapping), floating side panel from 768 px. Only the body scrolls.
  */
-export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHeight = 152, onInsetsChange }: SheetProps) {
+export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHeight = 152, onInsetsChange, contentKey }: SheetProps) {
   const m = useMessages(uiHu, uiEn);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const reduceMotion = useReducedMotion() ?? false;
   const [viewport, setViewport] = useState<Viewport | null>(null);
   const offset = useMotionValue(OFFSCREEN);
   const probeRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const suppressClick = useRef(false);
   const stopDrag = useRef<(() => void) | null>(null);
   const insetsRef = useRef(onInsetsChange);
@@ -100,6 +103,11 @@ export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHei
       stopDrag.current?.();
     };
   }, []);
+
+  // A new panel (room card, route, list) starts at its top, not where the previous one was scrolled to.
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = 0;
+  }, [contentKey]);
 
   const heights = viewport ? snapHeights(viewport, peekHeight) : null;
   const heightsKey = heights ? `${heights.peek}/${heights.half}/${heights.full}` : "";
@@ -210,6 +218,7 @@ export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHei
         {header}
       </div>
       <div
+        ref={bodyRef}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4"
         style={{ paddingBottom: `calc(${hiddenBelow + 24}px + env(safe-area-inset-bottom))` }}
       >

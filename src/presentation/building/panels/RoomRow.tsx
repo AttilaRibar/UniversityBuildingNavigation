@@ -2,7 +2,22 @@ import type { ReactNode } from "react";
 import { ChevronRight } from "@/presentation/ui/icons";
 
 /** One tappable row of a room or place list: big number, name underneath. */
-export function RoomRow({ title, subtitle, meta, onSelect, leading }: { title: string; subtitle: string; meta?: string | null; onSelect: () => void; leading?: ReactNode }) {
+export function RoomRow({
+  title,
+  subtitle,
+  meta,
+  onSelect,
+  leading,
+  wrapTitle,
+}: {
+  title: string;
+  subtitle: string;
+  meta?: string | null;
+  onSelect: () => void;
+  leading?: ReactNode;
+  /** Long names (entrances) wrap instead of being cut off. */
+  wrapTitle?: boolean;
+}) {
   return (
     <button
       type="button"
@@ -11,7 +26,7 @@ export function RoomRow({ title, subtitle, meta, onSelect, leading }: { title: s
     >
       {leading}
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-lg leading-tight font-extrabold">{title}</span>
+        <span className={`block text-lg leading-tight font-extrabold ${wrapTitle ? "text-balance" : "truncate"}`}>{title}</span>
         <span className="block truncate text-sm text-muted">{subtitle}</span>
       </span>
       {meta ? <span className="shrink-0 text-sm font-semibold text-muted">{meta}</span> : null}

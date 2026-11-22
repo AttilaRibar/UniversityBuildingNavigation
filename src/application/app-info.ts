@@ -6,3 +6,10 @@ export const APP_DESCRIPTION = {
   en: "Find any room at Óbuda University: 3D map and step-by-step route to the door, no install needed.",
 } as const;
 export const REPOSITORY_URL = "https://github.com/AttilaRibar/UniversityBuildingNavigation";
+
+/**
+ * Public origin of the deployed app, without a trailing slash. Absolute URLs in the
+ * page metadata, the sitemap and robots.txt are built from it. Override per deployment
+ * with `NEXT_PUBLIC_SITE_URL` (e.g. once a custom domain is attached).
+ */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://merre-chi.vercel.app").replace(/\/+$/, "");

@@ -1,5 +1,6 @@
 import type { UnitCategory } from "@/domain/indoor/model";
 import type { RelativeSide, TurnDirection } from "@/domain/routing";
+import { definiteArticle, elativeSuffix } from "../hungarian";
 
 type Turn = Exclude<TurnDirection, "straight">;
 
@@ -8,7 +9,7 @@ export const buildingHu = {
   backToCity: "Vissza a várostérképre",
   allLevels: "Minden szint",
   levelSwitcher: "Szintválasztó",
-  quickFind: "Mit találsz gyorsan",
+  quickFind: "Legközelebbi",
   quick: { restroom: "Mosdó", cafe: "Büfé", reception: "Porta", lobby: "Aula" },
   browseByLevel: "Termek szintenként",
   searchResults: "Találatok",
@@ -44,6 +45,8 @@ export const buildingHu = {
     estimated: "A terem pontos helye a folyosón becsült: az ajtón lévő számot keresd.",
     noRoute: "Ide nem találtam útvonalat a kiválasztott indulási pontról.",
     noStepFreeRoute: "Ide nincs lépcsőmentes útvonal. Kapcsold ki a lépcsőmentes módot, vagy kérj segítséget a portán.",
+    reportProblem: "Hibás a terem helye vagy az útvonal? Jelezd",
+    shareFailed: "A linket nem sikerült másolni.",
   },
   origin: {
     title: "Honnan indulsz?",
@@ -53,19 +56,22 @@ export const buildingHu = {
   },
   route: {
     summary: (metres: string, minutes: string) => `${metres}, ${minutes}`,
+    to: (place: string) => `Irány: ${place}`,
+    from: (place: string) => `Innen: ${place}`,
     start: "Indulás",
     next: "Következő",
     previous: "Előző",
     finish: "Megérkeztem",
     overview: "Áttekintés",
     end: "Útvonal vége",
-    stepOf: (n: number, total: number) => `${n}. lépés a ${total}-ból`,
+    stepOf: (n: number, total: number) => `${n}. lépés ${definiteArticle(total)} ${total}-${elativeSuffix(total)}`,
     remaining: (metres: string) => `Még ${metres}`,
     allSteps: "Az útvonal lépései",
     stepFree: "Lépcsőmentes út",
     stepFreeHint: "Csak liftet és rámpát használ.",
     emergency: "Vészhelyzetben a kijelölt menekülési útvonal érvényes, ne ezt az útvonalat kövesd.",
     arrivedTitle: "Megérkeztél!",
+    arrivedBody: (room: string) => `${room} – jó órát!`,
   },
   entranceMarker: "Itt menj be",
   step: {
@@ -83,7 +89,8 @@ export const buildingHu = {
       sharp_right: "Fordulj élesen jobbra",
       u_turn: "Fordulj vissza",
     } satisfies Record<Turn, string>,
-    walk: (metres: string) => `Menj ${metres}-t`,
+    // The title already says what to do ("Fordulj balra"); the subtitle only says how far.
+    walk: (metres: string) => metres.charAt(0).toUpperCase() + metres.slice(1),
     walkTo: { stairs: (metres: string) => `${metres} a lépcsőig`, elevator: (metres: string) => `${metres} a liftig`, ramp: (metres: string) => `${metres} a rámpáig` },
     landmark: { left: (name: string) => `${name} bal kézre marad.`, right: (name: string) => `${name} jobb kézre marad.` },
     connector: {
@@ -102,6 +109,8 @@ export const buildingHu = {
   units: { metres: (n: number) => `${n} m`, about: (s: string) => `kb. ${s}`, minutes: (n: number) => `${n} perc`, underMinute: "1 percnél rövidebb" },
   noWebGl: "A 3D nézet ezen az eszközön nem érhető el. A keresés és a szöveges útvonal így is működik.",
   dataNote: "Belső elrendezés: az épület tájékoztató táblái alapján becsült.",
+  loadFailed: "Az épület adatai most nem töltődtek be. Ellenőrizd a kapcsolatot, és próbáld újra.",
+  retry: "Újrapróbálás",
 };
 
 export type BuildingMessages = typeof buildingHu;
@@ -110,7 +119,7 @@ export const buildingEn: BuildingMessages = {
   backToCity: "Back to the city map",
   allLevels: "All levels",
   levelSwitcher: "Level switcher",
-  quickFind: "Find quickly",
+  quickFind: "Nearest",
   quick: { restroom: "Restroom", cafe: "Café", reception: "Reception", lobby: "Aula" },
   browseByLevel: "Rooms by level",
   searchResults: "Results",
@@ -146,6 +155,8 @@ export const buildingEn: BuildingMessages = {
     estimated: "The room's exact position along the corridor is estimated: look for the number on the door.",
     noRoute: "I could not find a route here from the selected starting point.",
     noStepFreeRoute: "There is no step-free route here. Turn off step-free mode or ask for help at the reception.",
+    reportProblem: "Wrong room position or route? Let us know",
+    shareFailed: "The link could not be copied.",
   },
   origin: {
     title: "Where are you starting from?",
@@ -155,6 +166,8 @@ export const buildingEn: BuildingMessages = {
   },
   route: {
     summary: (metres, minutes) => `${metres}, ${minutes}`,
+    to: (place) => `To ${place}`,
+    from: (place) => `From ${place}`,
     start: "Start",
     next: "Next",
     previous: "Previous",
@@ -168,6 +181,7 @@ export const buildingEn: BuildingMessages = {
     stepFreeHint: "Uses lifts and ramps only.",
     emergency: "In an emergency follow the marked evacuation route, not this one.",
     arrivedTitle: "You have arrived!",
+    arrivedBody: (room) => `${room} – enjoy your class.`,
   },
   entranceMarker: "Enter here",
   step: {
@@ -204,4 +218,6 @@ export const buildingEn: BuildingMessages = {
   units: { metres: (n) => `${n} m`, about: (s) => `about ${s}`, minutes: (n) => `${n} min`, underMinute: "under a minute" },
   noWebGl: "The 3D view is not available on this device. Search and the text route still work.",
   dataNote: "Interior layout: estimated from the building's floor directory signs.",
+  loadFailed: "The building data did not load. Check your connection and try again.",
+  retry: "Try again",
 };

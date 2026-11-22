@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { buildingHref } from "@/application/links";
+import { useTrackedSearch } from "@/presentation/analytics/useTrackedSearch";
 import { campusBuildingById } from "@/data/campus";
 import type { SearchHit } from "@/domain/search";
 import { useI18n, useMessages } from "@/presentation/i18n/I18nProvider";
@@ -25,7 +26,7 @@ function RoomRow({ hit, levelName }: { hit: SearchHit; levelName: string | undef
     .join(" • ");
   return (
     <Link
-      href={buildingHref(entry.buildingId, { to: entry.unitId })}
+      href={buildingHref(entry.buildingId, { to: entry.unitId, source: "search" })}
       className="group flex items-center gap-3 rounded-card px-2 py-3 transition-colors duration-150 hover:bg-surface-2 active:bg-surface-2"
     >
       <span className="grid min-h-11 min-w-16 shrink-0 place-items-center rounded-xl bg-ink px-2 pt-1 text-lg leading-none font-extrabold text-white">
@@ -55,6 +56,7 @@ export function SearchResults({ query, onSelectBuilding }: { query: string; onSe
   const rooms = useRoomSearch(query);
   const buildings = searchBuildings(query);
   const empty = !rooms.loading && rooms.hits.length === 0 && buildings.length === 0;
+  useTrackedSearch("city", query, rooms.loading ? null : { rooms: rooms.hits.length, buildings: buildings.length });
 
   return (
     <div aria-live="polite">
@@ -90,8 +92,8 @@ export function SearchResults({ query, onSelectBuilding }: { query: string; onSe
         <div className="mt-4 flex gap-3 rounded-card bg-surface-2 p-4 text-ink-soft animate-rise">
           <Info size={22} className="shrink-0 text-muted" />
           <div>
-            <p className="font-bold text-ink">{c.noResults}</p>
-            <p className="mt-1 text-sm">{c.searchHint}</p>
+            <p className="font-bold break-words text-ink">{c.noResults(query.trim())}</p>
+            <p className="mt-1 text-sm">{c.noResultsHint}</p>
           </div>
         </div>
       ) : null}
