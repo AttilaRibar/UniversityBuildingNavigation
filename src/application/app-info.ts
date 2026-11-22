@@ -12,4 +12,4 @@ export const REPOSITORY_URL = "https://github.com/AttilaRibar/UniversityBuilding
  * page metadata, the sitemap and robots.txt are built from it. Override per deployment
  * with `NEXT_PUBLIC_SITE_URL` (e.g. once a custom domain is attached).
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://merre-chi.vercel.app").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://oe-merre.vercel.app").replace(/\/+$/, "");

@@ -23,7 +23,7 @@ const PDF = path.join(DIR, "merre-szorolap.pdf");
 
 /* The only place the QR URLs live. If the app moves to its own domain, change SITE, run with
  * --qr --verify-qr, and update the visible short address (".url" on the front) in flyer.html. */
-const SITE = "https://merre-chi.vercel.app";
+const SITE = "https://oe-merre.vercel.app";
 const UTM = "utm_source=szorolap&utm_medium=print";
 const QR_CODES = [
   { file: "qr-main.svg", url: `${SITE}/?${UTM}` },

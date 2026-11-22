@@ -2,7 +2,7 @@
 
 Merre helps Óbuda University students find their way around campus. It shows a 3D map of the city with the university buildings highlighted, and an indoor 3D map of building BA (Bécsi út 96/B) with room search and step-by-step routing from an entrance to a room. It is a Progressive Web App built as a fully static Next.js export: there is no backend and no login.
 
-Live: **https://merre-chi.vercel.app** (version 1.0.0, see [CHANGELOG.md](CHANGELOG.md)).
+Live: **https://oe-merre.vercel.app** (version 1.1.0, see [CHANGELOG.md](CHANGELOG.md)).
 
 > **Status and data accuracy**
 >
@@ -27,9 +27,9 @@ Live: **https://merre-chi.vercel.app** (version 1.0.0, see [CHANGELOG.md](CHANGE
 
 ## Privacy and analytics
 
-Production builds with a PostHog key send anonymous usage statistics to PostHog EU Cloud, for example page views, searches (the text trimmed, lower-cased and cut to 40 characters, with the result counts), selected buildings and rooms, whether a route was started and finished, errors and load speed. Analytics sets no cookies and writes nothing to browser storage; PostHog counts visitors with a daily changing hash on its servers. Nothing is sent when the browser sends Do Not Track or Global Privacy Control, or after the visitor switches statistics off on the privacy page.
+Production builds with a PostHog key send anonymous usage statistics to PostHog EU Cloud, for example page views, searches (the text trimmed, lower-cased and cut to 40 characters, with the result counts), selected buildings and rooms, whether a route was started and finished, errors and load speed. Builds on Vercel also count visitors and page views with Vercel Web Analytics. Analytics sets no cookies and writes nothing to browser storage; PostHog counts visitors with a daily changing hash on its servers, Vercel with a request hash discarded after 24 hours. Nothing is sent when the browser sends Do Not Track or Global Privacy Control, or after the visitor switches statistics off on the privacy page.
 
-- Privacy page for visitors: `/privacy/` (https://merre-chi.vercel.app/privacy/)
+- Privacy page for visitors: `/privacy/` (https://oe-merre.vercel.app/privacy/)
 - Event catalogue, privacy rules for new events, testing: [docs/ANALYTICS.md](docs/ANALYTICS.md)
 
 The app itself stores only the language, a dismissed install banner and the analytics opt-out in `localStorage`. There are no accounts and no server-side user data.
@@ -68,10 +68,12 @@ All are optional and read by `next build`. `NEXT_PUBLIC_*` values are inlined in
 
 | Variable | Default | Effect |
 | --- | --- | --- |
-| `NEXT_PUBLIC_POSTHOG_KEY` | unset | PostHog project API key (`phc_…`). Without it, analytics is off |
+| `NEXT_PUBLIC_POSTHOG_KEY` | unset | PostHog project API key (`phc_…`). Without it, PostHog is off |
 | `NEXT_PUBLIC_POSTHOG_HOST` | `https://eu.i.posthog.com` | PostHog ingestion host. If changed, update `connect-src` in the CSP in `vercel.json` |
-| `NEXT_PUBLIC_SITE_URL` | `https://merre-chi.vercel.app` | Public origin used for canonical and Open Graph URLs, `sitemap.xml` and `robots.txt` |
+| `NEXT_PUBLIC_SITE_URL` | `https://oe-merre.vercel.app` | Public origin used for canonical and Open Graph URLs, `sitemap.xml` and `robots.txt` |
 | `PLANS_OUT` | `.plans` | Output folder of `scripts/render-plans.ts` (development only) |
+
+`VERCEL_ENV` is set by Vercel itself; `next.config.ts` inlines it as `MERRE_DEPLOY_ENV`, which turns Vercel Web Analytics on for Vercel builds and tags PostHog events with `deploy_env`.
 
 ## Project scripts
 
@@ -169,7 +171,7 @@ While the app is open it keeps the address bar in sync with the current destinat
 
 ## Deployment
 
-Production runs on Vercel (project `merre`, Git integration with this repository): every push to `main` is built and deployed to https://merre-chi.vercel.app, and pull requests get preview deployments behind Vercel Authentication. `vercel.json` sets the build command, the output folder `out`, the Content Security Policy and other security headers, and caching. Setup, releases, rollback and incident handling are in [docs/OPERATIONS.md](docs/OPERATIONS.md).
+Production runs on Vercel (project `merre`, Git integration with this repository): every push to `main` is built and deployed to https://oe-merre.vercel.app (the earlier `merre-chi.vercel.app` redirects there), and pull requests get preview deployments behind Vercel Authentication. `vercel.json` sets the build command, the output folder `out`, the Content Security Policy and other security headers, and caching. Setup, releases, rollback and incident handling are in [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 The build output is a static site in `out/`, so other static hosts work too. Notes:
 

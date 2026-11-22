@@ -6,6 +6,22 @@ All notable changes to Merre are listed here. The format follows [Keep a Changel
 
 Nothing yet.
 
+## 1.1.0 – 2026-11-22
+
+Production moved to https://oe-merre.vercel.app; `merre-chi.vercel.app` redirects there with path and query string.
+
+### Added
+
+- Vercel Web Analytics for visitors and page views (`src/presentation/analytics/VercelAnalytics.tsx`, `@vercel/analytics` 2.0.1). Same consent rules as PostHog: off with Do Not Track, Global Privacy Control or the opt-out, which takes effect immediately. Runs only on Vercel builds; Web Analytics has to be enabled for the project ([docs/OPERATIONS.md](docs/OPERATIONS.md#vercel-web-analytics-setup)).
+- PostHog events carry `deploy_env` (`production`, `preview`, `local`), so preview traffic can be filtered out.
+
+### Changed
+
+- Default `SITE_URL` (canonical and Open Graph URLs, `sitemap.xml`, `robots.txt`) is now https://oe-merre.vercel.app.
+- The flyer's QR codes and printed address point to the new domain.
+- The privacy page names Vercel Web Analytics and what it records.
+- The service worker leaves `/_vercel/*` requests to the network.
+
 ## 1.0.0 – 2026-11-22
 
 Deployed on Vercel at https://merre-chi.vercel.app.

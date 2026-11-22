@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@fontsource-variable/overpass";
 import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE, SITE_URL } from "@/application/app-info";
+import { VercelAnalytics } from "@/presentation/analytics/VercelAnalytics";
 import { I18nProvider } from "@/presentation/i18n/I18nProvider";
 import { PwaRoot } from "@/presentation/pwa/PwaRoot";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {children}
           <PwaRoot />
         </I18nProvider>
+        <VercelAnalytics />
       </body>
     </html>
   );
