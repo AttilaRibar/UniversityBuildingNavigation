@@ -3,11 +3,13 @@
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { track } from "@/application/analytics";
 import { campusBuildingById } from "@/data/campus";
 import { Logo } from "@/presentation/brand/Logo";
 import { useMessages } from "@/presentation/i18n/I18nProvider";
 import { cityEn, cityHu } from "@/presentation/i18n/messages/city";
 import { commonEn, commonHu } from "@/presentation/i18n/messages/common";
+import { FooterLinks } from "@/presentation/ui/FooterLinks";
 import { Info } from "@/presentation/ui/icons";
 import { LanguageToggle } from "@/presentation/ui/LanguageToggle";
 import { SearchField } from "@/presentation/ui/SearchField";
@@ -33,10 +35,15 @@ export function CityOverview() {
   const searchRef = useRef<HTMLDivElement>(null);
   const selected = selectedId ? campusBuildingById(selectedId) : undefined;
 
-  const select = useCallback((id: string | null) => {
+  const select = useCallback((id: string | null, source: "map" | "list" | "search" = "map") => {
     setSelectedId(id);
-    if (id) setSnap("half");
+    if (id) {
+      setSnap("half");
+      track("building_selected", { building: id, source });
+    }
   }, []);
+  const selectFromList = useCallback((id: string) => select(id, "list"), [select]);
+  const selectFromSearch = useCallback((id: string) => select(id, "search"), [select]);
 
   const closeCard = () => {
     setSelectedId(null);
@@ -56,6 +63,9 @@ export function CityOverview() {
   }, [selectedId]);
 
   useEffect(() => {
+    if (mapStatus === "failed" || mapStatus === "degraded") {
+      track("map_unavailable", { screen: "city", reason: mapStatus === "failed" ? "failed" : "tiles" });
+    }
     // Without a map the list is the whole interface, so give it room.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reacting to a map failure reported from outside React
     if (mapStatus === "failed") setSnap((s) => (s === "peek" ? "half" : s));
@@ -117,6 +127,7 @@ export function CityOverview() {
           onSnapChange={setSnap}
           ariaLabel={m.sheetLabel}
           onInsetsChange={onInsetsChange}
+          contentKey={selectedId ?? (searching ? "search" : "list")}
           header={
             <>
               <div className="hidden items-center pb-3 md:flex">
@@ -129,13 +140,14 @@ export function CityOverview() {
           {selected ? (
             <BuildingCard building={selected} />
           ) : searching ? (
-            <SearchResults query={query} onSelectBuilding={select} />
+            <SearchResults query={query} onSelectBuilding={selectFromSearch} />
           ) : (
-            <BuildingList onSelect={select} />
+            <BuildingList onSelect={selectFromList} />
           )}
           <footer className="mt-6 border-t border-line px-2 pt-4 text-xs leading-relaxed text-muted">
             <p>{c.unofficial}</p>
             <p>{m.footerData}</p>
+            <FooterLinks className="mt-1" />
           </footer>
         </Sheet>
       </main>

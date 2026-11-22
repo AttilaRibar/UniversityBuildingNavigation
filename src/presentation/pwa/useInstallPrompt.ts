@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { track } from "@/application/analytics";
 
 const DISMISS_KEY = "merre.installDismissed";
 
@@ -78,7 +79,8 @@ export function useInstallPrompt(): InstallPromptState {
   const promptInstall = useCallback(async () => {
     if (!deferred) return;
     await deferred.prompt();
-    await deferred.userChoice;
+    const { outcome } = await deferred.userChoice;
+    track("install_prompt_answered", { outcome });
     setDeferred(null); // the event can only be used once
   }, [deferred]);
 

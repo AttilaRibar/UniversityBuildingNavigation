@@ -390,7 +390,7 @@ const loaders: Record<string, () => Promise<IndoorBuildingBundle>> = {
 };
 ```
 
-   This is what makes the building appear in `generateStaticParams`, the search index, `npm run validate:data` and the build.
+   This is what makes the building appear in `generateStaticParams`, the search index, `sitemap.xml`, `npm run validate:data` and the build.
 4. In the campus dataset, set `hasIndoorMap: true` for the building in `src/data/campus/buildings.json`. If you regenerate that file with the campus bootstrap script, also set `hasIndoorMap: true` in the `CURATED` entry of `scripts/bootstrap/campus.ts`.
 5. Review the places that currently assume BA: the room-number normaliser (`DEFAULT_BUILDING_CODES = ["ba"]` and the level prefixes it knows, in `src/domain/search/normalize.ts`), the PWA manifest shortcut in `src/app/manifest.ts`, and `scripts/render-plans.ts`.
 6. Validate and test:

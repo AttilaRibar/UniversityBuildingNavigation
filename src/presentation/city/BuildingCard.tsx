@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useSyncExternalStore, type Ref } from "react";
+import { track } from "@/application/analytics";
 import { buildDirectionsUrl, detectMapsPlatform, type MapsPlatform } from "@/application/directions";
 import { buildingHref } from "@/application/links";
 import type { CampusBuilding } from "@/domain/campus/model";
@@ -88,6 +89,7 @@ export function BuildingCard({ building }: { building: CampusBuilding }) {
       size="lg"
       icon={<Navigation />}
       aria-label={`${m.navigate} – ${m.navigateHint}`}
+      onClick={() => track("directions_opened", { building: building.id, platform })}
       className="w-full"
     >
       {m.navigate}
@@ -95,7 +97,7 @@ export function BuildingCard({ building }: { building: CampusBuilding }) {
   );
 
   return (
-    <motion.div key={building.id} variants={stagger} initial="hidden" animate="shown" className="px-1 pt-1">
+    <motion.div key={building.id} variants={stagger} initial="hidden" animate="shown" className="px-2 pt-1">
       <motion.p variants={item} className="text-[15px] leading-snug text-ink-soft">
         <span className="font-bold text-ink">{m.kind[building.kind]}</span>
         {" • "}

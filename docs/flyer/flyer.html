@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merre szórólap</title>
+<!--
+  Merre szórólap, A5 álló, két oldal (elő- és hátlap).
+  PDF és előnézet: node docs/flyer/build-flyer.mjs  (részletek: README.md)
+  Minden méret mm-ben vagy pt-ben van, hogy a PDF pontosan A5 legyen.
+-->
+<style>
+  /*
+   * Overpass (OFL-1.1, assets/fonts/OFL.txt). Az app az "Overpass Variable" betűt használja;
+   * ezek annak 500/700/800-as statikus példányai. Változó fontot a Chromium csak Type 3
+   * glifekként tud PDF-be tenni, amit sok nyomdai ellenőrző kifogásol, a statikusat viszont
+   * rendes beágyazott fontként. A latin-ext subset kell az ő/ű betűkhöz. Újragenerálás: README.
+   */
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 500;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-ext-500.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 500;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-500.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-ext-700.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-700.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 800;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-ext-800.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: "Overpass";
+    font-style: normal;
+    font-weight: 800;
+    font-display: block;
+    src: url("assets/fonts/overpass-latin-800.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  /* Az app arculata (src/app/globals.css). Sárga csak a legfontosabb elemen. */
+  :root {
+    --ink: #14213d;
+    --ink-soft: #33415c;
+    --accent: #ffd21f;
+    --canvas: #c9d4e2;
+    --surface: #ffffff;
+    --surface-2: #eef2f7;
+    --line: #d6deea;
+  }
+
+  @page { size: 148mm 210mm; margin: 0; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--surface); }
+  body {
+    font-family: "Overpass", system-ui, sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-kerning: normal;
+    hyphens: manual;
+  }
+  h1, h2, h3, p, ul, ol, figure { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  img { display: block; }
+
+  .page {
+    position: relative;
+    width: 148mm;
+    height: 210mm;
+    overflow: hidden;
+    background: var(--surface);
+    break-after: page;
+  }
+  .page:last-child { break-after: auto; }
+
+  /* Overpass magas felnyúlói miatt a pirulákban a cap-height-ra vágjuk a sort. */
+  .trim { text-box: trim-both cap alphabetic; }
+  .nobr { white-space: nowrap; }
+
+  .brand { display: flex; align-items: center; gap: 2.4mm; }
+  .brand .logo { width: 10mm; height: 10mm; flex: none; }
+  .brand .wordmark { font-size: 19pt; font-weight: 800; letter-spacing: -0.01em; }
+
+  /* ───────────── Előlap ───────────── */
+
+  /* A panel 6 mm-re van a laptól, így kifutó nélkül, irodai nyomtatón is egyben marad. */
+  .front .panel {
+    position: absolute;
+    inset: 6mm;
+    background: var(--canvas);
+    border-radius: 7mm;
+    overflow: hidden;
+    padding: 8mm 8mm 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .front .tag {
+    margin-left: auto;
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 99px;
+    padding: 2.1mm 3.4mm;
+    font-size: 8.5pt;
+    font-weight: 700;
+  }
+  .kicker {
+    margin-top: 11mm;
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  h1 {
+    margin-top: 2.5mm;
+    font-size: 54pt;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  /* Ugyanaz a sárga célcímke, mint az appban a 3D térképen. */
+  .room {
+    display: inline-block;
+    margin-top: 1.2mm;
+    padding: 2.6mm 2.4mm 2.4mm;
+    background: var(--accent);
+    border: 0.9mm solid var(--ink);
+    border-radius: 3.6mm;
+    letter-spacing: -0.02em;
+  }
+  .lead {
+    margin-top: 6.5mm;
+    max-width: 112mm;
+    font-size: 12.5pt;
+    line-height: 1.34;
+    font-weight: 500;
+    text-wrap: pretty;
+  }
+  .front .note {
+    margin-top: 2.6mm;
+    font-size: 9.5pt;
+    line-height: 1.35;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+  .front .note b { font-weight: 700; color: var(--ink); }
+
+  .front .bottom {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 50mm;
+    column-gap: 6mm;
+    margin-top: 8mm;
+  }
+  .qr-card {
+    align-self: start;
+    margin-top: 4mm;
+    background: var(--surface);
+    border-radius: 5mm;
+    padding: 3.6mm 3mm 3.4mm;
+    text-align: center;
+    box-shadow: 0 1.2mm 4mm rgb(20 33 61 / 0.16);
+  }
+  .qr-card .label { font-size: 9pt; font-weight: 700; }
+  .qr-card .qr { width: 44mm; height: 44mm; margin: 1.6mm auto 0.6mm; }
+  .qr-card .or { font-size: 8pt; font-weight: 500; color: var(--ink-soft); }
+  .qr-card .url { margin-top: 0.4mm; font-size: 11.5pt; font-weight: 800; letter-spacing: -0.005em; }
+
+  /* A két telefon a panel aljánál kifut, a panel vágja le. */
+  .phones { position: relative; }
+  .phone {
+    position: absolute;
+    width: 40mm;
+    padding: 1.4mm;
+    background: var(--ink);
+    border-radius: 7mm;
+    box-shadow: 0 2mm 6mm rgb(20 33 61 / 0.22);
+  }
+  .phone img { width: 100%; border-radius: 5.7mm; }
+  .phone.one { left: 0; top: 0; }
+  .phone.two { left: 25mm; top: 15mm; }
+
+  /* ───────────── Hátlap ───────────── */
+
+  .back { padding: 10mm 12mm 0; }
+
+  h2 { font-size: 15pt; font-weight: 800; letter-spacing: -0.01em; }
+  .back .title-row { display: flex; align-items: center; justify-content: space-between; }
+  .back .title-row .logo { width: 7.5mm; height: 7.5mm; }
+  .back > h2 { margin-top: 5.5mm; }
+
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 6mm;
+    row-gap: 3.3mm;
+    margin-top: 3.2mm;
+  }
+  .features li { display: grid; grid-template-columns: 6.6mm 1fr; column-gap: 2.4mm; align-items: start; }
+  .icon {
+    width: 6.6mm; height: 6.6mm;
+    border-radius: 1.8mm;
+    background: var(--surface-2);
+    display: grid; place-items: center;
+  }
+  .icon svg { width: 4.2mm; height: 4.2mm; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  h3 { font-size: 10.5pt; line-height: 1.2; font-weight: 800; }
+  .features p { font-size: 9pt; line-height: 1.36; color: var(--ink-soft); font-weight: 500; margin-top: 0.5mm; text-wrap: pretty; }
+
+  .howto { display: grid; grid-template-columns: 1fr 27mm; column-gap: 6mm; margin-top: 3.2mm; align-items: start; }
+  .steps { display: grid; row-gap: 2.3mm; }
+  .steps li { display: grid; grid-template-columns: 6.6mm 1fr; column-gap: 2.4mm; align-items: start; }
+  .steps .num {
+    display: grid; place-items: center;
+    width: 6.6mm; height: 6.6mm; border-radius: 50%;
+    background: var(--ink); color: var(--surface);
+    font-size: 10pt; font-weight: 800;
+  }
+  .steps .num span { text-box: trim-both cap alphabetic; }
+  .steps p { font-size: 9pt; line-height: 1.36; color: var(--ink-soft); font-weight: 500; padding-top: 0.9mm; text-wrap: pretty; }
+  .steps p b { color: var(--ink); font-weight: 800; font-size: 10pt; }
+  .try {
+    background: var(--surface-2);
+    border-radius: 3.6mm;
+    padding: 2.4mm 2mm 2.2mm;
+    text-align: center;
+  }
+  .try .qr { width: 21mm; height: 21mm; margin: 1.2mm auto 0; border-radius: 0.6mm; }
+  .try p { font-size: 8pt; line-height: 1.25; font-weight: 700; }
+  .aside-line { margin-top: 2.8mm; font-size: 9pt; line-height: 1.36; color: var(--ink-soft); font-weight: 500; }
+  .aside-line b { color: var(--ink); font-weight: 700; }
+
+  .honest {
+    margin-top: 5mm;
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 5mm;
+    padding: 4mm 5mm 3.8mm;
+  }
+  .honest h2 { font-size: 13pt; }
+  .honest ul { display: grid; grid-template-columns: 1fr 1fr; column-gap: 6mm; row-gap: 2.6mm; margin-top: 2.2mm; }
+  .honest li { font-size: 8.5pt; line-height: 1.36; font-weight: 500; text-wrap: pretty; }
+  .honest b { font-size: 9pt; font-weight: 800; }
+  .honest .issues { margin-top: 2.6mm; padding-top: 2.2mm; border-top: 0.25mm solid rgb(255 255 255 / 0.22); font-size: 8.5pt; line-height: 1.36; font-weight: 500; }
+  .honest .issues span { display: block; font-size: 9pt; font-weight: 700; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════ 1. oldal: előlap ═════════════════════ -->
+<section class="page front" aria-label="Előlap">
+  <div class="panel">
+    <header class="brand">
+      <img class="logo" src="assets/logo.svg" alt="">
+      <span class="wordmark">Merre</span>
+      <span class="tag trim">Nem hivatalos hallgatói projekt</span>
+    </header>
+
+    <p class="kicker">Első hét, 7:50.</p>
+    <h1>Hol van<br>az <span class="room trim">F.06</span>?</h1>
+
+    <p class="lead">Írd be a teremszámot. A Merre megmutatja, melyik ajtón menj be, és onnan lépésről lépésre a terem ajtajáig vezet.</p>
+    <p class="note">Belső térkép egyelőre a <b>BA épülethez</b> van (Bécsi út&nbsp;96/B).</p>
+
+    <div class="bottom">
+      <div class="phones" aria-hidden="true" data-clipped>
+        <figure class="phone one"><img src="assets/p22-step1-approach.jpg" alt=""></figure>
+        <figure class="phone two"><img src="assets/p21-route-overview.jpg" alt=""></figure>
+      </div>
+      <div class="qr-card">
+        <p class="label">Olvasd be a telefonoddal</p>
+        <img class="qr" src="assets/qr-main.svg" alt="QR-kód: merre-chi.vercel.app">
+        <p class="or">vagy írd be a böngészőbe:</p>
+        <p class="url">merre-chi.vercel.app</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════ 2. oldal: hátlap ═════════════════════ -->
+<section class="page back" aria-label="Hátlap">
+  <div class="title-row">
+    <h2>Mit tud a Merre?</h2>
+    <img class="logo" src="assets/logo.svg" alt="">
+  </div>
+  <ul class="features">
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></span>
+      <div>
+        <h3>Teremszámra keres</h3>
+        <p>F.06, 1.32, vagy pont nélkül: 132. Névre is (Audmax), elgépelve, ékezet nélkül is.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M14 3h4.5A1.5 1.5 0 0 1 20 4.5v15a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="m9.5 16.5 4.5-4.5-4.5-4.5"/><path d="M14 12H3.5"/></svg></span>
+      <div>
+        <h3>A BA-ban az ajtóig vezet</h3>
+        <p>Megmutatja, melyik bejáraton menj be, aztán kártyánként vezet: „Lépcsőn fel, cél: 3.&nbsp;emelet”.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="m9 9.5 3-3 3 3"/><path d="m9 14.5 3 3 3-3"/></svg></span>
+      <div>
+        <h3>Lépcső nélkül is</h3>
+        <p>Lépcsőmentes módban csak liftet és rámpát használ.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M4 9h12v4.5A5.5 5.5 0 0 1 10.5 19h-1A5.5 5.5 0 0 1 4 13.5V9Z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v2.5M12 3.5v2.5"/></svg></span>
+      <div>
+        <h3>Mosdó, büfé, porta, aula</h3>
+        <p>Gyorsgombbal kérsz útvonalat a legközelebbihez.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span>
+      <div>
+        <h3>Mind a 16 épület</h3>
+        <p>7 helyszínen, 3D-ben, karonként színezve. Koppints egyre, és a térképappod gyalog odavezet.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M10 14a4.2 4.2 0 0 0 6 0l3-3a4.2 4.2 0 0 0-6-6l-1.2 1.2"/><path d="M14 10a4.2 4.2 0 0 0-6 0l-3 3a4.2 4.2 0 0 0 6 6l1.2-1.2"/></svg></span>
+      <div>
+        <h3>Minden teremnek van linkje</h3>
+        <p>Dobd be a csoportchatbe, vagy tedd az órarendedbe.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h2>Így használd</h2>
+  <div class="howto">
+    <ol class="steps">
+      <li>
+        <span class="num"><span>1</span></span>
+        <p><b>Nyisd meg.</b> Olvasd be a túloldali kódot. Ha kiteszed a kezdőképernyőre, appként indul.</p>
+      </li>
+      <li>
+        <span class="num"><span>2</span></span>
+        <p><b>Keresd meg a termet.</b> Írd be a számát vagy a nevét, vagy koppints egy épületre a térképen.</p>
+      </li>
+      <li>
+        <span class="num"><span>3</span></span>
+        <p><b>Indulj el.</b> Menj be azon az ajtón, amit mutat, aztán lapozd a kártyákat a terem ajtajáig.</p>
+      </li>
+    </ol>
+    <div class="try">
+      <p>Ez az F.06 linkje.<br>Próbáld ki:</p>
+      <img class="qr" src="assets/qr-f06.svg" alt="QR-kód: az F.06 terem linkje">
+    </div>
+  </div>
+  <p class="aside-line"><b>Bent gyenge a térerő?</b> Amit egyszer megnéztél, offline is megnyílik. <b>Angolul is megy.</b></p>
+
+  <aside class="honest">
+    <h2>Jó, ha tudod</h2>
+    <ul>
+      <li><b>Nem hivatalos.</b> Hallgatói projekt. Nem az egyetem készítette, és nem is támogatja.</li>
+      <li><b>Belül egyelőre csak a BA.</b> Bécsi&nbsp;út&nbsp;96/B, 6&nbsp;szint, 137&nbsp;terem. A többi épület csak a várostérképen van.</li>
+      <li><b>A BA belseje becsült.</b> Az emeleti táblák alapján készült, <span class="nobr">egy-egy</span> terem máshol lehet a folyosón. Ilyenkor nézd az ajtón a számot.</li>
+      <li><b>Nem menekülési terv.</b> Vészhelyzetben az épület jelzéseit kövesd.</li>
+    </ul>
+    <p class="issues">Hibát találtál, vagy egy terem nem ott van, ahol a térkép mutatja? Írd meg itt:<span>github.com/AttilaRibar/UniversityBuildingNavigation/issues</span></p>
+  </aside>
+</section>
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 # Merre
 
-Merre helps Óbuda University students find their way around campus. It shows a 3D map of the city with the university buildings highlighted, and an indoor 3D map of building BA (Bécsi út 96/B) with room search and step-by-step routing from an entrance to a room. It is a Progressive Web App built as a fully static Next.js export: there is no backend, no login and no tracking code in the repository.
+Merre helps Óbuda University students find their way around campus. It shows a 3D map of the city with the university buildings highlighted, and an indoor 3D map of building BA (Bécsi út 96/B) with room search and step-by-step routing from an entrance to a room. It is a Progressive Web App built as a fully static Next.js export: there is no backend and no login.
+
+Live: **https://merre-chi.vercel.app** (version 1.0.0, see [CHANGELOG.md](CHANGELOG.md)).
 
 > **Status and data accuracy**
 >
@@ -16,15 +18,25 @@ Merre helps Óbuda University students find their way around campus. It shows a 
 - **Indoor 3D map of building BA.** Six levels (A, F, 1, 2, 3, 4) shown as a stack of floor plates that can be explored level by level.
 - **Room search.** Search by room number (`F.06`, `1.32`, `132`), by name, by alias (for example "Audmax") or by category, with typo tolerance and Hungarian diacritics folded.
 - **Step-by-step routing.** From a chosen start point to a room, as instruction cards and as a highlighted route in the 3D view. A step-free option avoids stairs.
-- **Nearest facility.** "Nearest restroom" style shortcuts pick the cheapest reachable unit of a category.
-- **Shareable links.** Every room has a URL that opens the map with the route prepared (see [Deep links](#deep-links)).
+- **Nearest facility.** "Nearest" shortcuts (restroom, café, reception, aula) pick the cheapest reachable unit of a category.
+- **Shareable links.** Every room has a URL that opens the map with the route prepared (see [Deep links](#deep-links)). Link previews in chat apps show a title and an image.
+- **Problem reports.** The room card links to a pre-filled GitHub issue with the page link, for wrong room positions or routes.
 - **Offline use.** A hand-written service worker precaches the app and keeps visited map tiles, so a visited screen still opens without a connection.
 - **Hungarian and English.** The language follows the stored or browser preference and can be switched in the UI.
 - **Text alternative to the 3D view.** The full step list is always available as text, and the 3D scene respects `prefers-reduced-motion`.
 
+## Privacy and analytics
+
+Production builds with a PostHog key send anonymous usage statistics to PostHog EU Cloud, for example page views, searches (the text trimmed, lower-cased and cut to 40 characters, with the result counts), selected buildings and rooms, whether a route was started and finished, errors and load speed. Analytics sets no cookies and writes nothing to browser storage; PostHog counts visitors with a daily changing hash on its servers. Nothing is sent when the browser sends Do Not Track or Global Privacy Control, or after the visitor switches statistics off on the privacy page.
+
+- Privacy page for visitors: `/privacy/` (https://merre-chi.vercel.app/privacy/)
+- Event catalogue, privacy rules for new events, testing: [docs/ANALYTICS.md](docs/ANALYTICS.md)
+
+The app itself stores only the language, a dismissed install banner and the analytics opt-out in `localStorage`. There are no accounts and no server-side user data.
+
 ## Quick start
 
-Requirements: Node.js 22 and npm (see [CONTRIBUTING.md](CONTRIBUTING.md#prerequisites)).
+Requirements: Node.js 22 or later and npm (see [CONTRIBUTING.md](CONTRIBUTING.md#prerequisites)).
 
 ```bash
 npm install
@@ -48,7 +60,18 @@ Serve the exported site locally. This runs `npx serve out` on port 3000 and down
 npm run preview
 ```
 
-The service worker is registered in production builds only, so test offline behaviour with `npm run build` and `npm run preview`, not with `npm run dev`.
+The service worker and analytics run in production builds only, so test offline behaviour and analytics with `npm run build` and `npm run preview`, not with `npm run dev`. `npm run preview` does not send the headers from `vercel.json` (Content Security Policy and others).
+
+## Environment variables
+
+All are optional and read by `next build`. `NEXT_PUBLIC_*` values are inlined into the JavaScript at build time, so changing one needs a new build. Locally, use `.env.local` (git-ignored) or the command line; on Vercel, the project's environment variables ([docs/OPERATIONS.md](docs/OPERATIONS.md#environment-variables)).
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `NEXT_PUBLIC_POSTHOG_KEY` | unset | PostHog project API key (`phc_…`). Without it, analytics is off |
+| `NEXT_PUBLIC_POSTHOG_HOST` | `https://eu.i.posthog.com` | PostHog ingestion host. If changed, update `connect-src` in the CSP in `vercel.json` |
+| `NEXT_PUBLIC_SITE_URL` | `https://merre-chi.vercel.app` | Public origin used for canonical and Open Graph URLs, `sitemap.xml` and `robots.txt` |
+| `PLANS_OUT` | `.plans` | Output folder of `scripts/render-plans.ts` (development only) |
 
 ## Project scripts
 
@@ -63,6 +86,7 @@ The service worker is registered in production builds only, so test offline beha
 | `npm run test:watch` | `vitest` | Tests in watch mode |
 | `npm run validate:data` | `tsx scripts/validate-data.ts` | Validates every building's indoor data; exits non-zero on errors |
 | `npm run icons` | `tsx scripts/generate-icons.ts` | Regenerates the PWA icons from `public/icons/logo.svg` |
+| `npm run og-image` | `node scripts/generate-og-image.mjs` | Renders `scripts/og-image.html` to `public/og-image.png` (1200 × 630). Needs Playwright with Chromium, which is not a project dependency (see [CONTRIBUTING.md](CONTRIBUTING.md#link-preview-image)) |
 
 Scripts that are run directly with `npx tsx`:
 
@@ -78,28 +102,33 @@ Scripts that are run directly with `npx tsx`:
 | --- | --- |
 | Next.js 16 (App Router, `output: "export"`) | Static HTML and JS that any static host can serve; per-route code splitting |
 | React 19 | UI components |
-| TypeScript | Typed domain model and data mapping |
+| TypeScript | Typed domain model, data mapping and analytics event catalogue |
 | three.js | The indoor 3D scene, driven from one imperative scene object |
-| MapLibre GL JS with OpenFreeMap tiles | The city map, vector tiles without an API key |
+| MapLibre GL JS with OpenFreeMap tiles | The city map and the entrance street map, vector tiles without an API key |
 | Tailwind CSS 4 | Styling with design tokens |
 | motion | Sheet and screen animations; honours reduced motion |
+| posthog-js (pinned `1.445.5`, `no-external` build) | Cookieless product analytics, error and web vitals capture |
 | Vitest | Unit tests for the pure layers and the shipped data |
 | sharp, tsx | Development scripts (icons, plan rendering, data tools) |
 | Hand-written service worker | Offline support without a build-time library |
+| Vercel | Hosting, with headers and caching from `vercel.json` |
 
 ## Project structure
 
 ```text
 src/
-  domain/          Pure TypeScript: indoor model, routing, search, geometry, campus model
-  application/     Use-case helpers: maps hand-off, shareable links, room search index, app info
-  infrastructure/  GeoJSON -> domain mapper for indoor buildings
-  data/            Shipped datasets: campus buildings, building BA (building.json + levels/*.json)
-  presentation/    React UI: building screen (3D scene, panels), city screen, shared ui/, pwa/, i18n/
-  app/             Next.js routes, layout, manifest, icons
-scripts/           Data validation, plan rendering, icon generation, precache manifest, bootstrap tools
-public/            sw.js (service worker) and PWA icons
-docs/              Architecture, data model and research notes
+  domain/                  Pure TypeScript: indoor model, routing, search, geometry, campus model
+  application/             Use-case helpers: maps hand-off, links, room search index, app info, analytics facade
+  infrastructure/          Adapters: GeoJSON -> domain mapper, PostHog analytics adapter
+  data/                    Shipped datasets: campus buildings, building BA (building.json + levels/*.json)
+  presentation/            React UI: building screen (3D scene, panels), city screen, privacy and status pages,
+                           analytics consent helpers, shared ui/, pwa/, i18n/
+  app/                     Next.js routes, layout, error and 404 pages, manifest, robots, sitemap, icons
+  instrumentation-client.ts  Runs before hydration: analytics start-up (composition root)
+scripts/                   Data validation, plan rendering, icon and link preview generation, precache manifest, bootstrap tools
+public/                    sw.js (service worker), og-image.png, PWA icons
+docs/                      Architecture, data model, analytics, operations, research notes, flyer
+vercel.json                Vercel build settings, security headers, caching
 ```
 
 The layer rules are described in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -136,16 +165,19 @@ Example:
 /building/ba/?to=F.06&from=doberdo-entrance&sf=1
 ```
 
-While the app is open it keeps the address bar in sync with the current destination, start point and step-free setting, so the browser URL can be shared as it is.
+While the app is open it keeps the address bar in sync with the current destination, start point and step-free setting, so the browser URL can be shared as it is. Other parameters are removed from the address bar: `utm_*` campaign parameters on page load (they are kept for analytics only), and `src=search`, which the city search adds to its room links so analytics can tell a search from a shared link.
 
 ## Deployment
 
-The build output is a static site in `out/`. Any static host works. Notes:
+Production runs on Vercel (project `merre`, Git integration with this repository): every push to `main` is built and deployed to https://merre-chi.vercel.app, and pull requests get preview deployments behind Vercel Authentication. `vercel.json` sets the build command, the output folder `out`, the Content Security Policy and other security headers, and caching. Setup, releases, rollback and incident handling are in [docs/OPERATIONS.md](docs/OPERATIONS.md).
+
+The build output is a static site in `out/`, so other static hosts work too. Notes:
 
 - Host the site at the **root of a domain**. The service worker scope, the manifest `start_url` and the precache URLs are root-absolute, and `next.config.ts` sets no `basePath`.
 - Serve `sw.js` with `Cache-Control: no-cache` (or equivalent) so that browsers pick up new versions. `precache-manifest.json` should not be cached long-term either; the service worker fetches it with `cache: "no-store"` regardless.
-- `next.config.ts` enables `trailingSlash`, so pages are exported as `folder/index.html`. The host must serve `/building/ba/` from `building/ba/index.html`.
-- CI (`.github/workflows/ci.yml`) runs lint, typecheck, tests, data validation and the build on Node 22. It does not deploy.
+- `next.config.ts` enables `trailingSlash`, so pages are exported as `folder/index.html`. The host must serve `/building/ba/` from `building/ba/index.html`, and `404.html` for unknown paths.
+- The headers in `vercel.json` apply on Vercel only. On another host, configure the same headers there.
+- CI (`.github/workflows/ci.yml`) runs the production dependency audit, lint, typecheck, tests, data validation and the build on Node 22. It does not deploy.
 
 ## Data sources and attribution
 
@@ -170,7 +202,12 @@ The maintainer has not chosen a license yet. Until a `LICENSE` file is added, no
 
 ## Documentation
 
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): layers, design decisions, offline, testing, limitations
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): layers, runtime flow, error handling, security headers, design decisions, offline, testing, limitations
 - [docs/DATA_MODEL.md](docs/DATA_MODEL.md): indoor and campus data formats, validation, how to edit data
+- [docs/ANALYTICS.md](docs/ANALYTICS.md): why PostHog, how it is wired, event catalogue, privacy rules, testing, first insights
+- [docs/OPERATIONS.md](docs/OPERATIONS.md): PostHog and Vercel setup, environment variables, releases, rollback, verification, custom domain, incidents
+- [SECURITY.md](SECURITY.md): supported versions, reporting a vulnerability, security posture
+- [CHANGELOG.md](CHANGELOG.md): release notes
 - [CONTRIBUTING.md](CONTRIBUTING.md): workflow, code style, checks, reporting wrong map data
+- [docs/flyer/](docs/flyer/README.md): the printable A5 flyer (in Hungarian)
 - [docs/research/](docs/research/): research notes

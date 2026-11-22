@@ -5,6 +5,7 @@ import { centroid } from "@/domain/geometry/polygon";
 import type { Vec2 } from "@/domain/geometry/vec2";
 import { defaultAnchor, type IndoorBuilding, type Unit, type UnitCategory } from "@/domain/indoor/model";
 import { buildRouteGraph, buildSteps, condenseSteps, findRoute, findRouteToNearest, type Route, type RoutePoint } from "@/domain/routing";
+import { track, type AnalyticsEvents } from "@/application/analytics";
 import { buildingHref } from "@/application/links";
 import type { SceneFocus, SceneMode } from "./scene/BuildingScene";
 import type { NavStep } from "./stepText";
@@ -80,6 +81,7 @@ export function useNavigator(building: IndoorBuilding) {
       setDestinationId(unit.id);
       setLevelId(unit.levelId);
       setPhase("place");
+      track("room_selected", { building: building.id, room: unit.id, source: params.get("src") === "search" ? "search" : "link" });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [building]);
@@ -110,13 +112,14 @@ export function useNavigator(building: IndoorBuilding) {
   }, [building.id, destination, origin, stepFree, fallbackOrigin]);
 
   const selectDestination = useCallback(
-    (unitId: string) => {
+    (unitId: string, source: AnalyticsEvents["room_selected"]["source"] = "list") => {
       const unit = building.units.find((u) => u.id === unitId);
       if (!unit) return;
       setDestinationId(unit.id);
       setLevelId(unit.levelId);
       setStepIndex(null);
       setPhase("place");
+      track("room_selected", { building: building.id, room: unit.id, source });
     },
     [building],
   );
@@ -127,7 +130,8 @@ export function useNavigator(building: IndoorBuilding) {
       const candidates = building.units.filter((u) => categories.includes(u.category)).map((u) => u.id);
       const nearest = findRouteToNearest(building, graph, origin, candidates, { stepFree });
       const reached = nearest?.destination.type === "unit" ? nearest.destination.unitId : candidates[0];
-      if (reached) selectDestination(reached);
+      track("nearest_requested", { building: building.id, category: categories[0] ?? "", found: nearest !== null });
+      if (reached) selectDestination(reached, "nearest");
     },
     [building, graph, origin, stepFree, selectDestination],
   );
@@ -138,16 +142,30 @@ export function useNavigator(building: IndoorBuilding) {
     setPhase("explore");
   }, []);
 
-  const setOrigin = useCallback((point: RoutePoint) => {
-    setOriginState(point);
-    setStepIndex(null);
-  }, []);
+  const setOrigin = useCallback(
+    (point: RoutePoint) => {
+      setOriginState(point);
+      setStepIndex(null);
+      track("origin_changed", { building: building.id, origin_type: point.type, origin: idOf(point) });
+    },
+    [building.id],
+  );
 
   const showLevel = useCallback((id: string | null) => setLevelId(id), []);
   const startRoute = useCallback(() => {
     setStepIndex(null);
     setPhase("route");
-  }, []);
+    if (destination && route) {
+      track("route_started", {
+        building: building.id,
+        room: destination.id,
+        origin: idOf(origin),
+        step_free: stepFree,
+        distance_m: Math.round(route.distance),
+        steps: steps.length,
+      });
+    }
+  }, [building.id, destination, origin, route, stepFree, steps.length]);
   const endRoute = useCallback(() => {
     setStepIndex(null);
     setPhase("place");
@@ -156,7 +174,25 @@ export function useNavigator(building: IndoorBuilding) {
   const toggleStepFree = useCallback(() => {
     setStepFree((value) => !value);
     setStepIndex(null);
-  }, []);
+    track("step_free_toggled", { building: building.id, enabled: !stepFree });
+  }, [building.id, stepFree]);
+
+  /** The student pressed "I'm here" at the end of the route. */
+  const completeRoute = useCallback(() => {
+    if (destination) track("route_completed", { building: building.id, room: destination.id, step_free: stepFree });
+    setDestinationId(null);
+    setStepIndex(null);
+    setPhase("explore");
+  }, [building.id, destination, stepFree]);
+
+  // A destination that cannot be reached with the current options is worth knowing about.
+  const missingKey = destination && route === null ? `${destination.id}|${idOf(origin)}|${stepFree}` : null;
+  useEffect(() => {
+    if (!missingKey || !destination) return;
+    track("route_not_found", { building: building.id, room: destination.id, origin: idOf(origin), step_free: stepFree });
+    // Report each unreachable combination once, not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missingKey]);
 
   const state: NavigatorState = {
     phase,
@@ -170,7 +206,7 @@ export function useNavigator(building: IndoorBuilding) {
     routeMissing: destination !== null && route === null,
   };
 
-  return { state, graph, selectDestination, selectNearest, clearDestination, setOrigin, showLevel, startRoute, endRoute, goToStep, toggleStepFree };
+  return { state, graph, selectDestination, selectNearest, clearDestination, setOrigin, showLevel, startRoute, endRoute, goToStep, toggleStepFree, completeRoute };
 }
 
 export type Navigator = ReturnType<typeof useNavigator>;
