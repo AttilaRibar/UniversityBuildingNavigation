@@ -2,10 +2,12 @@
 
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import dynamic from "next/dynamic";
+import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { campusBuildingById } from "@/data/campus";
 import { Logo } from "@/presentation/brand/Logo";
 import { useMessages } from "@/presentation/i18n/I18nProvider";
+import { navigationLog } from "@/presentation/logging/navigationLog";
 import { cityEn, cityHu } from "@/presentation/i18n/messages/city";
 import { commonEn, commonHu } from "@/presentation/i18n/messages/common";
 import { Info } from "@/presentation/ui/icons";
@@ -35,7 +37,10 @@ export function CityOverview() {
 
   const select = useCallback((id: string | null) => {
     setSelectedId(id);
-    if (id) setSnap("half");
+    if (id) {
+      posthog.capture("building_selected", { building_id: id });
+      setSnap("half");
+    }
   }, []);
 
   const closeCard = () => {
@@ -61,6 +66,11 @@ export function CityOverview() {
     if (mapStatus === "failed") setSnap((s) => (s === "peek" ? "half" : s));
   }, [mapStatus]);
 
+  const onMapStatusChange = useCallback((status: CityMapStatus) => {
+    setMapStatus(status);
+    if (status === "degraded" || status === "failed") navigationLog.cityMapUnavailable(status);
+  }, []);
+
   const searching = query.trim() !== "";
 
   const header = selected ? (
@@ -84,7 +94,7 @@ export function CityOverview() {
     <MotionConfig reducedMotion="user">
       <main className="app-viewport bg-canvas">
         {mapStatus === "failed" ? null : (
-          <CityMap selectedId={selectedId} onSelect={select} obscured={obscured} onStatusChange={setMapStatus} />
+          <CityMap selectedId={selectedId} onSelect={select} obscured={obscured} onStatusChange={onMapStatusChange} />
         )}
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3 pt-[max(12px,env(safe-area-inset-top))] md:p-4">

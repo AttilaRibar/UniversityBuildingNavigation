@@ -2,9 +2,11 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { useCallback, useMemo, useState } from "react";
 import type { IndoorBuildingBundle } from "@/data/buildings";
 import { useI18n, useMessages } from "@/presentation/i18n/I18nProvider";
+import { navigationLog } from "@/presentation/logging/navigationLog";
 import { buildingEn, buildingHu } from "@/presentation/i18n/messages/building";
 import { commonEn, commonHu } from "@/presentation/i18n/messages/common";
 import { ArrowLeft } from "@/presentation/ui/icons";
@@ -85,16 +87,24 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
 
   const select = useCallback(
     (unitId: string) => {
+      const destination = building.units.find((unit) => unit.id === unitId);
+      if (!destination) return;
+      posthog.capture("destination_selected", {
+        building_id: building.id,
+        destination_id: destination.id,
+        destination_category: destination.category,
+      });
       nav.selectDestination(unitId);
       setQuery("");
       setPickingOrigin(false);
       setSnap("half");
     },
-    [nav, setSnap],
+    [building, nav, setSnap],
   );
 
   const activeLevelId =
     view.mode.type === "level" ? view.mode.levelId : view.mode.type === "route" ? view.mode.focusLevelId : null;
+  const destination = state.destination;
   const originName = textContext ? pointName(state.origin, textContext) : "";
 
   const header =
@@ -121,13 +131,16 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
           mode={view.mode}
           focus={view.focus}
           labels={labels}
-          destinationUnitId={state.destination?.id ?? null}
+          destinationUnitId={destination?.id ?? null}
           originUnitId={state.origin.type === "unit" && state.phase !== "explore" ? state.origin.unitId : null}
           route={sceneRoute}
           insets={insets}
           onUnitTap={select}
           onLevelTap={nav.showLevel}
-          onError={() => setWebglFailed(true)}
+          onError={() => {
+            navigationLog.indoorMapUnavailable(building.id);
+            setWebglFailed(true);
+          }}
           ariaLabel={text(building.name)}
         />
       )}
@@ -185,31 +198,49 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
             backLabel={common.back}
             onCancel={() => setPickingOrigin(false)}
             onPick={(point) => {
+              posthog.capture("route_origin_changed", {
+                building_id: building.id,
+                origin_type: point.type,
+              });
               nav.setOrigin(point);
               setPickingOrigin(false);
             }}
           />
-        ) : state.phase === "route" && state.route && state.destination && textContext ? (
+        ) : state.phase === "route" && state.route && destination && textContext ? (
           <RoutePanel
             m={m}
             route={state.route}
             steps={state.steps}
             cards={cards}
             stepIndex={state.stepIndex}
-            heading={`${originName} → ${unitTitle(state.destination, textContext)}`}
+            heading={`${originName} → ${unitTitle(destination, textContext)}`}
             stepFree={state.stepFree}
             onStep={(index) => {
               nav.goToStep(index);
               setSnap("peek");
             }}
-            onToggleStepFree={nav.toggleStepFree}
+            onToggleStepFree={() => {
+              posthog.capture("route_accessibility_changed", {
+                building_id: building.id,
+                step_free: !state.stepFree,
+              });
+              nav.toggleStepFree();
+            }}
             onEnd={nav.endRoute}
-            onArrived={nav.clearDestination}
+            onArrived={() => {
+              posthog.capture("route_completed", {
+                building_id: building.id,
+                destination_id: destination.id,
+                destination_category: destination.category,
+                step_free: state.stepFree,
+              });
+              nav.clearDestination();
+            }}
           />
-        ) : state.phase !== "explore" && state.destination ? (
+        ) : state.phase !== "explore" && destination ? (
           <PlacePanel
             building={building}
-            unit={state.destination}
+            unit={destination}
             route={state.route}
             originName={originName}
             stepFree={state.stepFree}
@@ -219,10 +250,30 @@ export function BuildingScreen({ bundle }: { bundle: IndoorBuildingBundle }) {
               setSnap("full");
             }}
             onClose={nav.clearDestination}
-            onRoute={nav.startRoute}
+            onRoute={() => {
+              posthog.capture("route_started", {
+                building_id: building.id,
+                destination_id: destination.id,
+                destination_category: destination.category,
+                step_free: state.stepFree,
+              });
+              nav.startRoute();
+            }}
           />
         ) : (
-          <ExplorePanel building={building} query={query} onSelect={select} onNearest={nav.selectNearest} />
+          <ExplorePanel
+            building={building}
+            query={query}
+            onSelect={select}
+            onNearest={(categories) => {
+              posthog.capture("nearest_place_selected", {
+                building_id: building.id,
+                place_categories: categories,
+                step_free: state.stepFree,
+              });
+              nav.selectNearest(categories);
+            }}
+          />
         )}
       </Sheet>
     </main>

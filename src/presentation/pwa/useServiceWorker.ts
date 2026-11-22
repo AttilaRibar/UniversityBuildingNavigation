@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { navigationLog } from "@/presentation/logging/navigationLog";
 
 /**
  * Registers `/sw.js` (production only) and reports when an updated worker is waiting.
@@ -40,6 +41,7 @@ export function useServiceWorker(): { updateReady: boolean; applyUpdate: () => v
       .then(watch)
       .catch(() => {
         // Registration failure only costs offline support.
+        navigationLog.serviceWorkerRegistrationFailed();
       });
 
     return () => container.removeEventListener("controllerchange", onControllerChange);
