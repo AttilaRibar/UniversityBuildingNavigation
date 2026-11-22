@@ -1,0 +1,36 @@
+/**
+ * Runs in the browser before the app becomes interactive (Next.js convention).
+ * Decides whether analytics may run and, if so, loads the PostHog adapter once the
+ * main thread is idle, so it never competes with the first paint or the 3D map.
+ *
+ * Analytics is on only when all of these hold:
+ * - production build,
+ * - `NEXT_PUBLIC_POSTHOG_KEY` was set at build time,
+ * - the browser does not send Do Not Track / Global Privacy Control,
+ * - the visitor has not opted out on the privacy page.
+ */
+import { attachAnalyticsSink, disableAnalytics } from "@/application/analytics";
+import { browserSignalsNoTracking, readOptOut } from "@/presentation/analytics/consent";
+
+const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
+
+function start(): void {
+  import("@/infrastructure/analytics/posthog")
+    .then(({ createPostHogSink }) => createPostHogSink({ key: key as string, host }))
+    .then(attachAnalyticsSink)
+    // Offline, blocked by an extension, or the vendor is down: the app carries on without analytics.
+    .catch(() => disableAnalytics());
+}
+
+try {
+  if (process.env.NODE_ENV !== "production" || !key || browserSignalsNoTracking() || readOptOut()) {
+    disableAnalytics();
+  } else if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(start, { timeout: 4000 });
+  } else {
+    setTimeout(start, 2000);
+  }
+} catch {
+  disableAnalytics();
+}
