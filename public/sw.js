@@ -102,6 +102,16 @@ function shouldIgnoreSearch(url) {
   return url.pathname.endsWith("/") || url.pathname.endsWith(".txt") || url.pathname === "/icon.svg" || url.pathname === "/apple-icon.png";
 }
 
+/** Looks the request up in the precache(s) only. */
+async function matchPrecache(request) {
+  for (const key of await caches.keys()) {
+    if (!key.startsWith(PRECACHE_PREFIX)) continue;
+    const hit = await (await caches.open(key)).match(request);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
 /** Looks the request up in every cache (precache versions + runtime). */
 function matchAny(request, options) {
   return caches.match(request, options);
@@ -119,7 +129,10 @@ async function handleNavigation(event, url) {
     return response;
   } catch {
     // Offline or too slow: the cached page, matched without the query string, then the cached "/".
+    // The precache comes first: its pages and chunks belong to the same build, while a page in the
+    // runtime cache may be from an older build whose chunks were dropped with the old precache.
     return (
+      (await matchPrecache(stripSearch(url))) ||
       (await matchAny(request, { ignoreSearch: true })) ||
       (await matchAny(stripSearch(url))) ||
       (await matchAny(withTrailingSlash(url), { ignoreSearch: true })) ||
