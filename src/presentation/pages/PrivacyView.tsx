@@ -11,7 +11,8 @@ import { privacyEn, privacyHu } from "@/presentation/i18n/messages/privacy";
 import { ArrowLeft } from "@/presentation/ui/icons";
 import { LanguageToggle } from "@/presentation/ui/LanguageToggle";
 
-const ANALYTICS_CONFIGURED = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY);
+/** PostHog needs its key; Vercel Web Analytics needs a Vercel deployment. */
+const ANALYTICS_CONFIGURED = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY) || Boolean(process.env.MERRE_DEPLOY_ENV);
 
 type Consent = "unknown" | "on" | "off" | "reload" | "browser" | "none";
 

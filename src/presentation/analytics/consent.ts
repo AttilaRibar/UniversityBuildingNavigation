@@ -24,6 +24,11 @@ export function writeOptOut(optedOut: boolean): void {
   }
 }
 
+/** The visitor allows analytics: no Do Not Track / Global Privacy Control and no opt-out. */
+export function analyticsAllowed(): boolean {
+  return !browserSignalsNoTracking() && !readOptOut();
+}
+
 /** Do Not Track or Global Privacy Control is switched on in the browser. */
 export function browserSignalsNoTracking(): boolean {
   const nav = navigator as Navigator & { globalPrivacyControl?: boolean };

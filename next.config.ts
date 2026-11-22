@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
   images: { unoptimized: true },
+  // Inlined at build time: "production" or "preview" on Vercel, empty elsewhere (local, CI).
+  // Vercel Web Analytics only exists on Vercel; PostHog events are tagged with it.
+  env: { MERRE_DEPLOY_ENV: process.env.VERCEL_ENV ?? "" },
   turbopack: {
     rules: {
       "*.css": {

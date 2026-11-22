@@ -81,6 +81,9 @@ self.addEventListener("fetch", (event) => {
     } else if (url.pathname === "/precache-manifest.json" || url.pathname === "/sw.js") {
       // Never serve these from cache: they decide what gets cached/updated.
       return;
+    } else if (url.pathname.startsWith("/_vercel/")) {
+      // Vercel Web Analytics script and endpoints: straight to the network, never cached.
+      return;
     } else {
       // RSC payloads, icons, data: show the cached copy immediately, refresh in the background.
       event.respondWith(staleWhileRevalidate(event, RUNTIME_CACHE, { ignoreSearch: shouldIgnoreSearch(url) }));
