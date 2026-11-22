@@ -1,0 +1,86 @@
+/*
+ * Overlay scrollbar for ScrollArea. The platform bar is hidden; a slim navy pill
+ * floats over the right gutter instead, and the edges fade where content goes on.
+ */
+
+/* Registered so the edge fades can transition instead of snapping on and off. */
+@property --scroll-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --scroll-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.scroll-area__viewport {
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 var(--scroll-fade-top),
+    #000 calc(100% - var(--scroll-fade-bottom)),
+    transparent
+  );
+  transition:
+    --scroll-fade-top 0.2s ease-out,
+    --scroll-fade-bottom 0.2s ease-out;
+}
+.scroll-area__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+/* A gutter-wide strip, so the thin pill is still easy to hit with a mouse. */
+.scroll-area__track {
+  position: absolute;
+  top: 6px;
+  right: 3px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.scroll-area__thumb {
+  position: absolute;
+  inset: 0 0 auto;
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+  will-change: transform;
+}
+.scroll-area__thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0 2px 0 auto;
+  width: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 24%, transparent);
+  transition:
+    width 0.15s ease-out,
+    background-color 0.15s ease-out;
+}
+
+.scroll-area[data-overflow][data-active] .scroll-area__thumb,
+.scroll-area[data-dragging] .scroll-area__thumb {
+  opacity: 1;
+  transition-duration: 0.1s;
+}
+
+/* With a mouse the bar shows while the pointer is over the list, and can be grabbed. */
+@media (hover: hover) and (pointer: fine) {
+  .scroll-area[data-overflow]:hover .scroll-area__thumb {
+    opacity: 1;
+    transition-duration: 0.1s;
+  }
+  .scroll-area[data-overflow]:hover .scroll-area__track {
+    pointer-events: auto;
+  }
+  .scroll-area__track:hover .scroll-area__thumb::after,
+  .scroll-area[data-dragging] .scroll-area__thumb::after {
+    width: 8px;
+    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  }
+  .scroll-area[data-dragging] .scroll-area__thumb::after {
+    background: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  }
+}

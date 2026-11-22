@@ -4,6 +4,7 @@ import { animate, motion, useMotionValue, useReducedMotion, type ValueAnimationT
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useMessages } from "@/presentation/i18n/I18nProvider";
 import { uiEn, uiHu } from "@/presentation/i18n/messages/ui";
+import { ScrollArea } from "./ScrollArea";
 import { DESKTOP_QUERY, useMediaQuery } from "./useMediaQuery";
 
 export type SheetSnap = "peek" | "half" | "full";
@@ -83,7 +84,6 @@ export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHei
   const [viewport, setViewport] = useState<Viewport | null>(null);
   const offset = useMotionValue(OFFSCREEN);
   const probeRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
   const suppressClick = useRef(false);
   const stopDrag = useRef<(() => void) | null>(null);
   const insetsRef = useRef(onInsetsChange);
@@ -103,11 +103,6 @@ export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHei
       stopDrag.current?.();
     };
   }, []);
-
-  // A new panel (room card, route, list) starts at its top, not where the previous one was scrolled to.
-  useEffect(() => {
-    if (bodyRef.current) bodyRef.current.scrollTop = 0;
-  }, [contentKey]);
 
   const heights = viewport ? snapHeights(viewport, peekHeight) : null;
   const heightsKey = heights ? `${heights.peek}/${heights.half}/${heights.full}` : "";
@@ -217,13 +212,16 @@ export function Sheet({ snap, onSnapChange, ariaLabel, header, children, peekHei
         </button>
         {header}
       </div>
-      <div
-        ref={bodyRef}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4"
-        style={{ paddingBottom: `calc(${hiddenBelow + 24}px + env(safe-area-inset-bottom))` }}
+      {/* A new panel (room card, route, list) starts at its top, not where the previous one was scrolled to. */}
+      <ScrollArea
+        resetKey={contentKey}
+        hiddenBottom={hiddenBelow}
+        className="flex-1"
+        viewportClassName="px-4"
+        viewportStyle={{ paddingBottom: `calc(${hiddenBelow + 24}px + env(safe-area-inset-bottom))` }}
       >
         {children}
-      </div>
+      </ScrollArea>
       <div ref={probeRef} aria-hidden="true" className="pointer-events-none invisible absolute pb-[env(safe-area-inset-bottom)]" />
     </motion.section>
   );

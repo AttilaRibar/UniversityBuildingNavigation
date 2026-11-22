@@ -105,7 +105,7 @@ Points where the table differs from a strict onion layering:
 - `presentation/pages/`: `PrivacyView.tsx` (privacy notice and opt-out switch), `StatusView.tsx` (404 and error screens).
 - `presentation/i18n/`: `I18nProvider`, message files per screen (`common`, `building`, `city`, `privacy`, `pwa`, `ui`), Hungarian and English, and `hungarian.ts` (article and suffix after a number: "az 5-ből", "a 10-ből").
 - `presentation/pwa/`: service worker registration, update toast, offline chip, install banner.
-- `presentation/ui/`: shared components (sheet, buttons, chips, search field, icons, `FooterLinks`) and hooks (`useMediaQuery`, `useViewportHeight`).
+- `presentation/ui/`: shared components (sheet, `ScrollArea`, buttons, chips, search field, icons, `FooterLinks`) and hooks (`useMediaQuery`, `useViewportHeight`).
 - `public/sw.js`: the service worker.
 
 ## Runtime flow
@@ -147,7 +147,7 @@ A route that starts at an entrance anchor (`kind: "entrance"`) begins with an "a
 
 On the city map the user can rotate the view (pitch stays fixed). When a building or campus is selected, the map slowly orbits (`src/presentation/city/orbit.ts`); any user input stops the orbit.
 
-The bottom sheet (`presentation/ui/Sheet.tsx`) takes a `contentKey`; when it changes (another room, the route, the origin picker), the sheet body scrolls back to the top. On the indoor screen the level switcher gets the height left between the top bar and the sheet (`useViewportHeight`); its buttons shrink from 44 px down to 32 px and, if that is not enough, the list scrolls, so the sheet never hides a floor.
+The bottom sheet (`presentation/ui/Sheet.tsx`) takes a `contentKey`; when it changes (another room, the route, the origin picker), the sheet body scrolls back to the top. The body is a `ScrollArea` (`presentation/ui/ScrollArea.tsx`): the platform scrollbar is hidden and a slim overlay bar shows while scrolling or while a mouse is over the panel; with a mouse it can be dragged, and a click on its track jumps there. Edges with more content beyond them fade out. Touch, wheel and keyboard scrolling stay native. On the indoor screen the level switcher gets the height left between the top bar and the sheet (`useViewportHeight`); its buttons shrink from 44 px down to 32 px and, if that is not enough, the list scrolls, so the sheet never hides a floor.
 
 ## Analytics
 

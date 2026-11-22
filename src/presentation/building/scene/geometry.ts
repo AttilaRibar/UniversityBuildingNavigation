@@ -45,37 +45,50 @@ export function shrink(polygon: Polygon, by: number): Polygon {
 }
 
 /**
- * A flat ribbon following a polyline, with round joints. Triangles are emitted
- * in path order so `setDrawRange` can reveal the ribbon progressively, and
- * `uv.x` carries the distance along the path for the moving chevron texture.
+ * A flat ribbon following a polyline, with round ends and joints. Triangles are
+ * emitted in path order so `setDrawRange` can reveal the ribbon progressively,
+ * and `uv.x` carries the distance along the path for the moving chevron texture.
+ *
+ * The round parts are half-discs ahead of (or, at the start, behind) the straight
+ * pieces, so they only fill ground the pieces leave open, and they sample the
+ * texture's edge (`v = 0`). With a texture that is plain along its edges they stay
+ * one steady colour: sampling the middle of a scrolling pattern at a single point
+ * made every joint flash whenever a chevron passed it.
+ *
+ * Pieces still overlap on the inside of a bend, in one plane. Draw the ribbon
+ * without depth writes so the later piece simply wins there instead of z-fighting.
  */
 export function ribbon(points: readonly Vec2[], width: number, height: number, uvScale: number): THREE.BufferGeometry {
   const positions: number[] = [];
   const uvs: number[] = [];
   const half = width / 2;
   let travelled = 0;
+  let started = false;
 
   const push = (p: Vec2, u: number, v: number) => {
     positions.push(p[0], height, -p[1]);
     uvs.push(u * uvScale, v);
   };
-  const disc = (c: Vec2, u: number) => {
-    const steps = 10;
+  /** Half-disc around `c`, bulging towards `heading` (radians in plan coordinates). */
+  const cap = (c: Vec2, heading: number, u: number) => {
+    const steps = 8;
     for (let i = 0; i < steps; i++) {
-      const a0 = (i / steps) * Math.PI * 2;
-      const a1 = ((i + 1) / steps) * Math.PI * 2;
-      push(c, u, 0.5);
-      push([c[0] + Math.cos(a1) * half, c[1] + Math.sin(a1) * half], u, 0.5);
-      push([c[0] + Math.cos(a0) * half, c[1] + Math.sin(a0) * half], u, 0.5);
+      const a0 = heading - Math.PI / 2 + (i / steps) * Math.PI;
+      const a1 = heading - Math.PI / 2 + ((i + 1) / steps) * Math.PI;
+      push(c, u, 0);
+      push([c[0] + Math.cos(a0) * half, c[1] + Math.sin(a0) * half], u, 0);
+      push([c[0] + Math.cos(a1) * half, c[1] + Math.sin(a1) * half], u, 0);
     }
   };
 
-  if (points.length > 0) disc(points[0], 0);
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1];
     const b = points[i];
     const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
     if (len < 1e-6) continue;
+    const heading = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    if (!started) cap(a, heading + Math.PI, 0);
+    started = true;
     const nx = (-(b[1] - a[1]) / len) * half;
     const ny = ((b[0] - a[0]) / len) * half;
     const u0 = travelled;
@@ -87,7 +100,13 @@ export function ribbon(points: readonly Vec2[], width: number, height: number, u
     push(a0, u0, 0); push(a1, u0, 1); push(b0, u1, 0);
     push(b0, u1, 0); push(a1, u0, 1); push(b1, u1, 1);
     travelled = u1;
-    disc(b, u1);
+    // Covers the outside of the bend into the next piece, or rounds off the end.
+    cap(b, heading, u1);
+  }
+  // A path that never moves is drawn as a dot.
+  if (!started && points.length > 0) {
+    cap(points[0], 0, 0);
+    cap(points[0], Math.PI, 0);
   }
 
   const geometry = new THREE.BufferGeometry();
