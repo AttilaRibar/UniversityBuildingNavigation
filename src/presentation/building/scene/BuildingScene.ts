@@ -558,16 +558,18 @@ export class BuildingScene {
       new THREE.MeshBasicMaterial({ color: COLORS.ink, side: THREE.DoubleSide }),
     );
     const texture = this.chevrons;
+    // The fill's pieces overlap in one plane at bends, so it does not write depth
+    // (see `ribbon`). That only works if it is drawn after the border beneath it.
     const fill = new THREE.Mesh(
       ribbon(leg.points, ROUTE_WIDTH, 0.14, 1 / CHEVRON_SPACING),
-      new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, depthWrite: false }),
     );
-    for (const mesh of [border, fill]) {
+    [border, fill].forEach((mesh, i) => {
       mesh.material.polygonOffset = true;
       mesh.material.polygonOffsetFactor = -4;
-      mesh.renderOrder = 2;
+      mesh.renderOrder = 2 + i;
       group.add(mesh);
-    }
+    });
     view.group.add(group);
     const counts = [border, fill].map((m) => m.geometry.getAttribute("position").count / 3);
     return {
@@ -863,7 +865,10 @@ function pointAlong(points: readonly Vec2[], distance: number): Vec2 {
   return points[points.length - 1];
 }
 
-/** Yellow tile with a navy chevron; repeated along the route and scrolled to show direction. */
+/**
+ * Yellow tile with a navy chevron; repeated along the route and scrolled to show direction.
+ * Keep its top and bottom edges plain yellow: the ribbon's round joints sample them.
+ */
 function createChevronTexture(): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 64;
